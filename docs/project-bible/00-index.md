@@ -1,6 +1,6 @@
 # Project Bible Index
 
-- **Status:** Draft v1.1 — Awaiting human review
+- **Status:** Approved v1.1
 - **Owner:** Project Lead
 - **Version:** 1.1
 - **Last reviewed:** 2026-07-19
@@ -8,7 +8,7 @@
 
 ## Project state
 
-Architecture v1.1 is approved. Phase 1 is conditionally approved pending the focused Draft v1.1 research-boundary review. No user evidence has been collected and no product solution has been selected.
+Architecture v1.1 and the Phase 1 research foundation are approved. The first manual pilot batch is authorized under the approved protocol. No product solution has been selected.
 
 ## Evidence language
 
@@ -21,24 +21,30 @@ Architecture v1.1 is approved. Phase 1 is conditionally approved pending the foc
 
 | Artifact | Location | Status |
 |---|---|---|
-| Project Bible index | `docs/project-bible/00-index.md` | Draft v1.1 — Awaiting human review |
-| Vision | `docs/project-bible/01-vision.md` | Draft v1 — Awaiting human review |
-| Problem | `docs/project-bible/02-problem.md` | Draft v1.1 — Awaiting human review |
-| Business goal | `docs/project-bible/03-business-goal.md` | Draft v1.1 — Awaiting human review |
-| Metrics | `docs/project-bible/04-metrics.md` | Draft v1 — Awaiting human review |
-| Research plan | `docs/project-bible/05-research-plan.md` | Draft v1.1 — Awaiting human review |
-| Research questions | `docs/project-bible/06-research-questions.md` | Draft v1.1 — Awaiting human review |
-| Hypothesis register | `docs/project-bible/07-hypothesis-register.md` | Draft v1 — Awaiting human review |
-| Decision log | `docs/project-bible/14-decision-log.md` | Draft v1 — Awaiting human review |
-| Rejected ideas | `docs/project-bible/15-rejected-ideas.md` | Draft v1 — Awaiting human review |
-| Limitations | `docs/project-bible/20-limitations.md` | Draft v1 — Awaiting human review |
-| Research Protocol v1 | `research/protocols/research-protocol-v1.md` | Draft v1.1 — Awaiting human review |
-| Category Taxonomy v1 | `research/taxonomies/category-taxonomy-v1.md` | Draft v1.1 — Awaiting human review |
-| Behavioral Codebook v1 | `research/taxonomies/behavioral-codebook-v1.md` | Draft v1.1 — Awaiting human review |
-| Query Matrix v1 | `research/query-plans/query-matrix-v1.md` | Draft v1.1 — Awaiting human review |
-| Source Policy v1 | `research/protocols/source-policy-v1.md` | Draft v1 — Awaiting human review |
-| Corpus Quality Rubric v1 | `research/protocols/corpus-quality-rubric-v1.md` | Draft v1.1 — Awaiting human review |
-| Insight Acceptance Criteria v1 | `research/protocols/insight-acceptance-criteria-v1.md` | Draft v1.1 — Awaiting human review |
+| Project Bible index | `docs/project-bible/00-index.md` | Approved v1.1 |
+| Vision | `docs/project-bible/01-vision.md` | Approved v1 |
+| Problem | `docs/project-bible/02-problem.md` | Approved v1.1 |
+| Business goal | `docs/project-bible/03-business-goal.md` | Approved v1.1 |
+| Metrics | `docs/project-bible/04-metrics.md` | Approved v1 |
+| Research plan | `docs/project-bible/05-research-plan.md` | Approved v1.1 |
+| Research questions | `docs/project-bible/06-research-questions.md` | Approved v1.1 |
+| Hypothesis register | `docs/project-bible/07-hypothesis-register.md` | Approved v1 |
+| Decision log | `docs/project-bible/14-decision-log.md` | Approved v1 |
+| Rejected ideas | `docs/project-bible/15-rejected-ideas.md` | Approved v1 |
+| Limitations | `docs/project-bible/20-limitations.md` | Approved v1 |
+| Research Protocol v1 | `research/protocols/research-protocol-v1.md` | Approved v1.1 |
+| Category Taxonomy v1 | `research/taxonomies/category-taxonomy-v1.md` | Approved v1.1 |
+| Behavioral Codebook v1 | `research/taxonomies/behavioral-codebook-v1.md` | Approved v1.1 |
+| Query Matrix v1 | `research/query-plans/query-matrix-v1.md` | Approved v1.1 |
+| Source Policy v1 | `research/protocols/source-policy-v1.md` | Approved v1 |
+| Corpus Quality Rubric v1 | `research/protocols/corpus-quality-rubric-v1.md` | Approved v1.1 |
+| Insight Acceptance Criteria v1 | `research/protocols/insight-acceptance-criteria-v1.md` | Approved v1.1 |
+| Manual pilot README | `research/pilot/README.md` | First batch complete — Awaiting pilot review |
+| Manual pilot source log | `research/pilot/source-log.csv` | First batch complete — Awaiting pilot review |
+| Manual pilot evidence items | `research/pilot/evidence-items.csv` | First batch complete — Awaiting pilot review |
+| Manual pilot excluded sources | `research/pilot/excluded-sources.csv` | First batch complete — Awaiting pilot review |
+| Manual pilot review | `research/pilot/pilot-review-template.md` | First batch complete — Awaiting pilot review |
+| Manual pilot query log | `research/pilot/query-execution-log.csv` | First batch complete — Awaiting pilot review |
 
 ## Lightweight review gates
 

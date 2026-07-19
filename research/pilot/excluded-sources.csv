@@ -1,0 +1,3 @@
+source_id,source_url,exclusion_reason,date_reviewed,reviewer_note
+S002,https://www.reddit.com/r/zepto/comments/1ncgaol,"Generic sorting and discount-filter complaint without a stated category-expansion decision, purchase, abandonment, workaround, purchase elsewhere, or repeat outcome",2026-07-19,"May inform generic usability work but does not meet this pilot's category-level retention rule"
+S006,https://www.reddit.com/r/blinkit/comments/1s65vup/can_i_trust_blinkit_for_skincare_products/,"Substantially duplicates the richer S005 skincare-authenticity thread; most replies are short opinions without enough decision context",2026-07-19,"Excluded to avoid inflating recurrence from overlapping Reddit discussions"
