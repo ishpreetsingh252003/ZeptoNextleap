@@ -1,0 +1,19 @@
+{
+  "name": "zepto-nextleap-research",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "build": "pnpm -r --if-present build",
+    "dev": "pnpm --parallel --filter @zepto/research-web --filter @zepto/research-api --filter @zepto/research-worker dev",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "db:generate": "pnpm --filter @zepto/research-database db:generate",
+    "db:migrate": "pnpm --filter @zepto/research-database db:migrate",
+    "pilot:import": "pnpm --filter @zepto/research-worker pilot:import"
+  },
+  "devDependencies": { "typescript": "^5.9.3" }
+}

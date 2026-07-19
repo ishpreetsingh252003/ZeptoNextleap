@@ -1,0 +1,34 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { ArrowRight, RefreshCw, RotateCcw } from "lucide-react";
+import { api, formatDate, titleCase, type AnalysisRun, type EvidenceRow, type Run, type Source, type Theme } from "@/lib/api";
+import { EmptyState, Metric, SectionHeader, SkeletonRows, StatusBadge } from "@/components/ui";
+
+type RunPayload = { run: Run; sources: Source[]; evidence: EvidenceRow[]; themes: Theme[]; analysisRuns: AnalysisRun[] };
+const stages = ["collection", "normalization_and_deduplication", "relevance", "evidence_extraction", "behavioral_coding", "contradiction_detection", "theme_synthesis", "human_review"];
+
+export function RunDetail({ runId }: { runId: string }) {
+  const [payload, setPayload] = useState<RunPayload>();
+  const [error, setError] = useState<string>();
+  const load = useCallback(async () => { try { setPayload(await api<RunPayload>(`/v1/runs/${runId}`)); setError(undefined); } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not load the run."); } }, [runId]);
+  useEffect(() => { void load(); const timer = window.setInterval(() => { if (!payload || ["queued", "collecting", "processing", "analyzing"].includes(payload.run.status)) void load(); }, 2000); return () => window.clearInterval(timer); }, [load, payload]);
+
+  async function retry() {
+    try { const run = await api<Run>(`/v1/runs/${runId}/retry`, { method: "POST", body: "{}" }); window.location.href = `/runs/${run.id}`; } catch (cause) { setError(cause instanceof Error ? cause.message : "Retry could not be created."); }
+  }
+
+  if (!payload) return <div className="page"><div className="page-heading"><div><span className="eyebrow">Run detail</span><h1>Loading collection run…</h1></div></div>{error ? <div className="notice notice-error">{error}</div> : <div className="panel"><SkeletonRows count={6} /></div>}</div>;
+  const activeStageIndex = stages.indexOf(payload.run.currentStage ?? "");
+  return <div className="page">
+    <div className="page-heading"><div><span className="eyebrow">Collection run · {payload.run.id.slice(0, 8)}</span><h1>{titleCase(payload.run.sourceType)} research run</h1><p>Started {formatDate(payload.run.createdAt)}. This page separates collection, validation, synthesis, and human review.</p></div><div className="filters"><StatusBadge status={payload.run.status} /><button className="button button-secondary" onClick={() => void load()}><RefreshCw size={14} />Refresh</button>{["failed", "partially_completed"].includes(payload.run.status) && <button className="button button-primary" onClick={() => void retry()}><RotateCcw size={14} />Retry as new run</button>}</div></div>
+    {error && <div className="notice notice-error">{error}</div>}
+    {payload.run.errorMessage && <div className={`notice ${payload.run.status === "failed" ? "notice-error" : "notice-info"}`}><strong>{payload.run.errorCode}</strong> — {payload.run.errorMessage}</div>}
+    <div className="metrics"><Metric label="Sources retained" value={payload.run.sourceCount} detail={`${payload.run.duplicateCount} duplicate(s) removed`} /><Metric label="Evidence items" value={payload.run.evidenceCount} detail="Atomic, source-linked observations" /><Metric label="Themes" value={payload.run.themeCount} detail="Human review remains required" /><Metric label="AI stages" value={payload.analysisRuns.filter((item) => item.status === "completed").length} detail={`${payload.analysisRuns.filter((item) => item.status === "failed").length} failed stage(s)`} /></div>
+    <div className="grid-main"><section className="panel"><SectionHeader eyebrow="Pipeline" title="Controlled stage progress" description="The worker persists each stage before moving forward." /><div className="steps">{stages.map((stage, index) => { const done = payload.run.status === "completed" || activeStageIndex > index; const active = activeStageIndex === index; return <div className={`step ${done ? "done" : ""} ${active ? "active" : ""}`} key={stage}><span className="step-index">{done ? "✓" : index + 1}</span><div><h4>{titleCase(stage)}</h4><p>{active ? "Current stage" : done ? "Completed or passed" : "Waiting for prior stage"}</p></div></div>; })}</div></section>
+    <aside className="panel"><SectionHeader eyebrow="Lineage" title="Model and prompt record" description="Only validated outputs can reach evidence or themes." /><div className="panel-pad">{payload.analysisRuns.length === 0 ? <div className="research-rule"><strong>No AI output stored</strong><p>{payload.run.status === "partially_completed" ? "Configure Groq and retry the run." : "Analysis has not started or no relevant content was found."}</p></div> : payload.analysisRuns.map((analysis) => <div className="theme-mini" key={analysis.id}><div className="card-top"><h3>{titleCase(analysis.stage)}</h3><StatusBadge status={analysis.status} /></div><p>{analysis.model}<br />{analysis.promptVersion}</p></div>)}</div></aside></div>
+    <section className="panel" style={{ marginTop: 16 }}><SectionHeader eyebrow="Evidence" title="Retained behavioral observations" description="Every item keeps its source, applicability, certainty, and limitations." action={<Link className="button button-secondary" href="/evidence">Open explorer <ArrowRight size={14} /></Link>} />{payload.evidence.length === 0 ? <EmptyState title="No evidence retained yet" body="The source may still be processing, may have failed policy checks, or may not contain category-expansion behavior." /> : <div className="panel-pad evidence-grid">{payload.evidence.slice(0, 6).map(({ item, source }) => <Link className="evidence-card" href={`/evidence/${item.id}`} key={item.id}><div className="card-top"><h3>{item.neutralParaphrase}</h3><StatusBadge status={item.evidenceValence} /></div><div className="card-meta"><span className="chip">{item.categoryGroup}</span><span className="chip">{item.applicability}</span><span className="chip">{item.interpretationCertainty}</span></div><div className="source-line"><span>{source.platform}</span><span>Evidence {item.id.slice(0, 8)}</span></div></Link>)}</div>}</section>
+    {payload.themes.length > 0 && <section className="panel" style={{ marginTop: 16 }}><SectionHeader eyebrow="Themes" title="Evidence-linked synthesis" description="Contradictions remain separate in each theme’s evidence map." /><div className="panel-pad evidence-grid">{payload.themes.map((theme) => <Link className="evidence-card" href={`/themes/${theme.id}`} key={theme.id}><div className="card-top"><h3>{theme.title}</h3><StatusBadge status={theme.evidenceStrength} /></div><p>{theme.summary}</p><div className="card-meta"><span className="chip">{theme.applicability}</span><span className="chip">{theme.claimStatus}</span><span className="chip">{theme.reviewerStatus}</span></div></Link>)}</div></section>}
+  </div>;
+}
