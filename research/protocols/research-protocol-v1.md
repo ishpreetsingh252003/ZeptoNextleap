@@ -1,8 +1,8 @@
 # Research Protocol v1
 
-- **Status:** Draft v1 — Awaiting human review
+- **Status:** Draft v1.1 — Awaiting human review
 - **Owner:** Research Lead
-- **Version:** 1.0
+- **Version:** 1.1
 - **Last reviewed:** 2026-07-19
 - **Purpose:** Specify how public evidence will be collected, reviewed, coded, synthesized, and translated into product discovery.
 
@@ -13,6 +13,8 @@ Identify evidence-backed behavioral mechanisms that prevent or enable monthly ca
 ## 2. Business goal
 
 Increase the percentage of Monthly Active Customers purchasing from at least one new category each month.
+
+**Monthly Active Customer is the business-metric population, not a public-research sampling criterion.** Public research samples customers and quick-commerce shoppers; it cannot verify an author's MAC status.
 
 Two metric interpretations remain under review:
 
@@ -29,6 +31,7 @@ The dormant lookback is undecided. A 180-day period is only a provisional assump
 - Shopping mission, trigger, barrier, decision criterion, information need, trust, perceived risk, workaround, and outcome
 - Zepto-specific evidence and relevant broader quick-commerce or category-purchase evidence
 - Positive, negative, mixed, and contradictory cases
+- Product-level trial only when it explains entry, abandonment, purchase, purchase elsewhere, workaround, or repeat behavior for a lifetime-new or dormant category
 
 ### Exclude
 
@@ -37,6 +40,9 @@ The dormant lookback is undecided. A 180-day period is only a provisional assump
 - Promotional content without authentic customer behavior
 - Unsupported summaries copied from other sources
 - Content with insufficient context for responsible interpretation
+- Flavors, brands, pack sizes, and variants within familiar categories unless directly relevant to a category-expansion mechanism
+
+Primary scope is category-level expansion. Product-level evidence is contextual support, not a separate product-discovery objective.
 
 ## 4. Evidence-status language
 
@@ -45,6 +51,16 @@ The dormant lookback is undecided. A 180-day period is only a provisional assump
 - **Research hypothesis:** A falsifiable explanation not yet accepted.
 - **Operational assumption:** A temporary research or measurement choice.
 - **Illustrative example:** Non-evidence used to explain a structure.
+
+### Evidence applicability
+
+Every retained evidence item must have one applicability value:
+
+- **Zepto-direct:** The source explicitly describes Zepto behavior.
+- **Quick-commerce transferable:** The source describes another quick-commerce context with a stated mechanism plausibly transferable to Zepto.
+- **Category-general contextual:** The source explains category behavior without a quick-commerce context.
+
+Every retained item must also include **Transfer rationale**: why the evidence is or is not applicable to Zepto. Category-general contextual evidence must never be presented as direct Zepto-user behavior.
 
 ## 5. Sampling strategy
 
@@ -60,7 +76,19 @@ Track variation across:
 - Confirming and disconfirming language
 - Publication dates
 
-No corpus-size target is approved. Begin with a small pilot and scale only if the evidence is relevant, context-rich, traceable, and sufficiently diverse.
+### Provisional manual pilot plan
+
+The pilot will use these **operational assumptions**, not statistical sufficiency thresholds:
+
+- Review 30–40 candidate sources manually.
+- Retain approximately 20–25 evidence items.
+- Include at least 3 source types.
+- Include at least 4 category groups.
+- Include at least 5 contradictory or boundary cases.
+- Keep every platform at or below 50% of retained evidence.
+- Stop or revise early if relevance or context quality is poor.
+
+Scale only if the evidence is relevant, context-rich, traceable, and sufficiently diverse for bounded directional synthesis. Pilot ranges may be revised after human review.
 
 ## 6. Collection procedure
 
@@ -87,6 +115,8 @@ Each evidence item should contain:
 - Linked category and shopping mission
 - Linked behavioral codes
 - Outcome if stated
+- Applicability: Zepto-direct, Quick-commerce transferable, or Category-general contextual
+- Transfer rationale: why the evidence is or is not applicable to Zepto
 - Reviewer state
 
 One item should express one bounded behavioral observation. Split sources containing multiple distinct behaviors.
@@ -106,10 +136,11 @@ One item should express one bounded behavioral observation. Split sources contai
 2. Compare patterns across source, category, and mission.
 3. Search deliberately for counterexamples.
 4. Separate recurring evidence from duplicated narratives.
-5. Draft insights with supporting and opposing evidence IDs.
-6. Apply the insight acceptance criteria.
-7. Update hypothesis status only after human review.
-8. Build behavior models and the PDD from accepted insights.
+5. Separate Zepto-direct evidence from transferable and category-general context.
+6. Draft insights with supporting and opposing evidence IDs, applicability, and transfer rationale.
+7. Apply the insight acceptance criteria.
+8. Update hypothesis status only after human review.
+9. Build behavior models and the PDD from accepted insights.
 
 ## 10. Quality controls
 
@@ -117,6 +148,7 @@ One item should express one bounded behavioral observation. Split sources contai
 - Apply the corpus-quality rubric before corpus freeze.
 - Require source traceability for every accepted evidence item.
 - Require contradictory-evidence search for every candidate insight.
+- Require applicability and transfer rationale before synthesis.
 - Record prompt/model lineage when AI stages are implemented later.
 - Never treat an AI score as statistical confidence.
 
@@ -135,7 +167,7 @@ One item should express one bounded behavioral observation. Split sources contai
 - Initial platforms and source priorities
 - Language and geography scope
 - Date/recency window
-- Pilot size or stopping rule
+- Approval or revision of the provisional pilot assumptions and early-stop rule
 - Category taxonomy depth
 - Treatment of broader non-Zepto evidence
 - Permitted excerpt-length guidance

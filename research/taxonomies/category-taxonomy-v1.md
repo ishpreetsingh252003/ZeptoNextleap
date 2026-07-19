@@ -1,8 +1,8 @@
 # Category Taxonomy v1
 
-- **Status:** Draft v1 — Awaiting human review
+- **Status:** Draft v1.1 — Awaiting human review
 - **Owner:** Product Research Lead
-- **Version:** 1.0
+- **Version:** 1.1
 - **Last reviewed:** 2026-07-19
 - **Purpose:** Provide a provisional category vocabulary for query planning and comparative behavioral analysis.
 
@@ -13,7 +13,9 @@ This is an operational research taxonomy, not Zepto's official category hierarch
 ## Taxonomy principles
 
 - Use categories broad enough to compare behavioral risk and consideration.
-- Preserve product-level detail in source notes without creating excessive taxonomy depth.
+- Primary scope is category-level expansion.
+- Preserve product-level detail only when it explains entry, abandonment, purchase, purchase elsewhere, workaround, or repeat behavior for a lifetime-new or dormant category.
+- Exclude flavors, brands, pack sizes, and variants within familiar categories unless directly relevant to a category-expansion mechanism.
 - Assign the narrowest supported category and its parent group.
 - Mark ambiguous items as `CAT-UNK` rather than guessing.
 - Keep category separate from shopping mission and customer segment.

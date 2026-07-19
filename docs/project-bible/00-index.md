@@ -1,14 +1,14 @@
 # Project Bible Index
 
-- **Status:** Draft v1 — Awaiting human review
+- **Status:** Draft v1.1 — Awaiting human review
 - **Owner:** Project Lead
-- **Version:** 1.0
+- **Version:** 1.1
 - **Last reviewed:** 2026-07-19
 - **Purpose:** Provide the entry point, status, and ownership for Phase 1 product-discovery artifacts.
 
 ## Project state
 
-Architecture v1.1 is approved. Phase 1 documentation is in draft. No user evidence has been collected and no product solution has been selected.
+Architecture v1.1 is approved. Phase 1 is conditionally approved pending the focused Draft v1.1 research-boundary review. No user evidence has been collected and no product solution has been selected.
 
 ## Evidence language
 
@@ -21,24 +21,24 @@ Architecture v1.1 is approved. Phase 1 documentation is in draft. No user eviden
 
 | Artifact | Location | Status |
 |---|---|---|
-| Project Bible index | `docs/project-bible/00-index.md` | Draft v1 — Awaiting human review |
+| Project Bible index | `docs/project-bible/00-index.md` | Draft v1.1 — Awaiting human review |
 | Vision | `docs/project-bible/01-vision.md` | Draft v1 — Awaiting human review |
-| Problem | `docs/project-bible/02-problem.md` | Draft v1 — Awaiting human review |
-| Business goal | `docs/project-bible/03-business-goal.md` | Draft v1 — Awaiting human review |
+| Problem | `docs/project-bible/02-problem.md` | Draft v1.1 — Awaiting human review |
+| Business goal | `docs/project-bible/03-business-goal.md` | Draft v1.1 — Awaiting human review |
 | Metrics | `docs/project-bible/04-metrics.md` | Draft v1 — Awaiting human review |
-| Research plan | `docs/project-bible/05-research-plan.md` | Draft v1 — Awaiting human review |
-| Research questions | `docs/project-bible/06-research-questions.md` | Draft v1 — Awaiting human review |
+| Research plan | `docs/project-bible/05-research-plan.md` | Draft v1.1 — Awaiting human review |
+| Research questions | `docs/project-bible/06-research-questions.md` | Draft v1.1 — Awaiting human review |
 | Hypothesis register | `docs/project-bible/07-hypothesis-register.md` | Draft v1 — Awaiting human review |
 | Decision log | `docs/project-bible/14-decision-log.md` | Draft v1 — Awaiting human review |
 | Rejected ideas | `docs/project-bible/15-rejected-ideas.md` | Draft v1 — Awaiting human review |
 | Limitations | `docs/project-bible/20-limitations.md` | Draft v1 — Awaiting human review |
-| Research Protocol v1 | `research/protocols/research-protocol-v1.md` | Draft v1 — Awaiting human review |
-| Category Taxonomy v1 | `research/taxonomies/category-taxonomy-v1.md` | Draft v1 — Awaiting human review |
-| Behavioral Codebook v1 | `research/taxonomies/behavioral-codebook-v1.md` | Draft v1 — Awaiting human review |
-| Query Matrix v1 | `research/query-plans/query-matrix-v1.md` | Draft v1 — Awaiting human review |
+| Research Protocol v1 | `research/protocols/research-protocol-v1.md` | Draft v1.1 — Awaiting human review |
+| Category Taxonomy v1 | `research/taxonomies/category-taxonomy-v1.md` | Draft v1.1 — Awaiting human review |
+| Behavioral Codebook v1 | `research/taxonomies/behavioral-codebook-v1.md` | Draft v1.1 — Awaiting human review |
+| Query Matrix v1 | `research/query-plans/query-matrix-v1.md` | Draft v1.1 — Awaiting human review |
 | Source Policy v1 | `research/protocols/source-policy-v1.md` | Draft v1 — Awaiting human review |
-| Corpus Quality Rubric v1 | `research/protocols/corpus-quality-rubric-v1.md` | Draft v1 — Awaiting human review |
-| Insight Acceptance Criteria v1 | `research/protocols/insight-acceptance-criteria-v1.md` | Draft v1 — Awaiting human review |
+| Corpus Quality Rubric v1 | `research/protocols/corpus-quality-rubric-v1.md` | Draft v1.1 — Awaiting human review |
+| Insight Acceptance Criteria v1 | `research/protocols/insight-acceptance-criteria-v1.md` | Draft v1.1 — Awaiting human review |
 
 ## Lightweight review gates
 

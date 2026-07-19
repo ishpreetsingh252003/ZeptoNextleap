@@ -1,8 +1,8 @@
 # Corpus Quality Rubric v1
 
-- **Status:** Draft v1 — Awaiting human review
+- **Status:** Draft v1.1 — Awaiting human review
 - **Owner:** Research Lead
-- **Version:** 1.0
+- **Version:** 1.1
 - **Last reviewed:** 2026-07-19
 - **Purpose:** Decide whether a pilot or bounded corpus is suitable for directional behavioral synthesis.
 
@@ -15,6 +15,20 @@ Score each dimension after the pilot and before corpus freeze:
 - **2 — Strong:** Sufficient variation, context, and traceability for the intended directional claim.
 
 Scores do not create statistical validity. Record a short rationale and corrective action for every 0 or 1.
+
+## Provisional manual pilot checks
+
+The pilot uses these **operational assumptions**, not statistical sufficiency thresholds:
+
+- Review 30–40 candidate sources.
+- Retain approximately 20–25 evidence items.
+- Include at least 3 source types.
+- Include at least 4 category groups.
+- Include at least 5 contradictory or boundary cases.
+- Keep every platform at or below 50% of retained evidence.
+- Stop or revise early if relevance or context quality is poor.
+
+Failure to meet a range triggers review or scope revision; meeting it does not prove representativeness or corpus sufficiency.
 
 ## Rubric
 

@@ -1,8 +1,8 @@
 # Behavioral Codebook v1
 
-- **Status:** Draft v1 — Awaiting human review
+- **Status:** Draft v1.1 — Awaiting human review
 - **Owner:** Product Research Lead
-- **Version:** 1.0
+- **Version:** 1.1
 - **Last reviewed:** 2026-07-19
 - **Purpose:** Define consistent behavioral codes for turning public discussions into inspectable evidence units.
 
@@ -18,6 +18,9 @@ All examples below are constructed, illustrative examples. They are not user quo
 - Do not infer demographics, motivation, causality, or outcomes from sentiment alone.
 - One evidence item may receive several codes when each is independently supported.
 - Preserve the neutral observation separately from the researcher's interpretation.
+- Treat category-level expansion as the primary scope.
+- Retain product-level trial only when it explains entry, abandonment, purchase, purchase elsewhere, workaround, or repeat behavior for a lifetime-new or dormant category.
+- Exclude flavors, brands, pack sizes, and variants within familiar categories unless directly relevant to a category-expansion mechanism.
 
 ## Code definitions
 
@@ -105,11 +108,11 @@ All examples below are constructed, illustrative examples. They are not user quo
 
 ### Experiment behavior
 
-- **Definition:** A deliberate trial of a lifetime-new, dormant, unfamiliar, or meaningfully different category/product option.
-- **Include when:** Novelty relative to the customer's stated history or routine is explicit.
+- **Definition:** Consideration or trial associated with entering or re-entering a lifetime-new or dormant category.
+- **Include when:** Category novelty or dormancy relative to the customer's stated history is explicit, or a product-level decision directly explains category entry, abandonment, purchase, purchase elsewhere, workaround, or repeat behavior.
 - **Starter values:** Considered, attempted, purchased, abandoned, repeated, not repeated, unknown.
 - **Illustrative inclusion:** A shopper says this was their first pet-care purchase through quick commerce and later reports whether they repeated it.
-- **Illustrative exclusion:** Buying a newly launched flavor when there is no relevance to category expansion, unless the research scope explicitly includes product-level experimentation.
+- **Illustrative exclusion:** Buying a new flavor, brand, pack size, or variant within a familiar category without a direct category-expansion mechanism.
 - **Do not assume:** A first observed corpus mention is lifetime-new for the customer.
 
 ### Jobs-to-be-Done (JTBD)
@@ -149,6 +152,16 @@ These are descriptors, not behavioral codes:
 - Prior category/channel experience
 - Evidence valence: confirming, opposing, mixed, boundary case
 - Interpretation certainty: explicit, inferred, unknown
+- Applicability: Zepto-direct, Quick-commerce transferable, Category-general contextual
+- Transfer rationale: why the evidence is or is not applicable to Zepto
+
+Applicability rules:
+
+- **Zepto-direct:** The source explicitly describes Zepto behavior.
+- **Quick-commerce transferable:** The source describes another quick-commerce context and includes a mechanism plausibly transferable to Zepto.
+- **Category-general contextual:** The source explains category behavior without a quick-commerce context.
+- Category-general contextual evidence must not be described as direct Zepto-user behavior.
+- Transfer rationale must state the shared mechanism, relevant limitation, or reason the evidence should not transfer.
 
 ## Code relationship example
 

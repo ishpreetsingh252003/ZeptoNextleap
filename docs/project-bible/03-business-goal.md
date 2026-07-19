@@ -1,14 +1,16 @@
 # Business Goal
 
-- **Status:** Draft v1 — Awaiting human review
+- **Status:** Draft v1.1 — Awaiting human review
 - **Owner:** Product Lead
-- **Version:** 1.0
+- **Version:** 1.1
 - **Last reviewed:** 2026-07-19
 - **Purpose:** Preserve the approved business outcome while documenting unresolved metric definitions.
 
 ## Confirmed business goal
 
 > Increase the percentage of Monthly Active Customers purchasing from at least one new category each month.
+
+**Monthly Active Customer is the business-metric population, not a public-research sampling criterion.** Public research will examine customers and quick-commerce shoppers whose MAC status cannot be verified.
 
 ## Required metric interpretations
 

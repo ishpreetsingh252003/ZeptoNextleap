@@ -1,14 +1,16 @@
 # Research Plan
 
-- **Status:** Draft v1 — Awaiting human review
+- **Status:** Draft v1.1 — Awaiting human review
 - **Owner:** Research Lead
-- **Version:** 1.0
+- **Version:** 1.1
 - **Last reviewed:** 2026-07-19
 - **Purpose:** Define a time-bounded public-research plan that produces traceable behavioral findings.
 
 ## Objective
 
 Explain the behaviors, contexts, mental models, risks, information needs, and workarounds associated with category experimentation, then identify opportunities Zepto could plausibly influence.
+
+Primary scope is category-level expansion. Product-level evidence is retained only when it explains entry, abandonment, purchase, purchase elsewhere, workaround, or repeat behavior for a lifetime-new or dormant category.
 
 ## Confirmed constraints
 
@@ -35,7 +37,19 @@ Explain the behaviors, contexts, mental models, risks, information needs, and wo
 
 Use purposive, maximum-variation sampling rather than claiming statistical representation. Seek variation across source types, experience valence, categories, shopping missions, successful experiments, abandoned consideration, and Zepto-specific versus broader quick-commerce discussions.
 
-No fixed corpus size is approved. Scale only after a pilot demonstrates useful evidence quality.
+### Provisional manual pilot
+
+The following are **operational pilot assumptions**, not statistical sufficiency thresholds:
+
+- Review 30–40 candidate sources manually.
+- Retain approximately 20–25 evidence items that meet the protocol.
+- Include at least 3 source types.
+- Include at least 4 category groups.
+- Include at least 5 contradictory or boundary cases.
+- Keep every platform at or below 50% of retained evidence.
+- Stop or revise early if relevance or context quality is poor.
+
+Scale only after the pilot demonstrates useful evidence quality. These ranges may be revised during pilot review and do not establish representativeness.
 
 ## Evidence unit
 

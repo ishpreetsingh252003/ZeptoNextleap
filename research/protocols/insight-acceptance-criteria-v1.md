@@ -1,8 +1,8 @@
 # Insight Acceptance Criteria v1
 
-- **Status:** Draft v1 — Awaiting human review
+- **Status:** Draft v1.1 — Awaiting human review
 - **Owner:** Product Research Lead
-- **Version:** 1.0
+- **Version:** 1.1
 - **Last reviewed:** 2026-07-19
 - **Purpose:** Prevent weak, unsupported, duplicated, or non-actionable research statements from becoming approved insights.
 
@@ -18,6 +18,8 @@ Every candidate insight must state:
 - Outcome or consequence
 - Supporting evidence IDs
 - Opposing or contradictory evidence IDs, or a documented search with none found
+- Applicability: Zepto-direct, Quick-commerce transferable, or Category-general contextual
+- Transfer rationale: why the evidence is or is not applicable to Zepto
 - Evidence-strength rationale
 - Product implication expressed as an opportunity, not a predetermined feature
 - Limitations and open questions
@@ -73,8 +75,13 @@ A candidate insight may be approved only when all tests pass.
 
 ### 10. Useful to the business goal
 
-- **Accept:** Explains category consideration, experimentation, purchase, dormant reactivation, or repeat behavior.
-- **Reject:** Describes unrelated satisfaction or operational friction with no credible link to category expansion.
+- **Accept:** Explains category consideration, experimentation, purchase, dormant reactivation, or repeat behavior. Product-level trial is used only when it explains one of these category-level mechanisms.
+- **Reject:** Describes unrelated satisfaction, operational friction, or a flavor, brand, pack-size, or variant trial within a familiar category with no credible link to category expansion.
+
+### 11. Applicability and transfer are explicit
+
+- **Accept:** Distinguishes Zepto-direct evidence from quick-commerce-transferable and category-general context, with a specific transfer rationale.
+- **Reject:** Presents category-general or another platform's evidence as direct Zepto-user behavior, or assumes transfer without explaining the shared mechanism and limitations.
 
 ## Automatic rejection conditions
 
@@ -86,6 +93,8 @@ A candidate insight may be approved only when all tests pass.
 - Duplicate of an accepted insight
 - Solution disguised as an insight
 - No plausible relationship to category-expansion behavior
+- Category-general evidence presented as direct Zepto-user behavior
+- Missing applicability label or transfer rationale
 
 ## Review outcomes
 

@@ -1,14 +1,18 @@
 # Research Questions
 
-- **Status:** Draft v1 — Awaiting human review
+- **Status:** Draft v1.1 — Awaiting human review
 - **Owner:** Research Lead
-- **Version:** 1.0
+- **Version:** 1.1
 - **Last reviewed:** 2026-07-19
 - **Purpose:** Define the behavioral questions the public-research corpus must address.
 
 ## Primary question
 
-What prevents or enables Monthly Active Customers to purchase from a lifetime-new or dormant category during a month?
+What prevents or enables customers and quick-commerce shoppers to purchase from a lifetime-new or dormant category during a month?
+
+**Monthly Active Customer is the business-metric population, not a public-research sampling criterion.** Public evidence cannot verify whether an author qualifies as a Monthly Active Customer.
+
+Primary scope is category-level expansion. Product-level trial is considered only when it explains category entry, abandonment, purchase, purchase elsewhere, workaround, or repeat behavior. Flavors, brands, pack sizes, and variants within familiar categories are excluded unless directly relevant to a category-expansion mechanism.
 
 ## Shopping missions and habits
 

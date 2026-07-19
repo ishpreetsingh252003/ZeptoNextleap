@@ -1,8 +1,8 @@
 # Problem Definition
 
-- **Status:** Draft v1 — Awaiting human review
+- **Status:** Draft v1.1 — Awaiting human review
 - **Owner:** Product Lead
-- **Version:** 1.0
+- **Version:** 1.1
 - **Last reviewed:** 2026-07-19
 - **Purpose:** Frame the product problem without prematurely choosing a behavioral explanation or solution.
 
@@ -42,6 +42,8 @@ In scope:
 - Opportunities Zepto could plausibly influence
 - Measurement of first-time and reactivated-category purchasing
 
+Primary scope is category-level expansion. Product-level trial is retained only when it explains entry, abandonment, purchase, purchase elsewhere, workaround, or repeat behavior for a lifetime-new or dormant category.
+
 Out of scope for Phase 1:
 
 - Choosing or building an MVP feature
@@ -49,6 +51,7 @@ Out of scope for Phase 1:
 - Claiming market prevalence
 - Building a personalization system
 - Assessing internal Zepto strategy or performance
+- Flavors, brands, pack sizes, or variants within a familiar category unless they directly explain a category-expansion mechanism
 
 ## Decision this research must enable
 
