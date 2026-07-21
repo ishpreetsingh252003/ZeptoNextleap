@@ -1,4 +1,4 @@
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import {
   assertThemeTraceability,
   createCollectionRunSchema,
@@ -8,10 +8,12 @@ import {
   type RelevanceOutput,
   type ThemeSynthesisOutput
 } from "@zepto/research-contracts";
-import { analysisRuns, collectionRuns, evidenceItems, getDb, sources, themeEvidence, themes } from "@zepto/research-database";
+import { collectionRuns, evidenceItems, getDb, sources, themeEvidence, themes } from "@zepto/research-database";
 import { promptDefinitions } from "@zepto/research-prompts";
 import type { ServerEnv } from "@zepto/shared-config";
-import { runStructuredStage } from "./ai/groq.js";
+import { AiConfigurationError, AiProviderError } from "./ai/errors.js";
+import { createAiProvider } from "./ai/factory.js";
+import { runStructuredStage } from "./ai/structured-stage.js";
 import { getAdapter, SourceCollectionError } from "./adapters/index.js";
 import { contentHash, dedupeDocuments, normalizeText } from "./lib/text.js";
 
@@ -82,23 +84,27 @@ export async function processRun(run: ClaimedRun, env: ServerEnv): Promise<void>
     }
     await setRun(run.id, { sourceCount: persistedSources.length, duplicateCount: duplicateCount + unique.length - persistedSources.length });
 
-    if (!env.GROQ_API_KEY) {
-      await setRun(run.id, { status: "partially_completed", currentStage: "analysis_not_configured", errorCode: "GROQ_NOT_CONFIGURED", errorMessage: "Sources were collected and deduplicated, but GROQ_API_KEY is not configured. Retry the run after configuring it.", completedAt: new Date() });
+    let provider;
+    try {
+      provider = createAiProvider(env);
+    } catch (error) {
+      if (!(error instanceof AiConfigurationError)) throw error;
+      await setRun(run.id, { status: "partially_completed", currentStage: "analysis_not_configured", errorCode: error.code, errorMessage: `${error.message} Sources were retained; configure the selected provider and retry as a new run.`, completedAt: new Date() });
       return;
     }
 
     await setRun(run.id, { status: "analyzing", currentStage: "relevance" });
     for (const source of persistedSources) {
       if (!source.normalizedContent) continue;
-      const relevance = await runStructuredStage<RelevanceOutput>({ collectionRunId: run.id, sourceId: source.id, model: env.GROQ_MODEL, apiKey: env.GROQ_API_KEY, definition: promptDefinitions.relevance, input: { source: { externalId: source.externalId, url: source.url, platform: source.platform, text: source.normalizedContent } } });
+      const relevance = await runStructuredStage<RelevanceOutput>({ collectionRunId: run.id, sourceId: source.id, provider, definition: promptDefinitions.relevance, input: { source: { externalId: source.externalId, url: source.url, platform: source.platform, text: source.normalizedContent } } });
       if (!relevance.output.relevant) continue;
 
       await setRun(run.id, { currentStage: "evidence_extraction" });
-      const extraction = await runStructuredStage<EvidenceExtractionOutput>({ collectionRunId: run.id, sourceId: source.id, model: env.GROQ_MODEL, apiKey: env.GROQ_API_KEY, definition: promptDefinitions.evidence_extraction, input: { source: { externalId: source.externalId, url: source.url, platform: source.platform, text: source.normalizedContent } }, postValidate: (output) => validateExtractedExcerpts(output, source.normalizedContent ?? "") });
+      const extraction = await runStructuredStage<EvidenceExtractionOutput>({ collectionRunId: run.id, sourceId: source.id, provider, definition: promptDefinitions.evidence_extraction, input: { source: { externalId: source.externalId, url: source.url, platform: source.platform, text: source.normalizedContent } }, postValidate: (output) => validateExtractedExcerpts(output, source.normalizedContent ?? "") });
       if (extraction.output.items.length === 0) continue;
 
       await setRun(run.id, { currentStage: "behavioral_coding" });
-      const coding = await runStructuredStage<BehavioralCodingOutput>({ collectionRunId: run.id, sourceId: source.id, model: env.GROQ_MODEL, apiKey: env.GROQ_API_KEY, definition: promptDefinitions.behavioral_coding, input: { evidenceItems: extraction.output.items.map((item, evidenceIndex) => ({ evidenceIndex, ...item })) }, postValidate: (output) => {
+      const coding = await runStructuredStage<BehavioralCodingOutput>({ collectionRunId: run.id, sourceId: source.id, provider, definition: promptDefinitions.behavioral_coding, input: { evidenceItems: extraction.output.items.map((item, evidenceIndex) => ({ evidenceIndex, ...item })) }, postValidate: (output) => {
         const indexes = new Set(output.items.map((item) => item.evidenceIndex));
         if (output.items.length !== extraction.output.items.length || extraction.output.items.some((_, index) => !indexes.has(index))) throw new Error("Coding output did not map one-to-one to extracted evidence.");
       } });
@@ -118,7 +124,7 @@ export async function processRun(run: ClaimedRun, env: ServerEnv): Promise<void>
     }
 
     await setRun(run.id, { currentStage: "contradiction_detection", evidenceCount: evidence.length });
-    const contradiction = await runStructuredStage<ContradictionOutput>({ collectionRunId: run.id, model: env.GROQ_MODEL, apiKey: env.GROQ_API_KEY, definition: promptDefinitions.contradiction_detection, input: { evidenceItems: evidence.map(({ item }, evidenceIndex) => ({ evidenceIndex, evidenceId: item.id, paraphrase: item.neutralParaphrase, applicability: item.applicability, currentValence: item.evidenceValence })) }, postValidate: (output) => {
+    const contradiction = await runStructuredStage<ContradictionOutput>({ collectionRunId: run.id, provider, definition: promptDefinitions.contradiction_detection, input: { evidenceItems: evidence.map(({ item }, evidenceIndex) => ({ evidenceIndex, evidenceId: item.id, paraphrase: item.neutralParaphrase, applicability: item.applicability, currentValence: item.evidenceValence })) }, postValidate: (output) => {
       if (output.relationships.some((relationship) => relationship.evidenceIndex >= evidence.length)) throw new Error("Contradiction output referenced an unknown evidence index.");
     } });
     for (const relationship of contradiction.output.relationships) {
@@ -128,7 +134,7 @@ export async function processRun(run: ClaimedRun, env: ServerEnv): Promise<void>
 
     const refreshedEvidence = await db.select({ item: evidenceItems, source: sources }).from(evidenceItems).innerJoin(sources, eq(evidenceItems.sourceId, sources.id)).where(eq(sources.collectionRunId, run.id));
     await setRun(run.id, { currentStage: "theme_synthesis" });
-    const synthesis = await runStructuredStage<ThemeSynthesisOutput>({ collectionRunId: run.id, model: env.GROQ_MODEL, apiKey: env.GROQ_API_KEY, definition: promptDefinitions.theme_synthesis, input: { evidenceItems: refreshedEvidence.map(({ item, source }) => ({ evidenceId: item.id, sourceUrl: source.url, paraphrase: item.neutralParaphrase, codes: item.behavioralCodes, applicability: item.applicability, transferRationale: item.transferRationale, valence: item.evidenceValence, limitations: item.limitations })) }, postValidate: (output) => assertThemeTraceability(output, new Set(refreshedEvidence.map(({ item }) => item.id))) });
+    const synthesis = await runStructuredStage<ThemeSynthesisOutput>({ collectionRunId: run.id, provider, definition: promptDefinitions.theme_synthesis, input: { evidenceItems: refreshedEvidence.map(({ item, source }) => ({ evidenceId: item.id, sourceUrl: source.url, paraphrase: item.neutralParaphrase, codes: item.behavioralCodes, applicability: item.applicability, transferRationale: item.transferRationale, valence: item.evidenceValence, limitations: item.limitations })) }, postValidate: (output) => assertThemeTraceability(output, new Set(refreshedEvidence.map(({ item }) => item.id))) });
 
     for (const theme of synthesis.output.themes) {
       const [persistedTheme] = await db.insert(themes).values({ projectId: run.projectId, collectionRunId: run.id, analysisRunId: synthesis.analysisRunId, title: theme.title, summary: theme.summary, behavioralMechanism: theme.behavioralMechanism, applicability: theme.applicability, transferRationale: theme.transferRationale, evidenceStrength: theme.evidenceStrength, strengthRationale: theme.strengthRationale, limitations: theme.limitations, claimStatus: theme.basis.claimStatus }).returning({ id: themes.id });
@@ -142,7 +148,7 @@ export async function processRun(run: ClaimedRun, env: ServerEnv): Promise<void>
     }
     await setRun(run.id, { status: "completed", currentStage: "human_review", themeCount: synthesis.output.themes.length, completedAt: new Date(), errorCode: null, errorMessage: null });
   } catch (error) {
-    const code = error instanceof SourceCollectionError ? error.code : "PIPELINE_FAILED";
+    const code = error instanceof SourceCollectionError || error instanceof AiProviderError ? error.code : "PIPELINE_FAILED";
     const message = error instanceof Error ? error.message : "Unknown pipeline failure.";
     await setRun(run.id, { status: "failed", currentStage: "failed", errorCode: code, errorMessage: message, completedAt: new Date() });
   }

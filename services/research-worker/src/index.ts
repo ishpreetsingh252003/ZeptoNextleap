@@ -1,7 +1,8 @@
 import { closeDb } from "@zepto/research-database";
-import { getServerEnv } from "@zepto/shared-config";
+import { getServerEnv, loadRootEnv } from "@zepto/shared-config";
 import { claimNextRun, processRun } from "./pipeline.js";
 
+loadRootEnv();
 const env = getServerEnv();
 let stopping = false;
 

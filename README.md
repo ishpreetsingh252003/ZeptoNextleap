@@ -1,123 +1,168 @@
 # Zepto NextLeap — Review Discovery Engine
 
-An internal PM research workspace for collecting permitted public discussions and turning them into traceable, human-reviewable behavioral evidence about category expansion. It is **Application 1** only; the Zepto consumer MVP is not part of this branch.
+An internal PM research workspace for collecting permitted public discussions and turning them into traceable, human-reviewable behavioral evidence about category expansion. This repository contains **Application 1** only. The Zepto customer MVP will be built separately after research synthesis and opportunity approval.
 
-## What works in this vertical slice
+## Current Phase 1 foundation
 
-- Create research projects and collection runs.
-- Collect visibly public Zepto Google Play reviews when the supported page structure is available.
-- Collect one public URL after public-address, robots, content-type, and size checks.
-- Discover pages through Tavily when configured, then verify each underlying page before retention.
-- Import manually captured public text as an explicitly labelled fallback.
-- Normalize and deduplicate source text.
-- Run five versioned Groq stages: relevance, atomic evidence extraction, behavioral coding, contradiction detection, and theme synthesis.
-- Validate every AI response with Zod; reject excerpts absent from source text and themes that reference unknown evidence IDs.
-- Inspect run state, source errors, AI lineage, evidence details, contradictions, themes, applicability, transfer rationale, and limitations.
-- Import the approved CSV pilot only as a separate `Manual Pilot v1` dataset.
+- Next.js research workspace, Express API, PostgreSQL polling worker, and Drizzle database layer.
+- Manual text, public URL, Google Play public-page, and optional Tavily adapters.
+- Five provider-independent AI stages: relevance, evidence extraction, behavioral coding, contradiction detection, and theme synthesis.
+- Gemini is the primary configured provider; Groq remains an explicitly selected optional provider.
+- No automatic provider fallback. A run uses only `AI_PROVIDER` and reports a configuration error when that provider is unavailable.
+- Zod remains the final structured-output validator. Exact-excerpt and theme-traceability validation remain provider-independent.
+- Analysis lineage records provider, model, prompt version, stage, status, and a simple attempt count.
 
-No source or analysis is faked when access, configuration, or validation fails.
+Phase 1 proves static architecture, tests, type safety, and buildability. It does **not** prove a live Gemini call, live Groq call, PostgreSQL connectivity, or the complete end-to-end pipeline.
 
 ## Architecture
 
 ```text
-apps/research-web          Next.js 16 App Router research UI
-services/research-api     Express API and review endpoints
-services/research-worker  PostgreSQL polling worker, adapters, and pipeline
-packages/research-contracts  Request, adapter, and AI output schemas
-packages/research-prompts    Versioned Groq prompts and JSON schemas
+apps/research-web             Next.js App Router research UI
+services/research-api        Express API and review endpoints
+services/research-worker     PostgreSQL worker, adapters, and AI pipeline
+packages/research-contracts  Request and AI-output Zod schemas
+packages/research-prompts    Versioned provider-neutral prompts
 packages/research-database   Drizzle schema, connection, and migrations
-packages/shared-config       Validated server configuration
+packages/shared-config       Root .env loading and validated configuration
 ```
 
-PostgreSQL is both the system of record and the small run queue. Drizzle was chosen over Prisma for explicit, lightweight SQL control across eight research tables. Redis, Kafka, a vector database, authentication, and a generic agent framework are intentionally absent.
+PostgreSQL is the system of record and the small run queue. Redis, Kafka, a vector database, authentication, and a generic agent framework remain intentionally absent.
 
-## Local setup
+## Local environment loading
 
-Requirements: Node.js 20.9+, pnpm 11, and PostgreSQL 16. Docker Compose is optional but convenient.
+Backend commands find the repository by walking upward to `pnpm-workspace.yaml`, then load:
 
-1. Copy `.env.example` to `.env` and keep it uncommitted.
-2. Start PostgreSQL:
+```text
+<repository-root>/.env
+```
 
-   ```sh
-   docker compose up -d postgres
-   ```
+Precedence is:
 
-   If Docker is unavailable, provide any PostgreSQL 16-compatible `DATABASE_URL`.
+1. Hosting or process environment variables
+2. Missing values filled from the root `.env` for local development
+3. Non-secret defaults in the validation schema
 
-3. Install and migrate:
+The root `.env` never overwrites a value already supplied by the process and remains gitignored. API startup, worker startup, Drizzle commands, and lazy database initialization all use the same loader. Production hosting can inject variables normally without creating an `.env` file.
 
-   ```sh
-   pnpm install --frozen-lockfile
-   pnpm db:migrate
-   ```
+Next.js handles `NEXT_PUBLIC_API_BASE_URL` through its normal frontend environment behavior. The client defaults to `http://localhost:4000`; a local override can use `apps/research-web/.env.local`, and hosting should inject the public value. Never put database URLs, AI keys, discovery keys, or tokens in a variable beginning with `NEXT_PUBLIC_`.
 
-4. Optional: import the approved manual pilot without AI re-analysis:
+## Create the root `.env`
 
-   ```sh
-   pnpm pilot:import
-   ```
+Copy `.env.example` to `.env` at the repository root. Do not commit it.
 
-5. Start frontend, API, and worker:
+Always configure:
 
-   ```sh
-   pnpm dev
-   ```
+```env
+DATABASE_URL=
+AI_PROVIDER=gemini
+```
 
-6. Open `http://localhost:3000`, create or select a project, choose a source, confirm the public-access and platform-terms check, and select **Collect reviews**.
+For Gemini:
 
-The API listens on port `4000`. A run without `GROQ_API_KEY` truthfully ends as `partially_completed` after source collection and can be retried as a new run after configuration.
+```env
+GEMINI_API_KEY=
+GEMINI_MODEL=
+```
 
-## Environment variables
+For explicitly selected Groq instead:
 
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `DATABASE_URL` | Yes | PostgreSQL connection for API and worker |
-| `NEXT_PUBLIC_API_BASE_URL` | Yes in deployed UI | Browser-visible API origin |
-| `CORS_ORIGIN` | Yes in deployment | Allowed frontend origin(s) |
-| `GROQ_API_KEY` | For AI stages | Never exposed to the frontend |
-| `GROQ_MODEL` | No | Defaults to a strict structured-output model |
-| `TAVILY_API_KEY` | No | Enables optional public-web discovery |
-| `SOURCE_FETCH_USER_AGENT` | Before deployment | Identifies the bounded research collector |
-| `MAX_SOURCE_BYTES` | No | Response size ceiling |
-| `MAX_NORMALIZED_CHARACTERS` | No | Stored analysis-context ceiling |
+```env
+AI_PROVIDER=groq
+GROQ_API_KEY=
+GROQ_MODEL=
+```
 
-See `.env.example` for the complete list. Never commit `.env` files or credentials.
+Gemini variables are not required when Groq is selected, and Groq variables are not required when Gemini is selected. No automatic fallback occurs.
 
-## Supported source behavior
+Optional variables:
 
-| Source | Current behavior | Known limitation |
-| --- | --- | --- |
-| Google Play | Reads only visibly rendered review bodies from Zepto or an entered package ID | The public app shell may be fetched up to 8 MB, but only minimal review bodies are retained; markup is brittle and returns `SOURCE_STRUCTURE_UNSUPPORTED` instead of sample data when unavailable |
-| Public URL | Checks public DNS, robots, response type, size, and readable context | Does not execute client-side JavaScript; login-gated or JS-only pages should use policy-reviewed manual import |
-| Tavily | Discovers candidate URLs, then fetches and verifies underlying public pages | Disabled without a key; discovery snippets alone are never evidence |
-| Manual text | Stores supplied minimal public context with manual provenance | Researcher remains responsible for accessibility, copyright, and source-link review |
+```env
+TAVILY_API_KEY=
+FIRECRAWL_API_KEY=
+APIFY_API_TOKEN=
+APIFY_GOOGLE_PLAY_ACTOR_ID=
+```
 
-Reddit, Apple App Store, Trustpilot, forums, and other sources remain future adapters. No private, paywalled, authenticated, sensitive, CAPTCHA-bypassed, or rate-limit-evading collection is implemented.
+Tavily is implemented but optional. Firecrawl and Apify are documentation placeholders only; no Phase 1 adapter uses them.
 
-## Quality checks
+## Environment reference
+
+| Variable | Required when | Used by | Secret/public | Default |
+| --- | --- | --- | --- | --- |
+| `DATABASE_URL` | All backend database operations | API, worker, Drizzle, pilot import | Secret | None |
+| `AI_PROVIDER` | Backend AI analysis | API health, worker | Non-secret | `gemini` |
+| `GEMINI_API_KEY` | `AI_PROVIDER=gemini` | Worker | Secret | None |
+| `GEMINI_MODEL` | `AI_PROVIDER=gemini` | Worker | Non-secret | None |
+| `GROQ_API_KEY` | `AI_PROVIDER=groq` | Worker | Secret | None |
+| `GROQ_MODEL` | `AI_PROVIDER=groq` | Worker | Non-secret | None |
+| `TAVILY_API_KEY` | Optional Tavily discovery | Worker | Secret | None |
+| `FIRECRAWL_API_KEY` | Future integration only | None in Phase 1 | Secret | None |
+| `APIFY_API_TOKEN` | Future integration only | None in Phase 1 | Secret | None |
+| `APIFY_GOOGLE_PLAY_ACTOR_ID` | Future integration only | None in Phase 1 | Non-secret identifier | None |
+| `NEXT_PUBLIC_API_BASE_URL` | Deployed frontend | Browser/frontend | Public | `http://localhost:4000` in client code |
+| `API_PORT` | Optional override | API | Non-secret | `4000` |
+| `CORS_ORIGIN` | Optional local; required deployment review | API | Public origin | `http://localhost:3000` |
+| `WORKER_POLL_INTERVAL_MS` | Optional override | Worker | Non-secret | `3000` |
+| `SOURCE_FETCH_USER_AGENT` | Deployment identification | Worker adapters | Public | `ZeptoNextLeapResearch/0.1` |
+| `MAX_SOURCE_BYTES` | Optional override | Worker adapters | Non-secret | `1000000` |
+| `MAX_NORMALIZED_CHARACTERS` | Optional override | Worker | Non-secret | `60000` |
+
+## Local commands
+
+Requirements: Node.js 20.9+, pnpm 11, and a PostgreSQL 16-compatible database for later live phases.
 
 ```sh
-pnpm typecheck
+pnpm install --frozen-lockfile
+pnpm db:generate
+pnpm db:migrate
+pnpm dev
+```
+
+`pnpm db:generate` is a static schema-consistency command. `pnpm db:migrate`, API startup, worker startup, and pilot import require a reachable `DATABASE_URL`. Phase 1 does not connect to a real database.
+
+Quality checks:
+
+```sh
 pnpm test
+pnpm typecheck
 pnpm build
 ```
 
-Tests cover normalization/deduplication, structured-output rejection, and theme-to-evidence traceability. Real Groq calls are not mocked into runtime behavior; a key is required for live analysis.
+## Provider behavior
 
-## Deployment targets
+The worker creates one provider instance per run through a provider factory and uses it for all five stages. The pipeline sees only the shared provider contract; Gemini and Groq SDK types remain inside their adapters.
 
-- Deploy `apps/research-web` to Vercel with `NEXT_PUBLIC_API_BASE_URL`.
-- Deploy `services/research-api` and `services/research-worker` as separate Railway or Render services.
-- Attach both services to one managed PostgreSQL database.
-- Run `pnpm db:migrate` as a release step.
+Both providers:
 
-No provider-specific project link, credentials, or deployment state is committed.
+- request structured JSON;
+- make at most two attempts;
+- add a concise correction instruction on the second attempt;
+- validate returned JSON through the existing Zod schema;
+- avoid logging raw model responses that may contain source text;
+- fail without fabricating output.
+
+Gemini supports a subset of JSON Schema. Its adapter removes unsupported string-length/pattern constraints, removes unsupported string formats, and converts simple nullable `anyOf` schemas into a supported type union before calling the official `@google/genai` SDK. Zod still enforces the full contract after the response. Schema compatibility must be verified with a live request in a later phase.
+
+## Supported sources
+
+| Source | Current behavior | Known limitation |
+| --- | --- | --- |
+| Google Play | Reads visibly rendered public review bodies from the supported page structure | Markup is brittle and may return `SOURCE_STRUCTURE_UNSUPPORTED` |
+| Public URL | Checks public DNS, robots, response type, size, and readable context | Does not execute client-side JavaScript |
+| Tavily | Discovers candidates, then fetches and verifies underlying public pages | Disabled without a key; snippets alone are never evidence |
+| Manual text | Stores supplied minimal context with manual provenance | Researcher remains responsible for public accessibility and source traceability |
+
+Firecrawl and Apify are not implemented. No private, paywalled, authenticated, sensitive, CAPTCHA-bypassed, or rate-limit-evading collection is supported.
+
+## Deployment status
+
+No deployment is configured or started in Phase 1. Vercel, Railway, and Render remain future targets after live database and AI validation.
 
 ## Current limitations
 
-- This public-research corpus cannot establish population prevalence or verify Monthly Active Customer status.
-- Category-general evidence is contextual and cannot be presented as Zepto-user behavior.
-- Source parsing and platform permission rules require ongoing review.
-- Normalized source context is capped at 20,000 characters and retained in PostgreSQL for pipeline inspection; production retention and deletion timing still require a human policy decision.
-- Retry creates a new run and preserves the failed attempt rather than mutating its lineage.
-- Authentication and multi-user access control are intentionally out of scope for this slice.
+- No provider has been called live through the refactored interface.
+- PostgreSQL and the full pipeline have not been validated end to end.
+- Public research cannot establish population prevalence or verify Monthly Active Customer status.
+- Category-general evidence cannot be presented as direct Zepto-user behavior.
+- Human review states exist in the API and database, but review controls are not yet implemented in the frontend.
+- Production retention, authentication, stale-run recovery, source retries, and transaction redesign remain out of scope.

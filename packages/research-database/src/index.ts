@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+import { loadRootEnv } from "@zepto/shared-config";
 import * as schema from "./schema.js";
 
 let pool: Pool | undefined;
@@ -7,6 +8,7 @@ let database: ReturnType<typeof drizzle<typeof schema>> | undefined;
 
 export function getPool(): Pool {
   if (!pool) {
+    loadRootEnv();
     const connectionString = process.env.DATABASE_URL;
     if (!connectionString) throw new Error("DATABASE_URL is required.");
     pool = new Pool({ connectionString, max: 10 });

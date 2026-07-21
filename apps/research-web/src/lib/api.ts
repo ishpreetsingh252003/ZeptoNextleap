@@ -6,7 +6,7 @@ export type Source = { id: string; url: string; canonicalUrl: string; platform: 
 export type EvidenceItem = { id: string; neutralParaphrase: string; minimalExcerpt: string; categoryGroup: string; shoppingMission: string; behavioralCodes: string[]; interpretationCertainty: string; outcome: string | null; jtbd: string | null; mentalModel: string | null; applicability: string; transferRationale: string; evidenceValence: string; reviewerStatus: string; limitations: string };
 export type EvidenceRow = { item: EvidenceItem; source: Pick<Source, "id" | "url" | "platform" | "title" | "publicationDate" | "capturedAt" | "policyNote"> };
 export type Theme = { id: string; title: string; summary: string; behavioralMechanism: string; applicability: string; transferRationale: string; evidenceStrength: string; strengthRationale: string; limitations: string; claimStatus: string; reviewerStatus: string };
-export type AnalysisRun = { id: string; stage: string; model: string; promptVersion: string; status: string; errorMessage: string | null; startedAt: string; completedAt: string | null };
+export type AnalysisRun = { id: string; stage: string; provider: string; model: string; promptVersion: string; attemptCount: number; status: string; errorMessage: string | null; startedAt: string; completedAt: string | null };
 
 export class ApiError extends Error {
   constructor(message: string, public readonly code?: string, public readonly status?: number) { super(message); }

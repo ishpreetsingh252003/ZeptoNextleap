@@ -1,12 +1,28 @@
 import cors from "cors";
 import express from "express";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { ZodError, z } from "zod";
 import { createCollectionRunSchema, createProjectSchema, reviewerStatusSchema } from "@zepto/research-contracts";
 import { analysisRuns, collectionRuns, evidenceItems, getDb, projects, reviewDecisions, sources, themeEvidence, themes } from "@zepto/research-database";
-import type { ServerEnv } from "@zepto/shared-config";
+import { isSelectedAiModelConfigured, isSelectedAiProviderConfigured, type ServerEnv } from "@zepto/shared-config";
 
 const idSchema = z.string().uuid();
+
+export function buildHealthStatus(env: ServerEnv, databaseReachable: boolean) {
+  return {
+    database: { configured: Boolean(env.DATABASE_URL), reachable: databaseReachable },
+    ai: {
+      selectedProvider: env.AI_PROVIDER,
+      configured: isSelectedAiProviderConfigured(env),
+      modelConfigured: isSelectedAiModelConfigured(env)
+    },
+    optionalSources: {
+      tavilyConfigured: Boolean(env.TAVILY_API_KEY),
+      firecrawlConfigured: Boolean(env.FIRECRAWL_API_KEY),
+      apifyConfigured: Boolean(env.APIFY_API_TOKEN && env.APIFY_GOOGLE_PLAY_ACTOR_ID)
+    }
+  };
+}
 
 export function createApp(env: ServerEnv): express.Express {
   const app = express();
@@ -16,8 +32,14 @@ export function createApp(env: ServerEnv): express.Express {
   const db = getDb();
 
   app.get("/health", async (_request, response) => {
-    await db.execute("select 1");
-    response.json({ status: "ok", groqConfigured: Boolean(env.GROQ_API_KEY), tavilyConfigured: Boolean(env.TAVILY_API_KEY) });
+    let reachable = false;
+    try {
+      await db.execute(sql`select 1`);
+      reachable = true;
+    } catch {
+      // Health remains available without leaking connection details.
+    }
+    response.json(buildHealthStatus(env, reachable));
   });
 
   app.get("/v1/projects", async (_request, response) => {
