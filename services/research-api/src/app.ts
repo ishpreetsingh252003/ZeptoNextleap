@@ -129,7 +129,7 @@ export function createApp(env: ServerEnv): express.Express {
 
   app.use((error: unknown, _request: express.Request, response: express.Response, _next: express.NextFunction) => {
     if (error instanceof ZodError) return response.status(400).json({ error: "INVALID_REQUEST", message: "The request did not match the research contract.", issues: error.issues });
-    console.error(error);
+    console.error("Research API request failed.");
     response.status(500).json({ error: "INTERNAL_ERROR", message: "The research service could not complete the request." });
   });
   return app;

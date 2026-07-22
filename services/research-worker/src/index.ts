@@ -23,7 +23,7 @@ process.on("SIGINT", stop);
 process.on("SIGTERM", stop);
 
 loop().catch(async (error) => {
-  console.error("Research worker stopped unexpectedly:", error);
+  console.error("Research worker stopped unexpectedly.");
   await closeDb();
   process.exitCode = 1;
 });

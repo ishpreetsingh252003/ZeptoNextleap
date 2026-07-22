@@ -43,4 +43,4 @@ async function main(): Promise<void> {
   });
 }
 
-main().catch((error) => { console.error(error); process.exitCode = 1; }).finally(closeDb);
+main().catch(() => { console.error("Manual pilot import failed."); process.exitCode = 1; }).finally(closeDb);

@@ -149,7 +149,7 @@ export async function processRun(run: ClaimedRun, env: ServerEnv): Promise<void>
     await setRun(run.id, { status: "completed", currentStage: "human_review", themeCount: synthesis.output.themes.length, completedAt: new Date(), errorCode: null, errorMessage: null });
   } catch (error) {
     const code = error instanceof SourceCollectionError || error instanceof AiProviderError ? error.code : "PIPELINE_FAILED";
-    const message = error instanceof Error ? error.message : "Unknown pipeline failure.";
+    const message = error instanceof SourceCollectionError || error instanceof AiProviderError ? error.message : "The research pipeline failed without exposing internal connection details.";
     await setRun(run.id, { status: "failed", currentStage: "failed", errorCode: code, errorMessage: message, completedAt: new Date() });
   }
 }

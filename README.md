@@ -2,7 +2,7 @@
 
 An internal PM research workspace for collecting permitted public discussions and turning them into traceable, human-reviewable behavioral evidence about category expansion. This repository contains **Application 1** only. The Zepto customer MVP will be built separately after research synthesis and opportunity approval.
 
-## Current Phase 1 foundation
+## Current Phase 2 database validation
 
 - Next.js research workspace, Express API, PostgreSQL polling worker, and Drizzle database layer.
 - Manual text, public URL, Google Play public-page, and optional Tavily adapters.
@@ -12,7 +12,7 @@ An internal PM research workspace for collecting permitted public discussions an
 - Zod remains the final structured-output validator. Exact-excerpt and theme-traceability validation remain provider-independent.
 - Analysis lineage records provider, model, prompt version, stage, status, and a simple attempt count.
 
-Phase 1 proves static architecture, tests, type safety, and buildability. It does **not** prove a live Gemini call, live Groq call, PostgreSQL connectivity, or the complete end-to-end pipeline.
+Phase 1 proved static architecture, tests, type safety, and buildability. Phase 2 additionally validates the committed migrations, schema constraints, persistence graph, API health and project persistence, and idle worker polling against Neon PostgreSQL. It does **not** call Gemini or Groq or validate the complete AI pipeline end to end.
 
 ## Architecture
 
@@ -109,7 +109,7 @@ Tavily is implemented but optional. Firecrawl and Apify are documentation placeh
 
 ## Local commands
 
-Requirements: Node.js 20.9+, pnpm 11, and a PostgreSQL 16-compatible database for later live phases.
+Requirements: Node.js 20.9+, pnpm 11, and a reachable PostgreSQL-compatible database. Phase 2 was validated with Neon PostgreSQL using the gitignored root `.env`.
 
 ```sh
 pnpm install --frozen-lockfile
@@ -124,9 +124,25 @@ Quality checks:
 
 ```sh
 pnpm test
+pnpm test:db
 pnpm typecheck
 pnpm build
 ```
+
+`pnpm test` remains deterministic and excludes the live database test. `pnpm test:db` is an explicit integration check that requires `DATABASE_URL`; it verifies TLS, migrations, schema presence, related-record persistence, foreign-key enforcement, run-status updates, and cleanup of its synthetic records.
+
+## Neon validation
+
+Use a direct Neon connection string in the root `.env`, then run:
+
+```sh
+pnpm db:migrate
+pnpm test:db
+```
+
+The migration command is safe to repeat: Drizzle records applied migrations and does not reapply them. The live test uses clearly labeled synthetic data and removes it in a `finally` block. Do not run it against a database where creating and deleting those temporary records is prohibited.
+
+Phase 2 observed an encrypted, certificate-authorized client connection. The current PostgreSQL driver also emits an upstream compatibility warning for some `sslmode` values; follow Neon's current connection-string guidance when generating or rotating the URL rather than editing credentials into tracked files.
 
 ## Provider behavior
 
@@ -161,7 +177,7 @@ No deployment is configured or started in Phase 1. Vercel, Railway, and Render r
 ## Current limitations
 
 - No provider has been called live through the refactored interface.
-- PostgreSQL and the full pipeline have not been validated end to end.
+- Neon PostgreSQL persistence is validated, but the full source-to-AI pipeline has not been validated end to end.
 - Public research cannot establish population prevalence or verify Monthly Active Customer status.
 - Category-general evidence cannot be presented as direct Zepto-user behavior.
 - Human review states exist in the API and database, but review controls are not yet implemented in the frontend.
