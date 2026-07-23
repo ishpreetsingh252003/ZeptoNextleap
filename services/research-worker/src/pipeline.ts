@@ -2,10 +2,10 @@ import { eq, sql } from "drizzle-orm";
 import {
   assertThemeTraceability,
   createCollectionRunSchema,
-  publicDocumentSchema,
   type BehavioralCodingOutput,
   type ContradictionOutput,
   type EvidenceExtractionOutput,
+  type PublicDocument,
   type RelevanceOutput,
   type ThemeSynthesisOutput
 } from "@zepto/research-contracts";
@@ -15,10 +15,20 @@ import type { ServerEnv } from "@zepto/shared-config";
 import { AiConfigurationError, AiProviderError } from "./ai/errors.js";
 import { createAiProvider } from "./ai/factory.js";
 import { runStructuredStage } from "./ai/structured-stage.js";
-import { getAdapter, SourceCollectionError } from "./adapters/index.js";
 import { contentHash, dedupeDocuments, normalizeText } from "./lib/text.js";
+import {
+  SourceOrchestrator,
+  type SourceRequest
+} from "./source-orchestrator.js";
 
 type ClaimedRun = typeof collectionRuns.$inferSelect;
+
+class CollectionFailedError extends Error {
+  constructor(readonly code: string, message: string) {
+    super(message);
+    this.name = "CollectionFailedError";
+  }
+}
 
 export async function claimNextRun(): Promise<ClaimedRun | null> {
   const db = getDb();
@@ -49,16 +59,31 @@ function validateExtractedExcerpts(output: EvidenceExtractionOutput, sourceText:
   }
 }
 
-export async function processRun(run: ClaimedRun, env: ServerEnv): Promise<void> {
-  const db = getDb();
-  try {
-    const input = createCollectionRunSchema.parse(run.input);
-    const adapter = getAdapter(input.sourceType, env);
-    const collected = publicDocumentSchema.array().parse(await adapter.collect(input, {
+export async function collectRunSources(runInput: unknown, env: ServerEnv): Promise<PublicDocument[]> {
+  const inputs = createCollectionRunSchema.array().min(1).parse(
+    Array.isArray(runInput) ? runInput : [runInput]
+  );
+  const requests: SourceRequest[] = inputs.map((input) => ({
+    input,
+    context: {
       maxRecords: input.maxRecords,
       ...(input.dateFrom ? { dateFrom: input.dateFrom } : {}),
       ...(input.dateTo ? { dateTo: input.dateTo } : {})
-    }));
+    }
+  }));
+
+  const result = await new SourceOrchestrator(env).collect(requests);
+  if (result.documents.length === 0 && result.failures.length > 0) {
+    const failure = result.failures[0];
+    if (failure) throw new CollectionFailedError(failure.code, failure.message);
+  }
+  return result.documents;
+}
+
+export async function processRun(run: ClaimedRun, env: ServerEnv): Promise<void> {
+  const db = getDb();
+  try {
+    const collected = await collectRunSources(run.input, env);
     const normalized = collected.map((document) => ({ ...document, normalizedText: normalizeText(document.normalizedText).slice(0, env.MAX_NORMALIZED_CHARACTERS) }));
     const { unique, duplicateCount } = dedupeDocuments(normalized);
     await setRun(run.id, { status: "processing", currentStage: "normalization_and_deduplication", duplicateCount });
@@ -149,8 +174,8 @@ export async function processRun(run: ClaimedRun, env: ServerEnv): Promise<void>
     }
     await setRun(run.id, { status: "completed", currentStage: "human_review", themeCount: synthesis.output.themes.length, completedAt: new Date(), errorCode: null, errorMessage: null });
   } catch (error) {
-    const code = error instanceof SourceCollectionError || error instanceof AiProviderError ? error.code : "PIPELINE_FAILED";
-    const message = error instanceof SourceCollectionError || error instanceof AiProviderError ? error.message : "The research pipeline failed without exposing internal connection details.";
+    const code = error instanceof CollectionFailedError || error instanceof AiProviderError ? error.code : "PIPELINE_FAILED";
+    const message = error instanceof CollectionFailedError || error instanceof AiProviderError ? error.message : "The research pipeline failed without exposing internal connection details.";
     await setRun(run.id, { status: "failed", currentStage: "failed", errorCode: code, errorMessage: message, completedAt: new Date() });
   }
 }
