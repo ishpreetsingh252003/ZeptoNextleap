@@ -2,6 +2,7 @@ import { eq, sql } from "drizzle-orm";
 import {
   assertThemeTraceability,
   createCollectionRunSchema,
+  publicDocumentSchema,
   type BehavioralCodingOutput,
   type ContradictionOutput,
   type EvidenceExtractionOutput,
@@ -53,11 +54,11 @@ export async function processRun(run: ClaimedRun, env: ServerEnv): Promise<void>
   try {
     const input = createCollectionRunSchema.parse(run.input);
     const adapter = getAdapter(input.sourceType, env);
-    const collected = await adapter.collect(input, {
+    const collected = publicDocumentSchema.array().parse(await adapter.collect(input, {
       maxRecords: input.maxRecords,
       ...(input.dateFrom ? { dateFrom: input.dateFrom } : {}),
       ...(input.dateTo ? { dateTo: input.dateTo } : {})
-    });
+    }));
     const normalized = collected.map((document) => ({ ...document, normalizedText: normalizeText(document.normalizedText).slice(0, env.MAX_NORMALIZED_CHARACTERS) }));
     const { unique, duplicateCount } = dedupeDocuments(normalized);
     await setRun(run.id, { status: "processing", currentStage: "normalization_and_deduplication", duplicateCount });

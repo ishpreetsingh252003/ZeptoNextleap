@@ -6,16 +6,19 @@ import { PublicUrlAdapter } from "./public-url.js";
 import { TavilyAdapter } from "./tavily.js";
 import { SourceCollectionError } from "./errors.js";
 
+type AdapterFactory = (env: ServerEnv) => SourceAdapter;
+
+const adapterFactories: Partial<Record<SourceType, AdapterFactory>> = {
+  google_play: (env) => new GooglePlayAdapter(env),
+  public_url: (env) => new PublicUrlAdapter(env),
+  manual_text: () => new ManualTextAdapter(),
+  tavily_query: (env) => new TavilyAdapter(env)
+};
+
 export function getAdapter(type: SourceType, env: ServerEnv): SourceAdapter {
-  const adapters: Partial<Record<SourceType, SourceAdapter>> = {
-    google_play: new GooglePlayAdapter(env),
-    public_url: new PublicUrlAdapter(env),
-    manual_text: new ManualTextAdapter(),
-    tavily_query: new TavilyAdapter(env)
-  };
-  const adapter = adapters[type];
-  if (!adapter) throw new SourceCollectionError("UNSUPPORTED_SOURCE", `Source type ${type} is not available for automated collection.`);
-  return adapter;
+  const factory = adapterFactories[type];
+  if (!factory) throw new SourceCollectionError("UNSUPPORTED_SOURCE", `Source type ${type} is not available for automated collection.`);
+  return factory(env);
 }
 
 export { SourceCollectionError } from "./errors.js";
