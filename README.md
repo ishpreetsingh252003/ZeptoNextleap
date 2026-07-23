@@ -80,6 +80,7 @@ Optional variables:
 TAVILY_API_KEY=
 FIRECRAWL_API_KEY=
 FIRECRAWL_TIMEOUT_MS=60000
+GOOGLE_PLAY_TIMEOUT_MS=30000
 APIFY_API_TOKEN=
 APIFY_GOOGLE_PLAY_ACTOR_ID=
 ```
@@ -99,6 +100,7 @@ Tavily and Firecrawl are implemented but optional. Apify remains a documentation
 | `TAVILY_API_KEY` | Optional Tavily discovery | Worker | Secret | None |
 | `FIRECRAWL_API_KEY` | Firecrawl source selected | Worker | Secret | None |
 | `FIRECRAWL_TIMEOUT_MS` | Firecrawl source selected | Worker | Non-secret | None; valid range `1000`–`300000` |
+| `GOOGLE_PLAY_TIMEOUT_MS` | Google Play source selected | Worker | Non-secret | None; valid range `1000`–`120000` |
 | `APIFY_API_TOKEN` | Future integration only | None in Phase 1 | Secret | None |
 | `APIFY_GOOGLE_PLAY_ACTOR_ID` | Future integration only | None in Phase 1 | Non-secret identifier | None |
 | `NEXT_PUBLIC_API_BASE_URL` | Deployed frontend | Browser/frontend | Public | `http://localhost:4000` in client code |
@@ -129,6 +131,7 @@ pnpm test
 pnpm test:db
 pnpm test:firecrawl
 pnpm test:gemini
+pnpm test:google-play
 pnpm typecheck
 pnpm build
 ```
@@ -136,6 +139,8 @@ pnpm build
 `pnpm test` remains deterministic and excludes the live database test. `pnpm test:db` is an explicit integration check that requires `DATABASE_URL`; it verifies TLS, migrations, schema presence, related-record persistence, foreign-key enforcement, run-status updates, and cleanup of its synthetic records.
 
 `pnpm test:firecrawl` is an opt-in live adapter check. It runs only when `FIRECRAWL_API_KEY` is present, requests `https://example.com` through Firecrawl, and validates the returned document against the shared contract. It does not call the database or AI pipeline.
+
+`pnpm test:google-play` is an opt-in live adapter check. It retrieves up to three newest public reviews for `com.zeptoconsumerapp` and validates the normalized documents. It does not call the database or AI pipeline.
 
 `pnpm test:gemini` is an explicit live integration check requiring Neon plus a configured Gemini key and model. It processes one approved manual-text fixture through all five stages, verifies exact excerpts and theme traceability, and removes its test records. It is excluded from the normal unit-test suite.
 
@@ -171,7 +176,7 @@ Gemini supports a subset of JSON Schema. Its adapter removes unsupported string-
 
 | Source | Current behavior | Known limitation |
 | --- | --- | --- |
-| Google Play | Reads visibly rendered public review bodies from the supported page structure | Markup is brittle and may return `SOURCE_STRUCTURE_UNSUPPORTED` |
+| Google Play | Uses `google-play-scraper` to retrieve a bounded set of newest public reviews | Public display names and ratings are retained in the provenance note; upstream parser changes can still break collection |
 | Public URL | Checks public DNS, robots, response type, size, and readable context | Does not execute client-side JavaScript |
 | Firecrawl | Sends one caller-confirmed public URL to the v2 scrape API and validates returned markdown | Disabled without a key; external accessibility and API limits remain provider-dependent |
 | Tavily | Discovers candidates, then fetches and verifies underlying public pages | Disabled without a key; snippets alone are never evidence |

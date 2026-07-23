@@ -1,48 +1,117 @@
-import { load } from "cheerio";
-import type { PublicDocument, SourceAdapter } from "@zepto/research-contracts";
+import gplay from "google-play-scraper";
+import { publicDocumentSchema, type PublicDocument, type SourceAdapter } from "@zepto/research-contracts";
 import type { ServerEnv } from "@zepto/shared-config";
+import { z } from "zod";
 import { normalizeText } from "../lib/text.js";
 import { SourceCollectionError } from "./errors.js";
-import { fetchPermittedPage } from "./fetch-public.js";
 
-const ZEPTO_PACKAGE = "com.zeptoconsumerapp";
+const PACKAGE_ID = /^[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+$/;
+const NEWEST_REVIEWS = (gplay.sort as unknown as { NEWEST: number }).NEWEST;
+
+const reviewsResultSchema = z.object({
+  data: z.array(z.object({
+    id: z.string().min(1),
+    userName: z.string().nullish(),
+    date: z.string().datetime().nullish(),
+    score: z.number().int().min(1).max(5),
+    title: z.string().nullish(),
+    text: z.string().min(1)
+  }))
+});
+
+function packageIdFromInput(value: string | undefined): string {
+  if (!value) throw new SourceCollectionError("MISSING_PACKAGE_ID", "A Google Play package ID is required.");
+  const candidate = value.trim();
+  if (!candidate.startsWith("http")) return candidate;
+
+  try {
+    const url = new URL(candidate);
+    if (url.hostname !== "play.google.com") throw new Error("Unsupported host");
+    return url.searchParams.get("id") ?? "";
+  } catch {
+    throw new SourceCollectionError("INVALID_PACKAGE_ID", "Enter a valid Google Play package ID or Play Store URL.");
+  }
+}
+
+function errorProperty(error: unknown, property: string): unknown {
+  return typeof error === "object" && error !== null ? Reflect.get(error, property) : undefined;
+}
 
 export class GooglePlayAdapter implements SourceAdapter {
   readonly type = "google_play" as const;
+
   constructor(private readonly env: ServerEnv) {}
 
   async collect(input: Parameters<SourceAdapter["collect"]>[0], context: Parameters<SourceAdapter["collect"]>[1]): Promise<PublicDocument[]> {
-    const candidate = input.urlOrQuery?.trim() || ZEPTO_PACKAGE;
-    let packageId = candidate;
-    if (candidate.startsWith("http")) packageId = new URL(candidate).searchParams.get("id") ?? "";
-    if (!/^[A-Za-z0-9._]+$/.test(packageId)) throw new SourceCollectionError("INVALID_PACKAGE_ID", "Enter a valid Google Play URL or package ID.");
-    const pageUrl = `https://play.google.com/store/apps/details?id=${encodeURIComponent(packageId)}&hl=en&gl=IN&showAllReviews=true`;
-    // Google Play's public app shell is larger than an ordinary research page;
-    // only visibly rendered review bodies are retained after parsing.
-    const { html } = await fetchPermittedPage(pageUrl, this.env.SOURCE_FETCH_USER_AGENT, Math.max(this.env.MAX_SOURCE_BYTES, 8_000_000), context.signal);
-    const $ = load(html);
-    const documents: PublicDocument[] = [];
-    $("div.RHo1pe").slice(0, context.maxRecords).each((index, element) => {
-      const review = normalizeText($(element).find(".h3YV2d").text());
-      if (!review) return;
-      const visibleDate = normalizeText($(element).find(".bp9Aid").text());
-      const parsedDate = Date.parse(visibleDate);
-      const externalId = `${packageId}:visible-review:${index}:${visibleDate}`;
-      documents.push({
-        externalId,
-        url: pageUrl,
-        canonicalUrl: `https://play.google.com/store/apps/details?id=${encodeURIComponent(packageId)}`,
+    const packageId = packageIdFromInput(input.urlOrQuery);
+    if (!PACKAGE_ID.test(packageId)) {
+      throw new SourceCollectionError("INVALID_PACKAGE_ID", "Enter a valid Google Play package ID or Play Store URL.");
+    }
+    if (!this.env.GOOGLE_PLAY_TIMEOUT_MS) {
+      throw new SourceCollectionError("GOOGLE_PLAY_NOT_CONFIGURED", "Google Play collection is unavailable until GOOGLE_PLAY_TIMEOUT_MS is configured.");
+    }
+
+    const requestOptions = {
+      timeout: { request: this.env.GOOGLE_PLAY_TIMEOUT_MS },
+      retry: { limit: 0 },
+      ...(context.signal ? { signal: context.signal } : {})
+    };
+
+    let response: unknown;
+    try {
+      response = await gplay.reviews({
+        appId: packageId,
+        country: "in",
+        lang: "en",
+        sort: NEWEST_REVIEWS,
+        num: context.maxRecords,
+        paginate: true,
+        requestOptions
+      } as Parameters<typeof gplay.reviews>[0]);
+    } catch (error) {
+      if (context.signal?.aborted) {
+        throw new SourceCollectionError("GOOGLE_PLAY_REQUEST_ABORTED", "The Google Play review request was cancelled.");
+      }
+      if (errorProperty(error, "status") === 404) {
+        throw new SourceCollectionError("GOOGLE_PLAY_APP_NOT_FOUND", "The requested app was not found on Google Play.");
+      }
+      if (errorProperty(error, "name") === "TimeoutError" || errorProperty(error, "code") === "ETIMEDOUT") {
+        throw new SourceCollectionError("GOOGLE_PLAY_TIMEOUT", "The Google Play review request timed out.", true);
+      }
+      throw new SourceCollectionError("GOOGLE_PLAY_NETWORK_FAILURE", "Google Play reviews could not be retrieved.", true);
+    }
+
+    const parsed = reviewsResultSchema.safeParse(response);
+    if (!parsed.success) {
+      throw new SourceCollectionError("GOOGLE_PLAY_INVALID_RESPONSE", "google-play-scraper returned a malformed review response.");
+    }
+    if (parsed.data.data.length === 0) {
+      throw new SourceCollectionError("GOOGLE_PLAY_EMPTY_REVIEWS", "Google Play returned no public reviews for this app.");
+    }
+
+    const canonicalUrl = `https://play.google.com/store/apps/details?id=${encodeURIComponent(packageId)}`;
+    const documents = parsed.data.data.slice(0, context.maxRecords).map((review): PublicDocument => {
+      const reviewText = normalizeText(review.text).slice(0, 20_000);
+      if (!reviewText) {
+        throw new SourceCollectionError("GOOGLE_PLAY_INVALID_RESPONSE", "google-play-scraper returned a review without usable text.");
+      }
+      const author = normalizeText(review.userName ?? "") || "not available";
+      const title = normalizeText(review.title ?? "").slice(0, 500) || null;
+      return {
+        externalId: `${packageId}:${review.id}`,
+        url: canonicalUrl,
+        canonicalUrl,
         sourceType: this.type,
         platform: "Google Play",
-        title: `Public Google Play review for ${packageId}`,
-        publicationDate: Number.isNaN(parsedDate) ? null : new Date(parsedDate).toISOString(),
+        title,
+        publicationDate: review.date ?? null,
         capturedAt: new Date().toISOString(),
-        normalizedText: review.slice(0, this.env.MAX_NORMALIZED_CHARACTERS),
+        normalizedText: reviewText,
         accessMethod: "public_page",
-        policyNote: `Only ${documents.length + 1} publicly rendered review bodies were read; author identifiers were not stored. Visible date: ${visibleDate || "not available"}.`
-      });
+        policyNote: `Collected from public Google Play reviews with google-play-scraper. Package: ${packageId}. Public author: ${author}. Star rating: ${review.score}/5.`
+      };
     });
-    if (documents.length === 0) throw new SourceCollectionError("SOURCE_STRUCTURE_UNSUPPORTED", "Google Play did not expose review text in the supported public page structure. No reviews were fabricated; use manual URL or text import.");
-    return documents;
+
+    return publicDocumentSchema.array().parse(documents);
   }
 }

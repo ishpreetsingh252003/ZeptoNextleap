@@ -5,6 +5,7 @@ packages:
 
 allowBuilds:
   '@google/genai': false
+  es5-ext: false
   esbuild: true
   protobufjs: false
   sharp: true
