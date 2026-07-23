@@ -8,8 +8,9 @@
     "start": "tsx src/index.ts",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --exclude src/database-validation.test.ts --exclude src/gemini-integration.test.ts",
+    "test": "vitest run --exclude src/database-validation.test.ts --exclude src/gemini-integration.test.ts --exclude src/adapters/firecrawl.integration.test.ts",
     "test:db": "vitest run src/database-validation.test.ts",
+    "test:firecrawl": "vitest run src/adapters/firecrawl.integration.test.ts",
     "test:gemini": "vitest run src/gemini-integration.test.ts",
     "pilot:import": "tsx src/import-manual-pilot.ts"
   },

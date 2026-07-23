@@ -79,11 +79,12 @@ Optional variables:
 ```env
 TAVILY_API_KEY=
 FIRECRAWL_API_KEY=
+FIRECRAWL_TIMEOUT_MS=60000
 APIFY_API_TOKEN=
 APIFY_GOOGLE_PLAY_ACTOR_ID=
 ```
 
-Tavily is implemented but optional. Firecrawl and Apify are documentation placeholders only; no Phase 1 adapter uses them.
+Tavily and Firecrawl are implemented but optional. Apify remains a documentation placeholder.
 
 ## Environment reference
 
@@ -96,7 +97,8 @@ Tavily is implemented but optional. Firecrawl and Apify are documentation placeh
 | `GROQ_API_KEY` | `AI_PROVIDER=groq` | Worker | Secret | None |
 | `GROQ_MODEL` | `AI_PROVIDER=groq` | Worker | Non-secret | None |
 | `TAVILY_API_KEY` | Optional Tavily discovery | Worker | Secret | None |
-| `FIRECRAWL_API_KEY` | Future integration only | None in Phase 1 | Secret | None |
+| `FIRECRAWL_API_KEY` | Firecrawl source selected | Worker | Secret | None |
+| `FIRECRAWL_TIMEOUT_MS` | Firecrawl source selected | Worker | Non-secret | None; valid range `1000`–`300000` |
 | `APIFY_API_TOKEN` | Future integration only | None in Phase 1 | Secret | None |
 | `APIFY_GOOGLE_PLAY_ACTOR_ID` | Future integration only | None in Phase 1 | Non-secret identifier | None |
 | `NEXT_PUBLIC_API_BASE_URL` | Deployed frontend | Browser/frontend | Public | `http://localhost:4000` in client code |
@@ -125,12 +127,15 @@ Quality checks:
 ```sh
 pnpm test
 pnpm test:db
+pnpm test:firecrawl
 pnpm test:gemini
 pnpm typecheck
 pnpm build
 ```
 
 `pnpm test` remains deterministic and excludes the live database test. `pnpm test:db` is an explicit integration check that requires `DATABASE_URL`; it verifies TLS, migrations, schema presence, related-record persistence, foreign-key enforcement, run-status updates, and cleanup of its synthetic records.
+
+`pnpm test:firecrawl` is an opt-in live adapter check. It runs only when `FIRECRAWL_API_KEY` is present, requests `https://example.com` through Firecrawl, and validates the returned document against the shared contract. It does not call the database or AI pipeline.
 
 `pnpm test:gemini` is an explicit live integration check requiring Neon plus a configured Gemini key and model. It processes one approved manual-text fixture through all five stages, verifies exact excerpts and theme traceability, and removes its test records. It is excluded from the normal unit-test suite.
 
@@ -168,10 +173,11 @@ Gemini supports a subset of JSON Schema. Its adapter removes unsupported string-
 | --- | --- | --- |
 | Google Play | Reads visibly rendered public review bodies from the supported page structure | Markup is brittle and may return `SOURCE_STRUCTURE_UNSUPPORTED` |
 | Public URL | Checks public DNS, robots, response type, size, and readable context | Does not execute client-side JavaScript |
+| Firecrawl | Sends one caller-confirmed public URL to the v2 scrape API and validates returned markdown | Disabled without a key; external accessibility and API limits remain provider-dependent |
 | Tavily | Discovers candidates, then fetches and verifies underlying public pages | Disabled without a key; snippets alone are never evidence |
 | Manual text | Stores supplied minimal context with manual provenance | Researcher remains responsible for public accessibility and source traceability |
 
-Firecrawl and Apify are not implemented. No private, paywalled, authenticated, sensitive, CAPTCHA-bypassed, or rate-limit-evading collection is supported.
+Apify is not implemented. No private, paywalled, authenticated, sensitive, CAPTCHA-bypassed, or rate-limit-evading collection is supported.
 
 ## Deployment status
 

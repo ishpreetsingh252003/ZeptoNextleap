@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const sourceTypeSchema = z.enum(["google_play", "public_url", "tavily_query", "manual_text", "manual_pilot"]);
+export const sourceTypeSchema = z.enum(["google_play", "public_url", "tavily_query", "firecrawl", "manual_text", "manual_pilot"]);
 export type SourceType = z.infer<typeof sourceTypeSchema>;
 
 export const runStatusSchema = z.enum(["queued", "collecting", "processing", "analyzing", "completed", "partially_completed", "failed"]);

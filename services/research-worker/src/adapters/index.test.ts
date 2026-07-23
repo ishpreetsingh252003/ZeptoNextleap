@@ -6,7 +6,7 @@ import { SourceCollectionError, getAdapter } from "./index.js";
 const env = getServerEnv({ DATABASE_URL: "postgresql://local/test" });
 
 describe("source adapter registry", () => {
-  it.each(["google_play", "public_url", "manual_text", "tavily_query"] satisfies SourceType[])("resolves %s through the typed registry", (sourceType) => {
+  it.each(["firecrawl", "google_play", "public_url", "manual_text", "tavily_query"] satisfies SourceType[])("resolves %s through the typed registry", (sourceType) => {
     expect(getAdapter(sourceType, env).type).toBe(sourceType);
   });
 

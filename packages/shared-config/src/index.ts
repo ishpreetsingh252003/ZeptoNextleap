@@ -24,6 +24,7 @@ export const serverEnvSchema = z.object({
   GROQ_MODEL: z.string().min(1).optional(),
   TAVILY_API_KEY: z.string().min(1).optional(),
   FIRECRAWL_API_KEY: z.string().min(1).optional(),
+  FIRECRAWL_TIMEOUT_MS: z.coerce.number().int().min(1_000).max(300_000).optional(),
   APIFY_API_TOKEN: z.string().min(1).optional(),
   APIFY_GOOGLE_PLAY_ACTOR_ID: z.string().min(1).optional(),
   API_PORT: z.coerce.number().int().positive().default(4000),
