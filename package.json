@@ -12,6 +12,7 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
     "test:db": "pnpm --filter @zepto/research-worker test:db",
+    "test:gemini": "pnpm --filter @zepto/research-worker test:gemini",
     "db:generate": "pnpm --filter @zepto/research-database db:generate",
     "db:migrate": "pnpm --filter @zepto/research-database db:migrate",
     "pilot:import": "pnpm --filter @zepto/research-worker pilot:import"

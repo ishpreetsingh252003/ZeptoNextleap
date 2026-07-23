@@ -28,11 +28,12 @@ describe("AI provider factory", () => {
       type: "object",
       properties: {
         id: { type: "string", format: "uuid", minLength: 1 },
-        outcome: { anyOf: [{ type: "string", maxLength: 500 }, { type: "null" }] }
+        outcome: { anyOf: [{ type: "string", maxLength: 500 }, { type: "null" }] },
+        items: { type: "array", maxItems: 12, items: { type: "string" } }
       }
     })).toEqual({
       type: "object",
-      properties: { id: { type: "string" }, outcome: { type: ["string", "null"] } }
+      properties: { id: { type: "string" }, outcome: { type: ["string", "null"] }, items: { type: "array", items: { type: "string" } } }
     });
   });
 });

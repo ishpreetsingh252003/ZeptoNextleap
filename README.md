@@ -2,7 +2,7 @@
 
 An internal PM research workspace for collecting permitted public discussions and turning them into traceable, human-reviewable behavioral evidence about category expansion. This repository contains **Application 1** only. The Zepto customer MVP will be built separately after research synthesis and opportunity approval.
 
-## Current Phase 2 database validation
+## Current Phase 3 manual AI validation
 
 - Next.js research workspace, Express API, PostgreSQL polling worker, and Drizzle database layer.
 - Manual text, public URL, Google Play public-page, and optional Tavily adapters.
@@ -12,7 +12,7 @@ An internal PM research workspace for collecting permitted public discussions an
 - Zod remains the final structured-output validator. Exact-excerpt and theme-traceability validation remain provider-independent.
 - Analysis lineage records provider, model, prompt version, stage, status, and a simple attempt count.
 
-Phase 1 proved static architecture, tests, type safety, and buildability. Phase 2 additionally validates the committed migrations, schema constraints, persistence graph, API health and project persistence, and idle worker polling against Neon PostgreSQL. It does **not** call Gemini or Groq or validate the complete AI pipeline end to end.
+Phase 1 proved static architecture, tests, type safety, and buildability. Phase 2 validated Neon persistence. Phase 3 validates one complete manual-text run through all five Gemini stages, PostgreSQL persistence, API retrieval, and frontend rendering. Other source adapters and Groq remain outside this live validation.
 
 ## Architecture
 
@@ -61,7 +61,7 @@ For Gemini:
 
 ```env
 GEMINI_API_KEY=
-GEMINI_MODEL=
+GEMINI_MODEL=gemini-3.1-flash-lite
 ```
 
 For explicitly selected Groq instead:
@@ -125,11 +125,14 @@ Quality checks:
 ```sh
 pnpm test
 pnpm test:db
+pnpm test:gemini
 pnpm typecheck
 pnpm build
 ```
 
 `pnpm test` remains deterministic and excludes the live database test. `pnpm test:db` is an explicit integration check that requires `DATABASE_URL`; it verifies TLS, migrations, schema presence, related-record persistence, foreign-key enforcement, run-status updates, and cleanup of its synthetic records.
+
+`pnpm test:gemini` is an explicit live integration check requiring Neon plus a configured Gemini key and model. It processes one approved manual-text fixture through all five stages, verifies exact excerpts and theme traceability, and removes its test records. It is excluded from the normal unit-test suite.
 
 ## Neon validation
 
@@ -176,8 +179,8 @@ No deployment is configured or started in Phase 1. Vercel, Railway, and Render r
 
 ## Current limitations
 
-- No provider has been called live through the refactored interface.
-- Neon PostgreSQL persistence is validated, but the full source-to-AI pipeline has not been validated end to end.
+- Gemini has been validated live only for the single-document manual-text path with `gemini-3.1-flash-lite`; model availability and free-tier limits remain external constraints.
+- Neon persistence and the manual-text AI path are validated, but automated source adapters have not been validated end to end.
 - Public research cannot establish population prevalence or verify Monthly Active Customer status.
 - Category-general evidence cannot be presented as direct Zepto-user behavior.
 - Human review states exist in the API and database, but review controls are not yet implemented in the frontend.

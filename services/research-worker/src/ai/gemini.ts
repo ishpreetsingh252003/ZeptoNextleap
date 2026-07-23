@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import { executeStructuredRequest } from "./execute.js";
 import type { AiProvider, AiStageRequest, AiStageResult } from "./types.js";
 
-const UNSUPPORTED_SCHEMA_KEYS = new Set(["$schema", "minLength", "maxLength", "pattern"]);
+const UNSUPPORTED_SCHEMA_KEYS = new Set(["$schema", "minLength", "maxLength", "maxItems", "pattern"]);
 const SUPPORTED_STRING_FORMATS = new Set(["date", "date-time", "time"]);
 
 export function jsonSchemaForGemini(value: unknown): unknown {
