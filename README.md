@@ -110,6 +110,13 @@ Tavily and Firecrawl are implemented but optional. Apify remains a documentation
 | `SOURCE_FETCH_USER_AGENT` | Deployment identification | Worker adapters | Public | `ZeptoNextLeapResearch/0.1` |
 | `MAX_SOURCE_BYTES` | Optional override | Worker adapters | Non-secret | `1000000` |
 | `MAX_NORMALIZED_CHARACTERS` | Optional override | Worker | Non-secret | `60000` |
+| `ANALYSIS_EVIDENCE_MAX_DOCUMENTS_PER_BATCH` | Optional scale override | Worker scale pipeline | Non-secret | `50` |
+| `ANALYSIS_EVIDENCE_MAX_ESTIMATED_PROMPT_TOKENS_PER_BATCH` | Optional scale override | Worker scale pipeline | Non-secret | `32000` |
+| `ANALYSIS_THEME_MAX_EVIDENCE_PER_BATCH` | Optional scale override | Worker scale pipeline | Non-secret | `100` |
+| `ANALYSIS_THEME_MAX_ESTIMATED_PROMPT_TOKENS_PER_BATCH` | Optional scale override | Worker scale pipeline | Non-secret | `32000` |
+| `ANALYSIS_THEME_MAX_PROVISIONAL_PER_BATCH` | Optional scale override | Worker scale pipeline | Non-secret | `40` |
+| `ANALYSIS_INSIGHT_MAX_EVIDENCE_PER_BATCH` | Optional scale override | Worker scale pipeline | Non-secret | `100` |
+| `ANALYSIS_INSIGHT_MAX_ESTIMATED_PROMPT_TOKENS_PER_BATCH` | Optional scale override | Worker scale pipeline | Non-secret | `32000` |
 
 ## Local commands
 
@@ -132,6 +139,7 @@ pnpm test:db
 pnpm test:firecrawl
 pnpm test:gemini
 pnpm test:google-play
+pnpm test:scale
 pnpm typecheck
 pnpm build
 ```
@@ -143,6 +151,30 @@ pnpm build
 `pnpm test:google-play` is an opt-in live adapter check. It retrieves up to three newest public reviews for `com.zeptoconsumerapp` and validates the normalized documents. It does not call the database or AI pipeline.
 
 `pnpm test:gemini` is an explicit live integration check requiring Neon plus a configured Gemini key and model. It processes one approved manual-text fixture through all five stages, verifies exact excerpts and theme traceability, and removes its test records. It is excluded from the normal unit-test suite.
+
+## Structured-analysis scale policy
+
+The structured `PublicDocument[] -> Evidence[] -> Theme[] -> Insight[]` path uses sequential bounded batches. A batch closes when either its record limit or its estimated-prompt-token limit would be exceeded. The `32000` defaults are conservative operating assumptions, not Gemini provider limits.
+
+Token estimates use `ceil(serialized JSON characters / 4)` plus a fixed 256-token allowance per batch. This is deterministic and useful for guarding payload growth, but it is not the Gemini tokenizer: language, punctuation, JSON escaping, system instructions, response schemas, and output tokens can change actual usage. Live provider limits still apply.
+
+Evidence is extracted in document batches. Evidence is clustered in bounded batches, then worker-internal provisional themes are consolidated in bounded passes; original evidence IDs remain local and every final evidence assignment is validated exactly once. Insights process bounded evidence windows within one final theme at a time, and every citation is validated against that final theme. All requests are sequential. A batch failure stops downstream work and reports the failed stage, batch, affected document IDs, completed batches, diagnostic document progress, and that restart currently repeats the full run. The corpus result remains invalid until every eligible document completes the full pipeline.
+
+Offline scale coverage:
+
+```sh
+pnpm test:scale
+```
+
+The suite uses synthetic data only and covers 0, 1, 100, 1,000, and 5,000 documents without calling Gemini.
+
+An opt-in live dry run collects and measures public Google Play reviews without AI:
+
+```sh
+pnpm scale:live -- --source google_play --package com.zeptoconsumerapp --review-count 1000 --dry-run
+```
+
+A non-dry run additionally requires `--max-ai-requests`. Do not run a complete corpus automatically. The command prints aggregates and reconciliation counts, never review text.
 
 ## Neon validation
 
@@ -176,7 +208,7 @@ Gemini supports a subset of JSON Schema. Its adapter removes unsupported string-
 
 | Source | Current behavior | Known limitation |
 | --- | --- | --- |
-| Google Play | Uses `google-play-scraper` to retrieve a bounded set of newest public reviews | Public display names and ratings are retained in the provenance note; upstream parser changes can still break collection |
+| Google Play | Uses `google-play-scraper` continuation tokens sequentially to retrieve a requested bounded set of newest English/India public reviews | The installed library exposes written reviews by language and continuation token, not a reliable historical-total count. Multi-page behavior is offline-tested, but full-history retrieval has not been proven by a real collection test |
 | Public URL | Checks public DNS, robots, response type, size, and readable context | Does not execute client-side JavaScript |
 | Firecrawl | Sends one caller-confirmed public URL to the v2 scrape API and validates returned markdown | Disabled without a key; external accessibility and API limits remain provider-dependent |
 | Tavily | Discovers candidates, then fetches and verifies underlying public pages | Disabled without a key; snippets alone are never evidence |

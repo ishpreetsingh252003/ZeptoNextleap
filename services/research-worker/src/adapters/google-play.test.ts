@@ -66,7 +66,6 @@ describe("GooglePlayAdapter", () => {
     expect(reviewsMock).toHaveBeenCalledWith(expect.objectContaining({
       appId: "com.zeptoconsumerapp",
       sort: 2,
-      num: 2,
       paginate: true,
       requestOptions: {
         timeout: { request: 15000 },
@@ -106,6 +105,110 @@ describe("GooglePlayAdapter", () => {
 
     await expect(new GooglePlayAdapter(env).collect(input, { maxRecords: 1 }))
       .rejects.toMatchObject({ code: "GOOGLE_PLAY_EMPTY_REVIEWS" });
+  });
+
+  it("follows continuation tokens sequentially until the requested count", async () => {
+    reviewsMock
+      .mockResolvedValueOnce({
+        data: [{
+          id: "review-1",
+          userName: null,
+          date: "2026-07-02T00:00:00.000Z",
+          score: 5,
+          title: null,
+          text: "First page review."
+        }],
+        nextPaginationToken: "page-two"
+      } as never)
+      .mockResolvedValueOnce({
+        data: [{
+          id: "review-2",
+          userName: null,
+          date: "2026-07-01T00:00:00.000Z",
+          score: 4,
+          title: null,
+          text: "Second page review."
+        }],
+        nextPaginationToken: null
+      } as never);
+
+    const result = await new GooglePlayAdapter(env).collect(input, { maxRecords: 2 });
+
+    expect(result.map(({ externalId }) => externalId)).toEqual([
+      "com.zeptoconsumerapp:review-1",
+      "com.zeptoconsumerapp:review-2"
+    ]);
+    expect(reviewsMock).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      nextPaginationToken: "page-two"
+    }));
+  });
+
+  it("rejects repeated continuation tokens instead of looping", async () => {
+    reviewsMock
+      .mockResolvedValueOnce({
+        data: [{
+          id: "review-1",
+          userName: null,
+          date: "2026-07-02T00:00:00.000Z",
+          score: 5,
+          title: null,
+          text: "First page review."
+        }],
+        nextPaginationToken: "repeated"
+      } as never)
+      .mockResolvedValueOnce({
+        data: [{
+          id: "review-2",
+          userName: null,
+          date: "2026-07-01T00:00:00.000Z",
+          score: 4,
+          title: null,
+          text: "Second page review."
+        }],
+        nextPaginationToken: "repeated"
+      } as never);
+
+    await expect(new GooglePlayAdapter(env).collect(
+      { ...input, maxRecords: 3 },
+      { maxRecords: 3 }
+    )).rejects.toMatchObject({ code: "GOOGLE_PLAY_INVALID_RESPONSE" });
+  });
+
+  it("continues past newer pages to satisfy a selected date range", async () => {
+    reviewsMock
+      .mockResolvedValueOnce({
+        data: [{
+          id: "too-new",
+          userName: null,
+          date: "2026-07-10T00:00:00.000Z",
+          score: 5,
+          title: null,
+          text: "Outside the requested range."
+        }],
+        nextPaginationToken: "older-page"
+      } as never)
+      .mockResolvedValueOnce({
+        data: [{
+          id: "in-range",
+          userName: null,
+          date: "2026-07-01T00:00:00.000Z",
+          score: 4,
+          title: null,
+          text: "Inside the requested range."
+        }],
+        nextPaginationToken: null
+      } as never);
+
+    const result = await new GooglePlayAdapter(env).collect(input, {
+      maxRecords: 1,
+      dateFrom: "2026-07-01",
+      dateTo: "2026-07-02"
+    });
+
+    expect(result.map(({ externalId }) => externalId)).toEqual([
+      "com.zeptoconsumerapp:in-range"
+    ]);
+    expect(reviewsMock).toHaveBeenCalledTimes(2);
   });
 
   it("reports a timeout truthfully", async () => {

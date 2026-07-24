@@ -33,7 +33,14 @@ export const serverEnvSchema = z.object({
   WORKER_POLL_INTERVAL_MS: z.coerce.number().int().min(500).default(3000),
   SOURCE_FETCH_USER_AGENT: z.string().min(10).default("ZeptoNextLeapResearch/0.1"),
   MAX_SOURCE_BYTES: z.coerce.number().int().positive().default(1_000_000),
-  MAX_NORMALIZED_CHARACTERS: z.coerce.number().int().positive().default(60_000)
+  MAX_NORMALIZED_CHARACTERS: z.coerce.number().int().positive().default(60_000),
+  ANALYSIS_EVIDENCE_MAX_DOCUMENTS_PER_BATCH: z.coerce.number().int().min(1).max(1_000).default(50),
+  ANALYSIS_EVIDENCE_MAX_ESTIMATED_PROMPT_TOKENS_PER_BATCH: z.coerce.number().int().min(1_000).max(500_000).default(32_000),
+  ANALYSIS_THEME_MAX_EVIDENCE_PER_BATCH: z.coerce.number().int().min(1).max(2_000).default(100),
+  ANALYSIS_THEME_MAX_ESTIMATED_PROMPT_TOKENS_PER_BATCH: z.coerce.number().int().min(1_000).max(500_000).default(32_000),
+  ANALYSIS_THEME_MAX_PROVISIONAL_PER_BATCH: z.coerce.number().int().min(2).max(500).default(40),
+  ANALYSIS_INSIGHT_MAX_EVIDENCE_PER_BATCH: z.coerce.number().int().min(1).max(2_000).default(100),
+  ANALYSIS_INSIGHT_MAX_ESTIMATED_PROMPT_TOKENS_PER_BATCH: z.coerce.number().int().min(1_000).max(500_000).default(32_000)
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;

@@ -13,6 +13,8 @@
     "test:firecrawl": "vitest run src/adapters/firecrawl.integration.test.ts",
     "test:gemini": "vitest run src/gemini-integration.test.ts",
     "test:google-play": "vitest run src/adapters/google-play.integration.test.ts",
+    "test:scale": "vitest run src/analysis-scale.test.ts",
+    "scale:live": "tsx src/analysis-scale-live.ts",
     "pilot:import": "tsx src/import-manual-pilot.ts"
   },
   "dependencies": {
