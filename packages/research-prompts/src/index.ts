@@ -4,11 +4,13 @@ import {
   contradictionOutputSchema,
   documentEvidenceExtractionSchema,
   evidenceExtractionOutputSchema,
+  insightGenerationOutputSchema,
   relevanceOutputSchema,
   themeClusteringOutputSchema,
   themeSynthesisOutputSchema,
   type AnalysisStage,
   type DocumentEvidenceExtraction,
+  type InsightGenerationOutput,
   type ThemeClusteringOutput
 } from "@zepto/research-contracts";
 
@@ -57,6 +59,14 @@ export const promptDefinitions = {
 Assign every supplied evidenceId to exactly one non-empty theme. Copy evidenceIds exactly and set evidenceCount to the number assigned.
 Use unique, concise theme IDs and titles. Describe the shared pattern and classify dominantSentiment as positive, negative, neutral, or mixed.
 Do not prioritize themes, score business impact, recommend changes, suggest solutions, or add evidence.`
+  },
+  insight_generation: {
+    stage: "insight_generation", version: "insight-generation-v1.0.0", name: "insight_generation",
+    schema: insightGenerationOutputSchema,
+    system: `Summarize the supplied themes and evidence into descriptive product insights.
+Every insight must reference one supplied themeId and one or more evidenceIds assigned to that theme. Use only supplied evidence and make every statement in the title and summary supportable from those cited records.
+Insights may describe recurring user problems, positive feedback, sentiment, or observed behavior.
+Do not recommend solutions, prioritize work, estimate business impact, suggest roadmap items, speculate beyond the evidence, or introduce new themes.`
   },
   theme_synthesis: {
     stage: "theme_synthesis", version: "themes-v1.0.0", name: "theme_synthesis",

@@ -6,7 +6,7 @@ export type SourceType = z.infer<typeof sourceTypeSchema>;
 export const runStatusSchema = z.enum(["queued", "collecting", "processing", "analyzing", "completed", "partially_completed", "failed"]);
 export type RunStatus = z.infer<typeof runStatusSchema>;
 
-export const analysisStageSchema = z.enum(["relevance", "evidence_extraction", "behavioral_coding", "contradiction_detection", "theme_clustering", "theme_synthesis"]);
+export const analysisStageSchema = z.enum(["relevance", "evidence_extraction", "behavioral_coding", "contradiction_detection", "theme_clustering", "insight_generation", "theme_synthesis"]);
 export type AnalysisStage = z.infer<typeof analysisStageSchema>;
 
 export const applicabilitySchema = z.enum(["Zepto-direct", "Quick-commerce transferable", "Category-general contextual"]);
@@ -134,6 +134,52 @@ export const themeClusteringOutputSchema = z.object({
 });
 export type Theme = z.infer<typeof themeSchema>;
 export type ThemeClusteringOutput = z.infer<typeof themeClusteringOutputSchema>;
+
+export const insightSchema = z.object({
+  id: z.string().trim().min(1),
+  title: z.string().trim().min(1).max(180),
+  summary: z.string().trim().min(1).max(1_200),
+  themeId: z.string().min(1),
+  evidenceIds: z.array(z.string().min(1)).min(1),
+  sentiment: evidenceSentimentSchema,
+  confidence: z.number().min(0).max(1)
+}).superRefine((insight, context) => {
+  const evidenceIds = new Set(insight.evidenceIds);
+  if (evidenceIds.size !== insight.evidenceIds.length) {
+    context.addIssue({
+      code: "custom",
+      path: ["evidenceIds"],
+      message: "Duplicate evidence IDs are not allowed within an insight."
+    });
+  }
+});
+export const insightGenerationOutputSchema = z.object({
+  insights: z.array(insightSchema)
+}).superRefine((output, context) => {
+  const ids = new Set<string>();
+  const titles = new Set<string>();
+  for (const [index, insight] of output.insights.entries()) {
+    const normalizedTitle = insight.title.toLocaleLowerCase("en");
+    if (ids.has(insight.id)) {
+      context.addIssue({
+        code: "custom",
+        path: ["insights", index, "id"],
+        message: "Duplicate insight IDs are not allowed."
+      });
+    }
+    if (titles.has(normalizedTitle)) {
+      context.addIssue({
+        code: "custom",
+        path: ["insights", index, "title"],
+        message: "Duplicate insight titles are not allowed."
+      });
+    }
+    ids.add(insight.id);
+    titles.add(normalizedTitle);
+  }
+});
+export type Insight = z.infer<typeof insightSchema>;
+export type InsightGenerationOutput = z.infer<typeof insightGenerationOutputSchema>;
 
 const reasoningBasisSchema = z.object({ claimStatus: claimStatusSchema, rationale: z.string().min(1).max(800) });
 
