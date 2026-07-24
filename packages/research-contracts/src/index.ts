@@ -6,7 +6,7 @@ export type SourceType = z.infer<typeof sourceTypeSchema>;
 export const runStatusSchema = z.enum(["queued", "collecting", "processing", "analyzing", "completed", "partially_completed", "failed"]);
 export type RunStatus = z.infer<typeof runStatusSchema>;
 
-export const analysisStageSchema = z.enum(["relevance", "evidence_extraction", "behavioral_coding", "contradiction_detection", "theme_synthesis"]);
+export const analysisStageSchema = z.enum(["relevance", "evidence_extraction", "behavioral_coding", "contradiction_detection", "theme_clustering", "theme_synthesis"]);
 export type AnalysisStage = z.infer<typeof analysisStageSchema>;
 
 export const applicabilitySchema = z.enum(["Zepto-direct", "Quick-commerce transferable", "Category-general contextual"]);
@@ -90,6 +90,50 @@ export const documentEvidenceExtractionSchema = z.object({
 });
 export type Evidence = z.infer<typeof evidenceSchema>;
 export type DocumentEvidenceExtraction = z.infer<typeof documentEvidenceExtractionSchema>;
+
+export const themeSchema = z.object({
+  id: z.string().trim().min(1),
+  title: z.string().trim().min(1).max(160),
+  description: z.string().trim().min(1).max(1_200),
+  evidenceIds: z.array(z.string().min(1)).min(1),
+  dominantSentiment: evidenceSentimentSchema,
+  evidenceCount: z.number().int().positive()
+}).superRefine((theme, context) => {
+  if (theme.evidenceCount !== theme.evidenceIds.length) {
+    context.addIssue({
+      code: "custom",
+      path: ["evidenceCount"],
+      message: "Evidence count must match the number of evidence IDs."
+    });
+  }
+});
+export const themeClusteringOutputSchema = z.object({
+  themes: z.array(themeSchema)
+}).superRefine((output, context) => {
+  const ids = new Set<string>();
+  const titles = new Set<string>();
+  for (const [index, theme] of output.themes.entries()) {
+    const normalizedTitle = theme.title.toLocaleLowerCase("en");
+    if (ids.has(theme.id)) {
+      context.addIssue({
+        code: "custom",
+        path: ["themes", index, "id"],
+        message: "Duplicate theme IDs are not allowed."
+      });
+    }
+    if (titles.has(normalizedTitle)) {
+      context.addIssue({
+        code: "custom",
+        path: ["themes", index, "title"],
+        message: "Duplicate theme titles are not allowed."
+      });
+    }
+    ids.add(theme.id);
+    titles.add(normalizedTitle);
+  }
+});
+export type Theme = z.infer<typeof themeSchema>;
+export type ThemeClusteringOutput = z.infer<typeof themeClusteringOutputSchema>;
 
 const reasoningBasisSchema = z.object({ claimStatus: claimStatusSchema, rationale: z.string().min(1).max(800) });
 
