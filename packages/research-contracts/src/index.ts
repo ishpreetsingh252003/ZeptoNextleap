@@ -63,6 +63,34 @@ export type PublicDocument = z.infer<typeof publicDocumentSchema>;
 export type AdapterContext = { maxRecords: number; dateFrom?: string; dateTo?: string; signal?: AbortSignal };
 export type SourceAdapter = { readonly type: SourceType; collect(input: CreateCollectionRunInput, context: AdapterContext): Promise<PublicDocument[]> };
 
+export const evidenceSentimentSchema = z.enum(["positive", "negative", "neutral", "mixed"]);
+export const evidenceSchema = z.object({
+  documentId: z.string().min(1),
+  sourceType: sourceTypeSchema,
+  supportingQuote: z.string().min(1).refine((quote) => quote.trim().length > 0, "Supporting quote cannot be blank."),
+  sentiment: evidenceSentimentSchema,
+  category: z.string().trim().min(1).max(120),
+  confidence: z.number().min(0).max(1)
+});
+export const documentEvidenceExtractionSchema = z.object({
+  evidence: z.array(evidenceSchema)
+}).superRefine((output, context) => {
+  const seen = new Set<string>();
+  for (const [index, evidence] of output.evidence.entries()) {
+    const key = JSON.stringify([evidence.documentId, evidence.supportingQuote]);
+    if (seen.has(key)) {
+      context.addIssue({
+        code: "custom",
+        path: ["evidence", index],
+        message: "Duplicate evidence is not allowed."
+      });
+    }
+    seen.add(key);
+  }
+});
+export type Evidence = z.infer<typeof evidenceSchema>;
+export type DocumentEvidenceExtraction = z.infer<typeof documentEvidenceExtractionSchema>;
+
 const reasoningBasisSchema = z.object({ claimStatus: claimStatusSchema, rationale: z.string().min(1).max(800) });
 
 export const relevanceOutputSchema = z.object({

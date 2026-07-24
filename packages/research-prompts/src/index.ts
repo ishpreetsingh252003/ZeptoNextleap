@@ -2,10 +2,12 @@ import { z, type ZodType } from "zod";
 import {
   behavioralCodingOutputSchema,
   contradictionOutputSchema,
+  documentEvidenceExtractionSchema,
   evidenceExtractionOutputSchema,
   relevanceOutputSchema,
   themeSynthesisOutputSchema,
-  type AnalysisStage
+  type AnalysisStage,
+  type DocumentEvidenceExtraction
 } from "@zepto/research-contracts";
 
 const NON_FABRICATION = `
@@ -52,6 +54,17 @@ export const promptDefinitions = {
     system: `Synthesize behavioral themes, not sentiment clusters. Every claim must cite only supplied evidence UUIDs and keep supporting, opposing, and boundary evidence separate. Strength is qualitative corpus support, never statistical confidence. Product ideas are out of scope. ${NON_FABRICATION}`
   }
 } as const satisfies Record<AnalysisStage, PromptDefinition<unknown>>;
+
+export const documentEvidenceExtractionPrompt: PromptDefinition<DocumentEvidenceExtraction> = {
+  stage: "evidence_extraction",
+  version: "document-evidence-v1.0.0",
+  name: "document_evidence_extraction",
+  schema: documentEvidenceExtractionSchema,
+  system: `Extract only evidence explicitly supported by the supplied public documents.
+For every item, copy the shortest exact supporting quote verbatim and return the originating documentId and sourceType exactly as supplied.
+Classify sentiment as positive, negative, neutral, or mixed. Use a concise product category and a confidence value from 0 to 1 based only on how directly the quote supports the classification.
+Do not create evidence for empty or irrelevant documents. Do not repeat the same quote from the same document. Never invent, paraphrase, repair, or translate a quote.`
+};
 
 export function jsonSchemaFor(definition: PromptDefinition<unknown>): Record<string, unknown> {
   return z.toJSONSchema(definition.schema, { target: "draft-7", unrepresentable: "any" }) as Record<string, unknown>;
