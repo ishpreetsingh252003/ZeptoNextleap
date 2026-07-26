@@ -10,7 +10,8 @@ import {
   analysisScaleConfigFromEnv,
   completedDocumentCountForStage,
   createBoundedBatches,
-  measureCorpus,
+  estimateAnalysisRequestCount,
+  prepareCorpusForAnalysis,
   runScaledAnalysisPipeline,
   type AnalysisScaleConfig
 } from "./analysis-scale.js";
@@ -117,24 +118,6 @@ function withCliOverrides(
   };
 }
 
-function planningRequestEstimate(
-  documentCount: number,
-  evidenceBatchCount: number,
-  config: AnalysisScaleConfig
-): number {
-  if (documentCount === 0) return 0;
-  const themeBatches = Math.ceil(documentCount / config.themes.maxItems);
-  let provisionalThemes = themeBatches;
-  let mergeRequests = 0;
-  while (provisionalThemes > config.themeMerge.maxItems) {
-    provisionalThemes = Math.ceil(provisionalThemes / config.themeMerge.maxItems);
-    mergeRequests += provisionalThemes;
-  }
-  if (provisionalThemes > 1) mergeRequests += 1;
-  const insightBatches = Math.ceil(documentCount / config.insights.maxItems);
-  return evidenceBatchCount + themeBatches + mergeRequests + insightBatches;
-}
-
 function print(value: unknown): void {
   process.stdout.write(`${JSON.stringify(value, null, 2)}\n`);
 }
@@ -156,14 +139,22 @@ async function main(): Promise<void> {
     ...(options.dateFrom ? { dateFrom: options.dateFrom } : {}),
     ...(options.dateTo ? { dateTo: options.dateTo } : {})
   };
+  let paginationDepth = 0;
   const collected = await adapter.collect(input, {
     maxRecords: options.reviewCount,
     ...(options.dateFrom ? { dateFrom: options.dateFrom } : {}),
-    ...(options.dateTo ? { dateTo: options.dateTo } : {})
+    ...(options.dateTo ? { dateTo: options.dateTo } : {}),
+    onPageCollected: ({ pageNumber }) => {
+      paginationDepth = Math.max(paginationDepth, pageNumber);
+    }
   });
-  const measurement = measureCorpus(collected);
+  const {
+    measurement,
+    eligibleDocuments,
+    duplicateCount
+  } = prepareCorpusForAnalysis(collected);
   const evidenceBatches = createBoundedBatches(
-    collected,
+    eligibleDocuments,
     config.evidence,
     (document) => JSON.stringify({
       documentId: document.externalId,
@@ -172,12 +163,9 @@ async function main(): Promise<void> {
     })
   );
   const invalid = 0;
-  const eligible = collected.length
-    - invalid
-    - measurement.normalizedEmptyCount
-    - measurement.exactDuplicateCount;
-  const requestEstimate = planningRequestEstimate(
-    eligible,
+  const eligible = eligibleDocuments.length;
+  const requestEstimate = estimateAnalysisRequestCount(
+    eligibleDocuments.length,
     evidenceBatches.length,
     config
   );
@@ -188,11 +176,14 @@ async function main(): Promise<void> {
       sourceAvailability: "Unknown: Google Play does not expose a reliable total written-review count.",
       requested: options.reviewCount,
       collected: collected.length,
+      paginationDepth,
       invalid,
       normalizedEmpty: measurement.normalizedEmptyCount,
-      exactDuplicates: measurement.exactDuplicateCount,
+      exactDuplicates: duplicateCount,
       eligible,
       evidenceBatchCount: evidenceBatches.length,
+      estimatedThemeBatchCount: Math.ceil(eligible / config.themes.maxItems),
+      estimatedInsightBatchCount: Math.ceil(eligible / config.insights.maxItems),
       planningGeminiRequestEstimate: requestEstimate,
       estimateAssumptions: [
         "one Evidence record per eligible document",
@@ -223,6 +214,7 @@ async function main(): Promise<void> {
       corpusResult: "valid",
       requested: options.reviewCount,
       collected: collected.length,
+      paginationDepth,
       invalid,
       normalizedEmpty: result.metrics.normalizedEmptyCount,
       exactDuplicates: result.metrics.exactDuplicateCount,
@@ -232,6 +224,10 @@ async function main(): Promise<void> {
       evidenceCount: result.evidence.length,
       themeCount: result.themes.length,
       insightCount: result.insights.length,
+      retryCount: Math.max(
+        0,
+        result.metrics.totalAiRequests - result.metrics.completedBatches.length
+      ),
       metrics: result.metrics
     });
   } catch (error) {
@@ -249,6 +245,7 @@ async function main(): Promise<void> {
       corpusResult: "invalid",
       requested: options.reviewCount,
       collected: collected.length,
+      paginationDepth,
       invalid,
       normalizedEmpty: measurement.normalizedEmptyCount,
       exactDuplicates: measurement.exactDuplicateCount,
@@ -262,6 +259,7 @@ async function main(): Promise<void> {
       failedBatchDocumentCount: batchError?.documentIds.length ?? 0,
       completedBatchCount: batchError?.completedBatches.length ?? 0,
       totalAiRequests: batchError?.totalAiRequests ?? 0,
+      diagnostics: batchError?.diagnostics ?? null,
       restartBehavior: batchError?.restartBehavior ?? "full_run_required"
     });
     process.exitCode = 1;

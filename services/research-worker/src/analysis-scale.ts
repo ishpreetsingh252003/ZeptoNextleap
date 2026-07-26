@@ -14,7 +14,19 @@ import type { ServerEnv } from "@zepto/shared-config";
 import { extractEvidence } from "./evidence-extractor.js";
 import { generateInsights } from "./insight-generation.js";
 import { dedupeDocuments } from "./lib/text.js";
-import { clusterEvidence, evidenceIdFor } from "./theme-clustering.js";
+import {
+  clusterEvidence,
+  evidenceIdFor,
+  themeBatchFingerprint,
+  ThemeCompletenessRepairError,
+  type ThemeClusteringMetrics
+} from "./theme-clustering.js";
+import { AiProviderError } from "./ai/errors.js";
+import {
+  StructuredValidationError,
+  type StructuredAttemptDiagnostic,
+  type StructuredFailureCategory
+} from "./ai/failure-diagnostics.js";
 import type { AiProvider, AiStageRequest, AiStageResult } from "./ai/types.js";
 
 const TOKEN_CHARACTER_RATIO = 4;
@@ -61,6 +73,12 @@ export type AnalysisScaleMetrics = CorpusMeasurement & {
   failedBatchCount: number;
   successfullyAnalyzedDocumentCount: number;
   completedBatches: CompletedAnalysisBatch[];
+  themeBatchMetrics: ThemeBatchProcessingMetric[];
+};
+
+export type ThemeBatchProcessingMetric = ThemeClusteringMetrics & {
+  batchIndex: number;
+  estimatedPromptTokens: number;
 };
 
 export type ScaledAnalysisResult = {
@@ -70,11 +88,59 @@ export type ScaledAnalysisResult = {
   metrics: AnalysisScaleMetrics;
 };
 
+export type InsightAggregationFailureDiagnostics = {
+  failureType: "insight_aggregation";
+  evidenceCount: number;
+  themeCount: number;
+  mergedInsightCount: number;
+  providerRequestCount: number;
+  retryCount: number;
+  stageTimings: Record<ScaleAnalysisStage, number>;
+};
+
+export type EvidenceBatchFailureDiagnostics = {
+  failureType: "evidence_batch";
+  batchIndex: number;
+  attemptCount: number;
+  providerAttempts: readonly StructuredAttemptDiagnostic[];
+  documentCount: number;
+  estimatedPromptTokens: number;
+  documentIds: string[];
+  validationCategories: StructuredFailureCategory[];
+  stageTimingMilliseconds: number;
+  stageTimings: Record<ScaleAnalysisStage, number>;
+  failureLocation: StructuredAttemptDiagnostic["failureLocation"];
+  retryChangedFailureCategory: boolean;
+};
+
+export type ThemeBatchFailureDiagnostics = {
+  failureType: "theme_batch";
+  batchIndex: number;
+  attemptCount: number;
+  providerAttempts: readonly StructuredAttemptDiagnostic[];
+  evidenceCount: number;
+  estimatedPromptTokens: number;
+  evidenceIds: string[];
+  validationCategories: StructuredFailureCategory[];
+  stageTimingMilliseconds: number;
+  stageTimings: Record<ScaleAnalysisStage, number>;
+  failureLocation: StructuredAttemptDiagnostic["failureLocation"];
+  retryChangedFailureCategory: boolean;
+  batchFingerprint: string;
+  repairMetrics?: ThemeBatchProcessingMetric;
+};
+
+export type AnalysisFailureDiagnostics =
+  | InsightAggregationFailureDiagnostics
+  | EvidenceBatchFailureDiagnostics
+  | ThemeBatchFailureDiagnostics;
+
 export type ScaleAnalysisStage =
   | "evidence_extraction"
   | "theme_clustering"
   | "theme_consolidation"
-  | "insight_generation";
+  | "insight_generation"
+  | "insight_aggregation";
 
 export const defaultAnalysisScaleConfig: AnalysisScaleConfig = {
   evidence: { maxItems: 50, maxEstimatedPromptTokens: 32_000 },
@@ -94,7 +160,9 @@ export class AnalysisBatchError extends Error {
     readonly documentIds: string[],
     readonly completedBatches: CompletedAnalysisBatch[],
     readonly totalAiRequests: number,
-    cause: unknown
+    cause: unknown,
+    readonly diagnostics?: AnalysisFailureDiagnostics,
+    readonly themeBatchMetrics: ThemeBatchProcessingMetric[] = []
   ) {
     super(message, { cause });
     this.name = "AnalysisBatchError";
@@ -197,6 +265,37 @@ export function measureCorpus(
   };
 }
 
+export function prepareCorpusForAnalysis(
+  documents: readonly PublicDocument[]
+): {
+  measurement: CorpusMeasurement;
+  eligibleDocuments: PublicDocument[];
+  duplicateCount: number;
+} {
+  const measurement = measureCorpus(documents);
+  const parsedDocuments = publicDocumentSchema.array().parse(documents);
+  const { unique: eligibleDocuments, duplicateCount } = dedupeDocuments(parsedDocuments);
+  return { measurement, eligibleDocuments, duplicateCount };
+}
+
+export function estimateAnalysisRequestCount(
+  documentCount: number,
+  evidenceBatchCount: number,
+  config: AnalysisScaleConfig
+): number {
+  if (documentCount === 0) return 0;
+  const themeBatches = Math.ceil(documentCount / config.themes.maxItems);
+  let provisionalThemes = themeBatches;
+  let mergeRequests = 0;
+  while (provisionalThemes > config.themeMerge.maxItems) {
+    provisionalThemes = Math.ceil(provisionalThemes / config.themeMerge.maxItems);
+    mergeRequests += provisionalThemes;
+  }
+  if (provisionalThemes > 1) mergeRequests += 1;
+  const insightBatches = Math.ceil(documentCount / config.insights.maxItems);
+  return evidenceBatchCount + themeBatches + mergeRequests + insightBatches;
+}
+
 export function createBoundedBatches<T>(
   items: readonly T[],
   limits: BatchLimits,
@@ -246,6 +345,23 @@ function errorCode(error: unknown): string {
 function stableId(prefix: string, values: readonly string[]): string {
   const hash = createHash("sha256").update(JSON.stringify([...values].sort())).digest("hex");
   return `${prefix}_${hash}`;
+}
+
+export function finalInsightIdFor(
+  insight: Pick<Insight, "themeId" | "evidenceIds">
+): string {
+  const identity = JSON.stringify({
+    themeId: insight.themeId,
+    evidenceIds: [...insight.evidenceIds].sort()
+  });
+  return `insight_${createHash("sha256").update(identity).digest("hex")}`;
+}
+
+export function finalizeInsightIds(insights: readonly Insight[]): Insight[] {
+  return insights.map((insight) => ({
+    ...insight,
+    id: finalInsightIdFor(insight)
+  }));
 }
 
 function documentIdsForEvidence(evidence: readonly Evidence[]): string[] {
@@ -336,7 +452,12 @@ Do not cite new evidence, recommend solutions, prioritize work, or expose provis
       const assigned = new Set<string>();
       for (const theme of output.themes) {
         for (const id of theme.provisionalThemeIds) {
-          if (!themesById.has(id)) throw new Error("Consolidation referenced an unknown provisional theme.");
+          if (!themesById.has(id)) {
+            throw new StructuredValidationError(
+              ["UNKNOWN_THEME_REFERENCE"],
+              "theme_reference"
+            );
+          }
           if (assigned.has(id)) throw new Error("A provisional theme cannot be assigned more than once.");
           assigned.add(id);
         }
@@ -367,22 +488,152 @@ function elapsedSince(startedAt: number): number {
   return performance.now() - startedAt;
 }
 
+function estimatedDocumentBatchPromptTokens(
+  documents: readonly PublicDocument[]
+): number {
+  return BATCH_OVERHEAD_TOKENS + documents.reduce(
+    (total, document) => total + estimatePromptTokens(JSON.stringify({
+      documentId: document.externalId,
+      sourceType: document.sourceType,
+      text: document.normalizedText
+    })),
+    0
+  );
+}
+
+function evidenceFailureDiagnostics(
+  error: unknown,
+  batchIndex: number,
+  batch: readonly PublicDocument[],
+  stageTimingMilliseconds: number,
+  stageTimings: Record<ScaleAnalysisStage, number>
+): EvidenceBatchFailureDiagnostics {
+  const providerAttempts = error instanceof AiProviderError
+    ? [...error.attemptDiagnostics]
+    : [];
+  const validationCategories = [
+    ...new Set(providerAttempts.flatMap(({ categories }) => categories))
+  ];
+  const categorySignatures = providerAttempts.map(({ categories }) =>
+    JSON.stringify([...categories].sort())
+  );
+  const lastAttempt = providerAttempts.at(-1);
+  return {
+    failureType: "evidence_batch",
+    batchIndex,
+    attemptCount: error instanceof AiProviderError ? error.attemptCount : 1,
+    providerAttempts,
+    documentCount: batch.length,
+    estimatedPromptTokens: estimatedDocumentBatchPromptTokens(batch),
+    documentIds: batch.map(({ externalId }) => externalId),
+    validationCategories: validationCategories.length > 0
+      ? validationCategories
+      : ["OTHER"],
+    stageTimingMilliseconds,
+    stageTimings: { ...stageTimings },
+    failureLocation: lastAttempt?.failureLocation ?? "unknown",
+    retryChangedFailureCategory: new Set(categorySignatures).size > 1
+  };
+}
+
+function estimatedThemeBatchPromptTokens(evidence: readonly Evidence[]): number {
+  return BATCH_OVERHEAD_TOKENS + evidence.reduce(
+    (total, item) => total + estimatePromptTokens(JSON.stringify({
+      evidenceId: evidenceIdFor(item),
+      ...item
+    })),
+    0
+  );
+}
+
+function evidenceIdsForProvisionalThemes(
+  themes: readonly ProvisionalTheme[]
+): string[] {
+  return [...new Set(themes.flatMap(({ evidenceIds }) => evidenceIds))];
+}
+
+function referenceBatchFingerprint(ids: readonly string[]): string {
+  return createHash("sha256").update([...ids].sort().join("\n")).digest("hex");
+}
+
+function estimatedThemeConsolidationPromptTokens(
+  themes: readonly ProvisionalTheme[]
+): number {
+  return BATCH_OVERHEAD_TOKENS + themes.reduce(
+    (total, { internalId, title, description, dominantSentiment }) =>
+      total + estimatePromptTokens(JSON.stringify({
+        provisionalThemeId: internalId,
+        title,
+        description,
+        dominantSentiment
+      })),
+    0
+  );
+}
+
+function themeFailureDiagnostics(
+  error: unknown,
+  batchIndex: number,
+  evidenceIds: readonly string[],
+  estimatedPromptTokens: number,
+  stageTimingMilliseconds: number,
+  stageTimings: Record<ScaleAnalysisStage, number>,
+  batchFingerprint: string,
+  repairMetrics?: ThemeBatchProcessingMetric
+): ThemeBatchFailureDiagnostics {
+  const providerError = error instanceof ThemeCompletenessRepairError
+    ? error.cause
+    : error;
+  const providerAttempts = providerError instanceof AiProviderError
+    ? [...providerError.attemptDiagnostics]
+    : [];
+  const validationCategories = [
+    ...new Set(providerAttempts.flatMap(({ categories }) => categories))
+  ];
+  const categorySignatures = providerAttempts.map(({ categories }) =>
+    JSON.stringify([...categories].sort())
+  );
+  const lastAttempt = providerAttempts.at(-1);
+  return {
+    failureType: "theme_batch",
+    batchIndex,
+    attemptCount: providerError instanceof AiProviderError ? providerError.attemptCount : 1,
+    providerAttempts,
+    evidenceCount: evidenceIds.length,
+    estimatedPromptTokens,
+    evidenceIds: [...evidenceIds],
+    validationCategories: validationCategories.length > 0
+      ? validationCategories
+      : ["OTHER"],
+    stageTimingMilliseconds,
+    stageTimings: { ...stageTimings },
+    failureLocation: lastAttempt?.failureLocation ?? "unknown",
+    retryChangedFailureCategory: new Set(categorySignatures).size > 1,
+    batchFingerprint,
+    ...(repairMetrics ? { repairMetrics } : {})
+  };
+}
+
 export async function runScaledAnalysisPipeline(
   documents: readonly PublicDocument[],
   provider: AiProvider,
   config: AnalysisScaleConfig
 ): Promise<ScaledAnalysisResult> {
-  const measurement = measureCorpus(documents);
-  const parsedDocuments = publicDocumentSchema.array().parse(documents);
-  const { unique: eligibleDocuments, duplicateCount } = dedupeDocuments(parsedDocuments);
+  const {
+    measurement,
+    eligibleDocuments,
+    duplicateCount
+  } = prepareCorpusForAnalysis(documents);
   const meteredProvider = new MeteredProvider(provider, config.maxAiRequests);
   const timings: Record<ScaleAnalysisStage, number> = {
     evidence_extraction: 0,
     theme_clustering: 0,
     theme_consolidation: 0,
-    insight_generation: 0
+    insight_generation: 0,
+    insight_aggregation: 0
   };
   const completedBatches: CompletedAnalysisBatch[] = [];
+  const themeBatchMetrics: ThemeBatchProcessingMetric[] = [];
 
   const evidenceBatches = createBoundedBatches(
     eligibleDocuments,
@@ -410,7 +661,8 @@ export async function runScaledAnalysisPipeline(
     error: unknown,
     stage: ScaleAnalysisStage,
     batchIndex: number,
-    documentIds: string[]
+    documentIds: string[],
+    diagnostics?: AnalysisFailureDiagnostics
   ): never => {
     throw new AnalysisBatchError(
       error instanceof Error ? error.message : "Structured analysis batch failed.",
@@ -419,7 +671,9 @@ export async function runScaledAnalysisPipeline(
       documentIds,
       [...completedBatches],
       meteredProvider.requestCount,
-      error
+      error,
+      diagnostics,
+      [...themeBatchMetrics]
     );
   };
 
@@ -438,7 +692,8 @@ export async function runScaledAnalysisPipeline(
         totalAiRequests: 0,
         failedBatchCount: 0,
         successfullyAnalyzedDocumentCount: 0,
-        completedBatches
+        completedBatches,
+        themeBatchMetrics
       }
     };
   }
@@ -455,8 +710,21 @@ export async function runScaledAnalysisPipeline(
         documentIds: batch.map(({ externalId }) => externalId)
       });
     } catch (error) {
-      timings.evidence_extraction += elapsedSince(startedAt);
-      fail(error, "evidence_extraction", batchIndex, batch.map(({ externalId }) => externalId));
+      const stageTimingMilliseconds = elapsedSince(startedAt);
+      timings.evidence_extraction += stageTimingMilliseconds;
+      fail(
+        error,
+        "evidence_extraction",
+        batchIndex,
+        batch.map(({ externalId }) => externalId),
+        evidenceFailureDiagnostics(
+          error,
+          batchIndex,
+          batch,
+          stageTimingMilliseconds,
+          timings
+        )
+      );
     }
     timings.evidence_extraction += elapsedSince(startedAt);
   }
@@ -471,8 +739,14 @@ export async function runScaledAnalysisPipeline(
   let provisionalThemes: ProvisionalTheme[] = [];
   for (const [batchIndex, batch] of themeEvidenceBatches.entries()) {
     const startedAt = performance.now();
+    const batchFingerprint = themeBatchFingerprint(batch);
+    const estimatedPromptTokens = estimatedThemeBatchPromptTokens(batch);
+    let batchMetrics: ThemeBatchProcessingMetric | undefined;
     try {
-      const clustered = await clusterEvidence(batch, meteredProvider);
+      const clustered = await clusterEvidence(batch, meteredProvider, (metrics) => {
+        batchMetrics = { ...metrics, batchIndex, estimatedPromptTokens };
+      });
+      if (batchMetrics) themeBatchMetrics.push(batchMetrics);
       provisionalThemes.push(...clustered.map((theme) => ({
         internalId: stableId("provisional_theme", theme.evidenceIds),
         finalId: theme.id,
@@ -488,8 +762,25 @@ export async function runScaledAnalysisPipeline(
         documentIds: documentIdsForEvidence(batch)
       });
     } catch (error) {
-      timings.theme_clustering += elapsedSince(startedAt);
-      fail(error, "theme_clustering", batchIndex, documentIdsForEvidence(batch));
+      if (batchMetrics) themeBatchMetrics.push(batchMetrics);
+      const stageTimingMilliseconds = elapsedSince(startedAt);
+      timings.theme_clustering += stageTimingMilliseconds;
+      fail(
+        error,
+        "theme_clustering",
+        batchIndex,
+        [],
+        themeFailureDiagnostics(
+          error,
+          batchIndex,
+          batch.map(evidenceIdFor),
+          estimatedPromptTokens,
+          stageTimingMilliseconds,
+          timings,
+          batchFingerprint,
+          batchMetrics
+        )
+      );
     }
     timings.theme_clustering += elapsedSince(startedAt);
   }
@@ -518,12 +809,22 @@ export async function runScaledAnalysisPipeline(
           documentIds: documentIdsForThemes(batch, evidenceById)
         });
       } catch (error) {
-        timings.theme_consolidation += elapsedSince(startedAt);
+        const stageTimingMilliseconds = elapsedSince(startedAt);
+        timings.theme_consolidation += stageTimingMilliseconds;
         fail(
           error,
           "theme_consolidation",
           mergePass * 1_000_000 + batchIndex,
-          documentIdsForThemes(batch, evidenceById)
+          [],
+          themeFailureDiagnostics(
+            error,
+            mergePass * 1_000_000 + batchIndex,
+            evidenceIdsForProvisionalThemes(batch),
+            estimatedThemeConsolidationPromptTokens(batch),
+            stageTimingMilliseconds,
+            timings,
+            referenceBatchFingerprint(evidenceIdsForProvisionalThemes(batch))
+          )
         );
       }
       timings.theme_consolidation += elapsedSince(startedAt);
@@ -551,12 +852,22 @@ export async function runScaledAnalysisPipeline(
         documentIds: documentIdsForThemes(finalBatch, evidenceById)
       });
     } catch (error) {
-      timings.theme_consolidation += elapsedSince(startedAt);
+      const stageTimingMilliseconds = elapsedSince(startedAt);
+      timings.theme_consolidation += stageTimingMilliseconds;
       fail(
         error,
         "theme_consolidation",
         mergePass * 1_000_000,
-        documentIdsForThemes(finalBatch, evidenceById)
+        [],
+        themeFailureDiagnostics(
+          error,
+          mergePass * 1_000_000,
+          evidenceIdsForProvisionalThemes(finalBatch),
+          estimatedThemeConsolidationPromptTokens(finalBatch),
+          stageTimingMilliseconds,
+          timings,
+          referenceBatchFingerprint(evidenceIdsForProvisionalThemes(finalBatch))
+        )
       );
     }
     timings.theme_consolidation += elapsedSince(startedAt);
@@ -628,7 +939,32 @@ export async function runScaledAnalysisPipeline(
       insightBatchIndex += 1;
     }
   }
-  const validatedInsights = insightGenerationOutputSchema.parse({ insights }).insights;
+  const aggregationStartedAt = performance.now();
+  let validatedInsights: Insight[] = [];
+  try {
+    validatedInsights = insightGenerationOutputSchema.parse({
+      insights: finalizeInsightIds(insights)
+    }).insights;
+    timings.insight_aggregation += elapsedSince(aggregationStartedAt);
+  } catch (error) {
+    timings.insight_aggregation += elapsedSince(aggregationStartedAt);
+    const providerRequestCount = meteredProvider.requestCount;
+    fail(
+      error,
+      "insight_aggregation",
+      0,
+      eligibleDocuments.map(({ externalId }) => externalId),
+      {
+        failureType: "insight_aggregation",
+        evidenceCount: evidence.length,
+        themeCount: themes.length,
+        mergedInsightCount: insights.length,
+        providerRequestCount,
+        retryCount: Math.max(0, providerRequestCount - completedBatches.length),
+        stageTimings: { ...timings }
+      }
+    );
+  }
 
   return {
     evidence,
@@ -642,9 +978,10 @@ export async function runScaledAnalysisPipeline(
       estimatedMaximumEvidenceBatchPromptTokens: maximumEvidenceBatchTokens,
       elapsedMillisecondsByStage: timings,
       totalAiRequests: meteredProvider.requestCount,
-      failedBatchCount: 0,
-      successfullyAnalyzedDocumentCount: eligibleDocuments.length,
-      completedBatches
+          failedBatchCount: 0,
+          successfullyAnalyzedDocumentCount: eligibleDocuments.length,
+          completedBatches,
+          themeBatchMetrics
     }
   };
 }

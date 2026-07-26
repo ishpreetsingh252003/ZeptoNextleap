@@ -5,6 +5,7 @@ import type {
 } from "@zepto/shared-config";
 import type {
   AnalysisStage,
+  Insight,
   PublicDocument
 } from "@zepto/research-contracts";
 import type {
@@ -12,13 +13,18 @@ import type {
   AiStageRequest,
   AiStageResult
 } from "./ai/types.js";
+import { executeStructuredRequest } from "./ai/execute.js";
 import {
   AnalysisBatchError,
   analysisScaleConfigFromEnv,
   completedDocumentCountForStage,
   createBoundedBatches,
+  estimateAnalysisRequestCount,
   estimatePromptTokens,
+  finalInsightIdFor,
+  finalizeInsightIds,
   measureCorpus,
+  prepareCorpusForAnalysis,
   runScaledAnalysisPipeline,
   type AnalysisScaleConfig
 } from "./analysis-scale.js";
@@ -35,7 +41,9 @@ class SyntheticProvider implements AiProvider {
   private callsByStage = new Map<AnalysisStage, number>();
 
   constructor(
-    private readonly failAt?: { stage: AnalysisStage; call: number }
+    private readonly failAt?: { stage: AnalysisStage; call: number },
+    private readonly duplicateInsightTitles = false,
+    private readonly fixedLocalInsightIds = false
   ) {}
 
   async generateStructured<T>(request: AiStageRequest<T>): Promise<AiStageResult<T>> {
@@ -94,8 +102,10 @@ class SyntheticProvider implements AiProvider {
       const themes = input.themes as Array<{ id: string; title: string; evidenceIds: string[] }>;
       payload = {
         insights: themes.map((theme, index) => ({
-          id: `insight-${call}-${index}`,
-          title: `Insight for ${theme.title} ${theme.evidenceIds[0]}`,
+          id: this.fixedLocalInsightIds ? "local-insight" : `insight-${call}-${index}`,
+          title: this.duplicateInsightTitles
+            ? "Duplicate generated title"
+            : `Insight for ${theme.title} ${theme.evidenceIds[0]}`,
           summary: "Synthetic evidence-supported insight.",
           themeId: theme.id,
           evidenceIds: theme.evidenceIds,
@@ -111,6 +121,65 @@ class SyntheticProvider implements AiProvider {
       model: this.model,
       attemptCount: 1
     };
+  }
+}
+
+class RetryingEvidenceFailureProvider implements AiProvider {
+  readonly provider = "gemini" as const;
+  readonly model = "offline-diagnostics";
+  private callCount = 0;
+
+  generateStructured<T>(request: AiStageRequest<T>): Promise<AiStageResult<T>> {
+    const responses = [
+      "{\"evidence\":[",
+      JSON.stringify({
+        evidence: [{
+          documentId: "doc-0",
+          sourceType: "google_play",
+          supportingQuote: "PRIVATE_MODEL_QUOTE",
+          sentiment: "unsupported-enum",
+          category: "Test"
+        }]
+      })
+    ];
+    return executeStructuredRequest({
+      provider: this.provider,
+      model: this.model,
+      request,
+      invoke: async () => responses[this.callCount++] ?? ""
+    });
+  }
+}
+
+class RetryingThemeFailureProvider implements AiProvider {
+  readonly provider = "gemini" as const;
+  readonly model = "offline-theme-diagnostics";
+  private readonly base = new SyntheticProvider();
+  private themeAttempt = 0;
+
+  generateStructured<T>(request: AiStageRequest<T>): Promise<AiStageResult<T>> {
+    if (request.stage !== "theme_clustering") {
+      return this.base.generateStructured(request);
+    }
+    const responses = [
+      JSON.stringify({
+        themes: [{
+          id: "theme-local",
+          title: "Private title",
+          description: "PRIVATE_GENERATED_THEME_DESCRIPTION",
+          evidenceIds: ["unknown-evidence"],
+          dominantSentiment: "neutral",
+          evidenceCount: 1
+        }]
+      }),
+      JSON.stringify({ themes: [] })
+    ];
+    return executeStructuredRequest({
+      provider: this.provider,
+      model: this.model,
+      request,
+      invoke: async () => responses[this.themeAttempt++] ?? ""
+    });
   }
 }
 
@@ -243,6 +312,43 @@ describe("analysis scale", () => {
     }
   });
 
+  it("replaces duplicate window-local IDs with globally unique final IDs", async () => {
+    const result = await runScaledAnalysisPipeline(
+      documents(10),
+      new SyntheticProvider(undefined, false, true),
+      config
+    );
+
+    expect(result.insights).toHaveLength(2);
+    expect(new Set(result.insights.map(({ id }) => id)).size).toBe(2);
+    expect(result.insights.every(({ id }) => id.startsWith("insight_"))).toBe(true);
+  });
+
+  it("derives final Insight IDs independently of wording, order, and batching", () => {
+    const first: Insight = {
+      id: "window-a",
+      title: "First wording",
+      summary: "First summary.",
+      themeId: "final-theme",
+      evidenceIds: ["evidence-b", "evidence-a"],
+      sentiment: "negative",
+      confidence: 0.8
+    };
+    const second: Insight = {
+      ...first,
+      id: "window-z",
+      title: "Completely different wording",
+      summary: "A different generated summary.",
+      evidenceIds: ["evidence-a", "evidence-b"]
+    };
+
+    expect(finalInsightIdFor(first)).toBe(finalInsightIdFor(second));
+    expect(finalizeInsightIds([first, second]).map(({ id }) => id)).toEqual([
+      finalInsightIdFor(first),
+      finalInsightIdFor(first)
+    ]);
+  });
+
   it("stops after evidence batch N fails and reports restart visibility", async () => {
     const provider = new SyntheticProvider({ stage: "evidence_extraction", call: 2 });
     const error = await runScaledAnalysisPipeline(
@@ -269,6 +375,129 @@ describe("analysis scale", () => {
     expect(provider.prompts.every(({ stage }) => stage === "evidence_extraction")).toBe(true);
   });
 
+  it("retains sanitized Evidence diagnostics across changed retry failures", async () => {
+    const input = documents(1);
+    input[0] = {
+      ...input[0]!,
+      normalizedText: "PRIVATE_REVIEW_TEXT_NEVER_RETAIN"
+    };
+    const error = await runScaledAnalysisPipeline(
+      input,
+      new RetryingEvidenceFailureProvider(),
+      config
+    ).catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(AnalysisBatchError);
+    expect(error).toMatchObject({
+      failedStage: "evidence_extraction",
+      failedBatchIndex: 0,
+      totalAiRequests: 2,
+      diagnostics: {
+        failureType: "evidence_batch",
+        batchIndex: 0,
+        attemptCount: 2,
+        documentCount: 1,
+        documentIds: ["doc-0"],
+        validationCategories: expect.arrayContaining([
+          "INVALID_JSON",
+          "SCHEMA_VALIDATION_FAILED",
+          "MISSING_REQUIRED_FIELD",
+          "INVALID_ENUM"
+        ]),
+        failureLocation: "schema_validation",
+        retryChangedFailureCategory: true
+      }
+    });
+    const diagnostics = (error as AnalysisBatchError).diagnostics;
+    expect(diagnostics).toMatchObject({
+      providerAttempts: [
+        {
+          attempt: 1,
+          categories: ["INVALID_JSON"],
+          jsonFailure: "unexpected_termination"
+        },
+        {
+          attempt: 2,
+          categories: expect.arrayContaining([
+            "SCHEMA_VALIDATION_FAILED",
+            "MISSING_REQUIRED_FIELD",
+            "INVALID_ENUM"
+          ]),
+          validationIssues: expect.arrayContaining([
+            {
+              fieldPath: "evidence.0.confidence",
+              validationRule: "invalid_type",
+              expectedType: "number",
+              actualType: "missing"
+            },
+            {
+              fieldPath: "evidence.0.sentiment",
+              validationRule: "invalid_value",
+              expectedType: "enum",
+              actualType: "string"
+            }
+          ])
+        }
+      ]
+    });
+    expect(JSON.stringify(diagnostics)).not.toContain("PRIVATE_REVIEW_TEXT_NEVER_RETAIN");
+    expect(JSON.stringify(diagnostics)).not.toContain("PRIVATE_MODEL_QUOTE");
+    expect(JSON.stringify(diagnostics)).not.toContain("PRIVATE_TRUNCATED");
+  });
+
+  it("retains only sanitized Theme diagnostics across changed retry failures", async () => {
+    const input = documents(2);
+    input[0] = { ...input[0]!, normalizedText: "PRIVATE_EVIDENCE_TEXT_ONE" };
+    input[1] = { ...input[1]!, normalizedText: "PRIVATE_EVIDENCE_TEXT_TWO" };
+    const error = await runScaledAnalysisPipeline(
+      input,
+      new RetryingThemeFailureProvider(),
+      config
+    ).catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(AnalysisBatchError);
+    expect(error).toMatchObject({
+      failedStage: "theme_clustering",
+      failedBatchIndex: 0,
+      documentIds: [],
+      diagnostics: {
+        failureType: "theme_batch",
+        batchIndex: 0,
+        attemptCount: 2,
+        evidenceCount: 2,
+        validationCategories: expect.arrayContaining([
+          "UNKNOWN_EVIDENCE_ID",
+          "EMPTY_THEME"
+        ]),
+        failureLocation: "evidence_assignment",
+        retryChangedFailureCategory: true,
+        providerAttempts: [
+          {
+            attempt: 1,
+            categories: ["UNKNOWN_EVIDENCE_ID"],
+            validationIssues: []
+          },
+          {
+            attempt: 2,
+            categories: ["EMPTY_THEME"],
+            validationIssues: []
+          }
+        ]
+      }
+    });
+    const diagnostics = (error as AnalysisBatchError).diagnostics;
+    expect(diagnostics).toMatchObject({
+      evidenceIds: [
+        expect.stringMatching(/^evidence_[a-f0-9]{64}$/),
+        expect.stringMatching(/^evidence_[a-f0-9]{64}$/)
+      ]
+    });
+    const serialized = JSON.stringify(diagnostics);
+    expect(serialized).not.toContain("PRIVATE_EVIDENCE_TEXT");
+    expect(serialized).not.toContain("PRIVATE_GENERATED_THEME_DESCRIPTION");
+    expect(serialized).not.toContain("Private title");
+  });
+
   it("retains diagnostic progress without treating a partial insight run as valid", async () => {
     const provider = new SyntheticProvider({ stage: "insight_generation", call: 2 });
     const error = await runScaledAnalysisPipeline(
@@ -286,6 +515,58 @@ describe("analysis scale", () => {
     const completed = (error as AnalysisBatchError).completedBatches;
     expect(completedDocumentCountForStage(completed, "insight_generation")).toBe(5);
     expect(120 - completedDocumentCountForStage(completed, "insight_generation")).toBe(115);
+  });
+
+  it("retains full diagnostics when final Insight aggregation fails", async () => {
+    const error = await runScaledAnalysisPipeline(
+      documents(10),
+      new SyntheticProvider(undefined, true, true),
+      config
+    ).catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(AnalysisBatchError);
+    expect(error).toMatchObject({
+      failedStage: "insight_aggregation",
+      failedBatchIndex: 0,
+      diagnostics: {
+        evidenceCount: 10,
+        themeCount: 1,
+        mergedInsightCount: 2,
+        providerRequestCount: 4,
+        retryCount: 0
+      }
+    });
+    expect((error as AnalysisBatchError).diagnostics?.stageTimings)
+      .toHaveProperty("insight_aggregation");
+  });
+
+  it("plans dry-run batches from eligible post-deduplication documents", () => {
+    const input = documents(2);
+    input.push({
+      ...input[0]!,
+      externalId: "duplicate-doc",
+      url: "https://example.com/duplicate",
+      canonicalUrl: "https://example.com/duplicate"
+    });
+    const prepared = prepareCorpusForAnalysis(input);
+    const evidenceBatches = createBoundedBatches(
+      prepared.eligibleDocuments,
+      { maxItems: 1, maxEstimatedPromptTokens: 8_000 },
+      (document) => document.normalizedText
+    );
+    const planningConfig: AnalysisScaleConfig = {
+      ...config,
+      evidence: { maxItems: 1, maxEstimatedPromptTokens: 8_000 }
+    };
+
+    expect(prepared.duplicateCount).toBe(1);
+    expect(prepared.eligibleDocuments).toHaveLength(2);
+    expect(evidenceBatches).toHaveLength(2);
+    expect(estimateAnalysisRequestCount(
+      prepared.eligibleDocuments.length,
+      evidenceBatches.length,
+      planningConfig
+    )).toBe(4);
   });
 
   it("does not mutate its input array or documents", async () => {

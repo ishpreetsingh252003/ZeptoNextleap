@@ -73,19 +73,68 @@ describe("document evidence extraction", () => {
   });
 
   it("rejects a hallucinated quote", async () => {
-    await expect(extractEvidence([
+    const error = await extractEvidence([
       document("doc-1", "The available source says something else entirely.")
     ], new RawResponseProvider([
       response([validEvidence])
-    ]))).rejects.toMatchObject({ code: "AI_STAGE_FAILED" });
+    ])).catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({
+      code: "AI_STAGE_FAILED",
+      attemptDiagnostics: [
+        {
+          categories: ["QUOTE_NOT_EXACT"],
+          failureLocation: "quote_validation",
+          quoteMismatch: {
+            categories: expect.any(Array),
+            quoteLength: expect.any(Number),
+            sourceLength: expect.any(Number),
+            editDistance: expect.any(Number),
+            normalizationAloneMatched: expect.any(Boolean)
+          }
+        },
+        {
+          categories: ["QUOTE_NOT_EXACT"],
+          failureLocation: "quote_validation",
+          quoteMismatch: {
+            categories: expect.any(Array),
+            quoteLength: expect.any(Number),
+            sourceLength: expect.any(Number),
+            editDistance: expect.any(Number),
+            normalizationAloneMatched: expect.any(Boolean)
+          }
+        }
+      ]
+    });
+    const attemptDiagnostics = (error as { attemptDiagnostics: unknown }).attemptDiagnostics;
+    expect(JSON.stringify(attemptDiagnostics)).not.toContain(
+      "The available source says something else entirely."
+    );
+    expect(JSON.stringify(attemptDiagnostics)).not.toContain(
+      validEvidence.supportingQuote
+    );
   });
 
   it("rejects evidence referencing an unknown document", async () => {
-    await expect(extractEvidence([
+    const error = await extractEvidence([
       document("doc-1", "I tried baby care products for the first time.")
     ], new RawResponseProvider([
       response([{ ...validEvidence, documentId: "unknown" }])
-    ]))).rejects.toMatchObject({ code: "AI_STAGE_FAILED" });
+    ])).catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({
+      code: "AI_STAGE_FAILED",
+      attemptDiagnostics: [
+        {
+          categories: ["UNKNOWN_DOCUMENT", "UNKNOWN_EVIDENCE_REFERENCE"],
+          failureLocation: "evidence_reference"
+        },
+        {
+          categories: ["UNKNOWN_DOCUMENT", "UNKNOWN_EVIDENCE_REFERENCE"],
+          failureLocation: "evidence_reference"
+        }
+      ]
+    });
   });
 
   it("rejects evidence with a mismatched source type", async () => {

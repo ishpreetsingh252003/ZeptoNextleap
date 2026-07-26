@@ -57,10 +57,22 @@ export const publicDocumentSchema = z.object({
   capturedAt: z.string().datetime(),
   normalizedText: z.string().min(1).max(20_000),
   accessMethod: z.enum(["public_page", "public_search_api", "manual_import"]),
-  policyNote: z.string().min(1)
+  policyNote: z.string().min(1),
+  sourceMetadata: z.object({
+    rating: z.number().int().min(1).max(5).optional(),
+    locale: z.string().min(1).optional(),
+    packageId: z.string().min(1).optional()
+  }).strict().optional()
 });
 export type PublicDocument = z.infer<typeof publicDocumentSchema>;
-export type AdapterContext = { maxRecords: number; dateFrom?: string; dateTo?: string; signal?: AbortSignal };
+export type SourcePageProgress = { pageNumber: number; recordCount: number };
+export type AdapterContext = {
+  maxRecords: number;
+  dateFrom?: string;
+  dateTo?: string;
+  signal?: AbortSignal;
+  onPageCollected?: (progress: SourcePageProgress) => void;
+};
 export type SourceAdapter = { readonly type: SourceType; collect(input: CreateCollectionRunInput, context: AdapterContext): Promise<PublicDocument[]> };
 
 export const evidenceSentimentSchema = z.enum(["positive", "negative", "neutral", "mixed"]);

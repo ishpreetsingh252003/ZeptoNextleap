@@ -64,6 +64,7 @@ export class GooglePlayAdapter implements SourceAdapter {
     const seenTokens = new Set<string>();
     let nextPaginationToken: string | undefined;
     let firstPage = true;
+    let pageNumber = 0;
 
     while (firstPage || (nextPaginationToken && reviews.length < context.maxRecords)) {
       firstPage = false;
@@ -95,6 +96,11 @@ export class GooglePlayAdapter implements SourceAdapter {
       if (!parsed.success) {
         throw new SourceCollectionError("GOOGLE_PLAY_INVALID_RESPONSE", "google-play-scraper returned a malformed review response.");
       }
+      pageNumber += 1;
+      context.onPageCollected?.({
+        pageNumber,
+        recordCount: parsed.data.data.length
+      });
       const pagePublicationTimes = parsed.data.data
         .map(({ date }) => date ? Date.parse(date) : null)
         .filter((value): value is number => value !== null && Number.isFinite(value));
@@ -143,7 +149,12 @@ export class GooglePlayAdapter implements SourceAdapter {
         capturedAt: new Date().toISOString(),
         normalizedText: reviewText,
         accessMethod: "public_page",
-        policyNote: `Collected from public Google Play reviews with google-play-scraper. Package: ${packageId}. Public author: ${author}. Star rating: ${review.score}/5.`
+        policyNote: `Collected from public Google Play reviews with google-play-scraper. Package: ${packageId}. Public author: ${author}. Star rating: ${review.score}/5.`,
+        sourceMetadata: {
+          rating: review.score,
+          locale: "en-IN",
+          packageId
+        }
       };
       });
 

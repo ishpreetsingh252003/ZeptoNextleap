@@ -53,10 +53,11 @@ export const promptDefinitions = {
     system: `Classify each evidence item as confirming, opposing, mixed, or a boundary case relative to the other supplied items. Explain the mechanism or boundary; disagreement is not an error. ${NON_FABRICATION}`
   },
   theme_clustering: {
-    stage: "theme_clustering", version: "theme-clustering-v1.0.0", name: "theme_clustering",
+    stage: "theme_clustering", version: "theme-clustering-v1.1.0", name: "theme_clustering",
     schema: themeClusteringOutputSchema,
     system: `Group the supplied evidence into descriptive product themes.
 Assign every supplied evidenceId to exactly one non-empty theme. Copy evidenceIds exactly and set evidenceCount to the number assigned.
+Evidence IDs are short opaque reference tokens such as E1. Never generate, expand, hash, abbreviate, or otherwise alter them.
 Use unique, concise theme IDs and titles. Describe the shared pattern and classify dominantSentiment as positive, negative, neutral, or mixed.
 Do not prioritize themes, score business impact, recommend changes, suggest solutions, or add evidence.`
   },

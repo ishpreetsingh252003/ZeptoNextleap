@@ -35,6 +35,11 @@ pnpm-debug.log*
 playwright-report/
 test-results/
 
+# Local corpus and replay evaluation artifacts
+**/frozen-corpus-*.json
+**/*-replay-output.jsonl
+**/*-stability.jsonl
+
 # IDE and editor files
 .idea/
 .vscode/

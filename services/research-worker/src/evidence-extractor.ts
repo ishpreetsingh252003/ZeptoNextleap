@@ -9,6 +9,8 @@ import {
   jsonSchemaFor
 } from "@zepto/research-prompts";
 import type { AiProvider } from "./ai/types.js";
+import { StructuredValidationError } from "./ai/failure-diagnostics.js";
+import { classifyQuoteMismatch } from "./quote-mismatch.js";
 
 function documentKey(documentId: string, sourceType: string): string {
   return JSON.stringify([documentId, sourceType]);
@@ -46,9 +48,21 @@ export async function extractEvidence(
       const output = documentEvidenceExtractionSchema.parse(value);
       for (const evidence of output.evidence) {
         const document = documentsByKey.get(documentKey(evidence.documentId, evidence.sourceType));
-        if (!document) throw new Error("Evidence referenced an unknown document.");
+        if (!document) {
+          throw new StructuredValidationError(
+            ["UNKNOWN_DOCUMENT", "UNKNOWN_EVIDENCE_REFERENCE"],
+            "evidence_reference"
+          );
+        }
         if (!document.normalizedText.includes(evidence.supportingQuote)) {
-          throw new Error("Supporting quote was not found in the originating document.");
+          throw new StructuredValidationError(
+            ["QUOTE_NOT_EXACT"],
+            "quote_validation",
+            classifyQuoteMismatch(
+              document.normalizedText,
+              evidence.supportingQuote
+            )
+          );
         }
       }
       return output;

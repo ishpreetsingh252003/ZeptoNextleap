@@ -8,6 +8,7 @@ import type {
 import { executeStructuredRequest } from "./ai/execute.js";
 import type { AiProvider, AiStageRequest, AiStageResult } from "./ai/types.js";
 import { runAnalysisPipeline } from "./analysis-pipeline.js";
+import { finalInsightIdFor } from "./analysis-scale.js";
 import { evidenceIdFor } from "./theme-clustering.js";
 
 type StageResponses = Partial<Record<AnalysisStage, string[]>>;
@@ -69,6 +70,10 @@ const theme: Theme = {
   dominantSentiment: "negative",
   evidenceCount: 1
 };
+const providerTheme = {
+  ...theme,
+  evidenceIds: ["E1"]
+};
 const insight = {
   id: "insight-1",
   title: "Missing detail delays category trial",
@@ -82,7 +87,7 @@ const insight = {
 function validResponses(): StageResponses {
   return {
     evidence_extraction: [JSON.stringify({ evidence: [evidence] })],
-    theme_clustering: [JSON.stringify({ themes: [theme] })],
+    theme_clustering: [JSON.stringify({ themes: [providerTheme] })],
     insight_generation: [JSON.stringify({ insights: [insight] })]
   };
 }
@@ -94,7 +99,7 @@ describe("analysis pipeline integration", () => {
     expect(result).toEqual({
       evidence: [evidence],
       themes: [theme],
-      insights: [insight]
+      insights: [{ ...insight, id: finalInsightIdFor(insight) }]
     });
   });
 

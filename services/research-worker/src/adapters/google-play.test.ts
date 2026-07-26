@@ -108,6 +108,7 @@ describe("GooglePlayAdapter", () => {
   });
 
   it("follows continuation tokens sequentially until the requested count", async () => {
+    const pageProgress: Array<{ pageNumber: number; recordCount: number }> = [];
     reviewsMock
       .mockResolvedValueOnce({
         data: [{
@@ -132,7 +133,10 @@ describe("GooglePlayAdapter", () => {
         nextPaginationToken: null
       } as never);
 
-    const result = await new GooglePlayAdapter(env).collect(input, { maxRecords: 2 });
+    const result = await new GooglePlayAdapter(env).collect(input, {
+      maxRecords: 2,
+      onPageCollected: (progress) => pageProgress.push(progress)
+    });
 
     expect(result.map(({ externalId }) => externalId)).toEqual([
       "com.zeptoconsumerapp:review-1",
@@ -141,6 +145,10 @@ describe("GooglePlayAdapter", () => {
     expect(reviewsMock).toHaveBeenNthCalledWith(2, expect.objectContaining({
       nextPaginationToken: "page-two"
     }));
+    expect(pageProgress).toEqual([
+      { pageNumber: 1, recordCount: 1 },
+      { pageNumber: 2, recordCount: 1 }
+    ]);
   });
 
   it("rejects repeated continuation tokens instead of looping", async () => {
