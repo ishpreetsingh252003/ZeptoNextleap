@@ -256,4 +256,129 @@ export type BehavioralCodingOutput = z.infer<typeof behavioralCodingOutputSchema
 export type ContradictionOutput = z.infer<typeof contradictionOutputSchema>;
 export type ThemeSynthesisOutput = z.infer<typeof themeSynthesisOutputSchema>;
 
+export const mvpEvidenceSchema = z.object({
+  id: z.string().regex(/^mvp_evidence_[a-f0-9]{64}$/),
+  documentId: z.string().min(1),
+  canonicalText: z.string().min(1).max(20_000),
+  sourceType: sourceTypeSchema,
+  sourceUrl: z.string().url(),
+  rating: z.number().int().min(1).max(5).nullable(),
+  reviewDate: z.string().datetime().nullable()
+}).strict();
+
+export const mvpThemeSchema = z.object({
+  id: z.string().regex(/^mvp_theme_[a-f0-9]{64}$|^mvp_theme_uncategorized$/),
+  title: z.string().trim().min(1).max(160),
+  description: z.string().trim().min(1).max(1_200),
+  inclusionCriteria: z.string().trim().min(1).max(1_000),
+  exclusionCriteria: z.string().trim().min(1).max(1_000),
+  dominantIssueCategory: z.string().trim().min(1).max(120).nullable(),
+  evidenceIds: z.array(z.string().min(1)),
+  evidenceCount: z.number().int().nonnegative(),
+  percentage: z.number().min(0).max(100),
+  ratingDistribution: z.object({
+    one: z.number().int().nonnegative(),
+    two: z.number().int().nonnegative(),
+    three: z.number().int().nonnegative(),
+    four: z.number().int().nonnegative(),
+    five: z.number().int().nonnegative(),
+    unknown: z.number().int().nonnegative()
+  }).strict(),
+  dominantSentiment: evidenceSentimentSchema,
+  representativeEvidenceIds: z.array(z.string().min(1)).max(3)
+}).strict().superRefine((theme, context) => {
+  if (theme.evidenceCount !== theme.evidenceIds.length) {
+    context.addIssue({
+      code: "custom",
+      path: ["evidenceCount"],
+      message: "Evidence count must match assigned Evidence IDs."
+    });
+  }
+  const assigned = new Set(theme.evidenceIds);
+  for (const [index, evidenceId] of theme.representativeEvidenceIds.entries()) {
+    if (!assigned.has(evidenceId)) {
+      context.addIssue({
+        code: "custom",
+        path: ["representativeEvidenceIds", index],
+        message: "Representative Evidence must belong to the Theme."
+      });
+    }
+  }
+});
+
+const mvpBusinessListSchema = z.array(z.string().trim().min(1).max(500)).max(12);
+
+export const mvpBusinessNarrativeSchema = z.object({
+  overallSummary: z.string().trim().min(1).max(2_000),
+  topUserPainPoints: mvpBusinessListSchema,
+  positivePatterns: mvpBusinessListSchema,
+  requestedImprovements: mvpBusinessListSchema,
+  operationalIssues: mvpBusinessListSchema,
+  deliveryIssues: mvpBusinessListSchema,
+  paymentIssues: mvpBusinessListSchema,
+  applicationUxIssues: mvpBusinessListSchema,
+  retentionRisks: mvpBusinessListSchema,
+  productOpportunities: mvpBusinessListSchema,
+  analysisLimitations: mvpBusinessListSchema
+}).strict();
+
+export const mvpRepresentativeReviewSchema = z.object({
+  themeId: z.string().min(1),
+  evidenceId: z.string().min(1),
+  documentId: z.string().min(1),
+  canonicalText: z.string().min(1).max(20_000),
+  sourceUrl: z.string().url(),
+  rating: z.number().int().min(1).max(5).nullable(),
+  reviewDate: z.string().datetime().nullable()
+}).strict();
+
+export const mvpAnalysisArtifactSchema = z.object({
+  corpusStatus: z.enum(["valid", "valid_with_uncategorized"]),
+  sourceMode: z.literal("frozen_replay"),
+  corpusFingerprint: z.string().regex(/^[a-f0-9]{64}$/),
+  collectedReviewCount: z.number().int().nonnegative(),
+  eligibleCount: z.number().int().nonnegative(),
+  selectedReviewCount: z.number().int().nonnegative(),
+  duplicatesRemoved: z.number().int().nonnegative(),
+  evidenceCount: z.number().int().nonnegative(),
+  categorizedCount: z.number().int().nonnegative(),
+  uncategorizedCount: z.number().int().nonnegative(),
+  themeCount: z.number().int().nonnegative(),
+  insightCount: z.number().int().nonnegative(),
+  providerRequestCount: z.number().int().nonnegative(),
+  taxonomyProviderRequestCount: z.number().int().nonnegative(),
+  classificationBatchCount: z.number().int().nonnegative(),
+  classificationProviderRequestCount: z.number().int().nonnegative(),
+  businessSynthesisProviderRequestCount: z.number().int().nonnegative(),
+  duplicateConflictFallbackCount: z.number().int().nonnegative(),
+  missingAssignmentFallbackCount: z.number().int().nonnegative(),
+  providerFailureFallbackCount: z.number().int().nonnegative(),
+  classificationDiagnostics: z.array(z.object({
+    batchIndex: z.number().int().nonnegative(),
+    evidenceCount: z.number().int().positive(),
+    providerAttempts: z.number().int().nonnegative(),
+    status: z.enum(["classified", "classified_with_fallback", "provider_failure_fallback"]),
+    duplicateConflictCount: z.number().int().nonnegative(),
+    missingAssignmentCount: z.number().int().nonnegative(),
+    providerFailureCount: z.number().int().nonnegative()
+  }).strict()),
+  sentimentDistribution: z.object({
+    positive: z.number().int().nonnegative(),
+    negative: z.number().int().nonnegative(),
+    neutral: z.number().int().nonnegative(),
+    unknown: z.number().int().nonnegative()
+  }).strict(),
+  themes: z.array(mvpThemeSchema).min(1).max(9),
+  representativeReviews: z.array(mvpRepresentativeReviewSchema),
+  businessAnalysis: mvpBusinessNarrativeSchema,
+  limitations: z.array(z.string().min(1).max(500)),
+  runtimeMilliseconds: z.number().nonnegative()
+}).strict();
+
+export type MvpEvidence = z.infer<typeof mvpEvidenceSchema>;
+export type MvpTheme = z.infer<typeof mvpThemeSchema>;
+export type MvpBusinessNarrative = z.infer<typeof mvpBusinessNarrativeSchema>;
+export type MvpRepresentativeReview = z.infer<typeof mvpRepresentativeReviewSchema>;
+export type MvpAnalysisArtifact = z.infer<typeof mvpAnalysisArtifactSchema>;
+
 export { assertThemeTraceability } from "./traceability.js";

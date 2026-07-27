@@ -614,6 +614,7 @@ function themeFailureDiagnostics(
   };
 }
 
+/** Experimental reliability pipeline. The primary NextLeap MVP path uses runMvpAnalysis. */
 export async function runScaledAnalysisPipeline(
   documents: readonly PublicDocument[],
   provider: AiProvider,

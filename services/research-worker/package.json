@@ -16,6 +16,7 @@
     "test:scale": "vitest run src/analysis-scale.test.ts",
     "scale:live": "tsx src/analysis-scale-live.ts",
     "corpus:live": "tsx src/frozen-corpus-live.ts",
+    "mvp:live": "tsx src/mvp-analysis-live.ts",
     "stability:live": "tsx src/pipeline-stability-live.ts",
     "pilot:import": "tsx src/import-manual-pilot.ts"
   },
