@@ -15,6 +15,22 @@ export class EnvironmentConfigurationError extends Error {
   }
 }
 
+const environmentBooleanSchema = z.enum(["true", "false"])
+  .transform((value) => value === "true");
+
+export const tinyFishEnvSchema = z.object({
+  TINYFISH_API_KEY: z.string().min(1).optional(),
+  TINYFISH_SEARCH_ENABLED: environmentBooleanSchema.default(false),
+  TINYFISH_FETCH_ENABLED: environmentBooleanSchema.default(false),
+  TINYFISH_SEARCH_MAX_RESULTS: z.coerce.number().int().min(1).max(20).default(5),
+  TINYFISH_MAX_SEARCH_REQUESTS_PER_RUN: z.coerce.number().int().min(1).max(50).default(10),
+  TINYFISH_FETCH_MAX_URLS_PER_RUN: z.coerce.number().int().min(1).max(10).default(10),
+  TINYFISH_REQUEST_TIMEOUT_MS: z.coerce.number().int().min(1_000).max(120_000).default(30_000),
+  TINYFISH_MAX_RETRIES: z.coerce.number().int().min(0).max(1).default(1)
+});
+
+export type TinyFishEnv = z.infer<typeof tinyFishEnvSchema>;
+
 export const serverEnvSchema = z.object({
   DATABASE_URL: z.string().min(1),
   AI_PROVIDER: aiProviderSchema.default("gemini"),
@@ -28,6 +44,7 @@ export const serverEnvSchema = z.object({
   GOOGLE_PLAY_TIMEOUT_MS: z.coerce.number().int().min(1_000).max(120_000).optional(),
   APIFY_API_TOKEN: z.string().min(1).optional(),
   APIFY_GOOGLE_PLAY_ACTOR_ID: z.string().min(1).optional(),
+  ...tinyFishEnvSchema.shape,
   API_PORT: z.coerce.number().int().positive().default(4000),
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
   WORKER_POLL_INTERVAL_MS: z.coerce.number().int().min(500).default(3000),
@@ -91,6 +108,27 @@ export function getServerEnv(source: NodeJS.ProcessEnv = process.env): ServerEnv
     if (!(error instanceof ZodError)) throw error;
     const issues = error.issues.map((issue) => `${issue.path.join(".") || "environment"}: ${issue.message}`).join("; ");
     throw new EnvironmentConfigurationError(`Invalid environment configuration. ${issues}`);
+  }
+}
+
+export function getTinyFishEnv(
+  source: NodeJS.ProcessEnv = process.env
+): TinyFishEnv {
+  const cleaned = Object.fromEntries(
+    Object.entries(source).filter(([, value]) => value !== "")
+  );
+  try {
+    return tinyFishEnvSchema.parse(cleaned);
+  } catch (error) {
+    if (!(error instanceof ZodError)) throw error;
+    const issues = error.issues
+      .map((issue) =>
+        `${issue.path.join(".") || "environment"}: ${issue.message}`
+      )
+      .join("; ");
+    throw new EnvironmentConfigurationError(
+      `Invalid TinyFish configuration. ${issues}`
+    );
   }
 }
 

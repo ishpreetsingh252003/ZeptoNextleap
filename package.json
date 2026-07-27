@@ -20,7 +20,9 @@
     "db:generate": "pnpm --filter @zepto/research-database db:generate",
     "db:migrate": "pnpm --filter @zepto/research-database db:migrate",
     "pilot:import": "pnpm --filter @zepto/research-worker pilot:import",
-    "research:intake": "pnpm --filter @zepto/research-worker research:intake"
+    "research:intake": "pnpm --filter @zepto/research-worker research:intake",
+    "research:discover": "pnpm --filter @zepto/research-worker research:discover",
+    "research:fetch-approved": "pnpm --filter @zepto/research-worker research:fetch-approved"
   },
   "devDependencies": { "typescript": "^5.9.3" }
 }

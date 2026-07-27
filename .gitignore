@@ -43,6 +43,7 @@ test-results/
 # Local category-evidence imports and normalized intake output
 research/imports/
 research/intake-output/
+research/discovery-output/
 **/*category-evidence-import*.json
 
 # IDE and editor files
