@@ -41,6 +41,7 @@ function document(): PublicDocument {
   return {
     externalId: "doc-1",
     sourceType: "manual_text",
+    sourceName: "Manual import",
     url: "https://example.com/doc-1",
     canonicalUrl: "https://example.com/doc-1",
     platform: "Test source",

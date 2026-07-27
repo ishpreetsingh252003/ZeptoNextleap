@@ -199,6 +199,7 @@ function documents(count: number, textLength = 80): PublicDocument[] {
       url: `https://example.com/${index}`,
       canonicalUrl: `https://example.com/${index}`,
       sourceType: "manual_text",
+      sourceName: "Manual import",
       platform: "Synthetic test",
       title: null,
       publicationDate: null,

@@ -1,6 +1,18 @@
 import { z } from "zod";
 
-export const sourceTypeSchema = z.enum(["google_play", "public_url", "tavily_query", "firecrawl", "manual_text", "manual_pilot"]);
+export const sourceTypeSchema = z.enum([
+  "google_play",
+  "app_store",
+  "reddit",
+  "quora",
+  "public_url",
+  "curated_public_url",
+  "csv_import",
+  "tavily_query",
+  "firecrawl",
+  "manual_text",
+  "manual_pilot"
+]);
 export type SourceType = z.infer<typeof sourceTypeSchema>;
 
 export const runStatusSchema = z.enum(["queued", "collecting", "processing", "analyzing", "completed", "partially_completed", "failed"]);
@@ -22,6 +34,42 @@ export const behavioralCodeSchema = z.enum([
 ]);
 export type BehavioralCode = z.infer<typeof behavioralCodeSchema>;
 
+export const researchBehaviorStageSchema = z.enum([
+  "awareness",
+  "consideration",
+  "comparison",
+  "trial",
+  "abandonment",
+  "purchase_elsewhere",
+  "first_purchase",
+  "post_purchase",
+  "repeat_purchase",
+  "churn"
+]);
+export type ResearchBehaviorStage = z.infer<typeof researchBehaviorStageSchema>;
+
+export const researchEvidenceTypeSchema = z.enum([
+  "barrier",
+  "trigger",
+  "trust_signal",
+  "perceived_risk",
+  "information_need",
+  "workaround",
+  "decision_criterion",
+  "outcome",
+  "complaint",
+  "positive_signal"
+]);
+export type ResearchEvidenceType = z.infer<typeof researchEvidenceTypeSchema>;
+
+export const researchRelevanceSchema = z.enum([
+  "directly_relevant",
+  "potentially_relevant",
+  "broad_service_feedback",
+  "irrelevant"
+]);
+export type ResearchRelevance = z.infer<typeof researchRelevanceSchema>;
+
 export const createProjectSchema = z.object({
   name: z.string().trim().min(2).max(120),
   description: z.string().trim().max(500).optional()
@@ -32,15 +80,27 @@ export const createCollectionRunSchema = z.object({
   sourceType: sourceTypeSchema.exclude(["manual_pilot"]),
   urlOrQuery: z.string().trim().max(2_000).optional(),
   manualText: z.string().trim().max(20_000).optional(),
+  csvText: z.string().max(2_000_000).optional(),
+  urls: z.array(z.string().url()).max(100).optional(),
+  sourceLabel: z.string().trim().min(1).max(120).optional(),
   policyConfirmed: z.literal(true),
-  maxRecords: z.coerce.number().int().min(1).max(50).default(10),
+  maxRecords: z.coerce.number().int().min(1).max(5_000).default(10),
   dateFrom: z.string().date().optional(),
   dateTo: z.string().date().optional()
 }).superRefine((value, context) => {
   if (value.sourceType === "manual_text" && !value.manualText) {
     context.addIssue({ code: "custom", path: ["manualText"], message: "Manual text is required." });
   }
-  if (value.sourceType !== "manual_text" && !value.urlOrQuery) {
+  if (value.sourceType === "csv_import" && !value.csvText) {
+    context.addIssue({ code: "custom", path: ["csvText"], message: "CSV text is required." });
+  }
+  if (value.sourceType === "curated_public_url" && (!value.urls?.length || !value.sourceLabel)) {
+    context.addIssue({ code: "custom", path: ["urls"], message: "Explicit public URLs and a source label are required." });
+  }
+  if (
+    !["manual_text", "csv_import", "curated_public_url"].includes(value.sourceType)
+    && !value.urlOrQuery
+  ) {
     context.addIssue({ code: "custom", path: ["urlOrQuery"], message: "A public URL or query is required." });
   }
 });
@@ -51,6 +111,7 @@ export const publicDocumentSchema = z.object({
   url: z.string().url(),
   canonicalUrl: z.string().url(),
   sourceType: sourceTypeSchema,
+  sourceName: z.string().trim().min(1).max(120),
   platform: z.string().min(1),
   title: z.string().max(500).nullable(),
   publicationDate: z.string().datetime().nullable(),
@@ -61,7 +122,21 @@ export const publicDocumentSchema = z.object({
   sourceMetadata: z.object({
     rating: z.number().int().min(1).max(5).optional(),
     locale: z.string().min(1).optional(),
-    packageId: z.string().min(1).optional()
+    country: z.string().min(2).max(80).optional(),
+    packageId: z.string().min(1).optional(),
+    appVersion: z.string().min(1).max(80).optional(),
+    sourceLabel: z.string().min(1).max(120).optional(),
+    score: z.number().finite().optional(),
+    sourceUrlAvailable: z.boolean().optional(),
+    category: z.string().trim().min(1).max(120).optional(),
+    behaviorStage: researchBehaviorStageSchema.optional(),
+    evidenceType: researchEvidenceTypeSchema.optional(),
+    provenanceNote: z.string().trim().min(1).max(500).optional(),
+    provenanceMethod: z.enum([
+      "manual_entry",
+      "csv_import",
+      "automated_collection"
+    ]).optional()
   }).strict().optional()
 });
 export type PublicDocument = z.infer<typeof publicDocumentSchema>;
@@ -261,6 +336,7 @@ export const mvpEvidenceSchema = z.object({
   documentId: z.string().min(1),
   canonicalText: z.string().min(1).max(20_000),
   sourceType: sourceTypeSchema,
+  sourceName: z.string().trim().min(1).max(120),
   sourceUrl: z.string().url(),
   rating: z.number().int().min(1).max(5).nullable(),
   reviewDate: z.string().datetime().nullable()
@@ -284,6 +360,8 @@ export const mvpThemeSchema = z.object({
     five: z.number().int().nonnegative(),
     unknown: z.number().int().nonnegative()
   }).strict(),
+  sourceCounts: z.record(z.string().min(1), z.number().int().nonnegative()),
+  sourceConcentrationWarning: z.string().trim().min(1).max(500).nullable(),
   dominantSentiment: evidenceSentimentSchema,
   representativeEvidenceIds: z.array(z.string().min(1)).max(3)
 }).strict().superRefine((theme, context) => {
@@ -327,6 +405,8 @@ export const mvpRepresentativeReviewSchema = z.object({
   evidenceId: z.string().min(1),
   documentId: z.string().min(1),
   canonicalText: z.string().min(1).max(20_000),
+  sourceType: sourceTypeSchema,
+  sourceName: z.string().min(1).max(120),
   sourceUrl: z.string().url(),
   rating: z.number().int().min(1).max(5).nullable(),
   reviewDate: z.string().datetime().nullable()
@@ -334,7 +414,7 @@ export const mvpRepresentativeReviewSchema = z.object({
 
 export const mvpAnalysisArtifactSchema = z.object({
   corpusStatus: z.enum(["valid", "valid_with_uncategorized"]),
-  sourceMode: z.literal("frozen_replay"),
+  sourceMode: z.enum(["frozen_replay", "multi_source_snapshot"]),
   corpusFingerprint: z.string().regex(/^[a-f0-9]{64}$/),
   collectedReviewCount: z.number().int().nonnegative(),
   eligibleCount: z.number().int().nonnegative(),

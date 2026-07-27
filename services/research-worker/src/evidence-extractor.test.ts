@@ -29,6 +29,7 @@ function document(externalId: string, normalizedText: string, sourceType: Public
   return {
     externalId,
     sourceType,
+    sourceName: sourceType,
     url: `https://example.com/${externalId}`,
     canonicalUrl: `https://example.com/${externalId}`,
     platform: "Test source",

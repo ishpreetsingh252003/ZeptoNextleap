@@ -17,6 +17,6 @@ export class TavilyAdapter implements SourceAdapter {
     const settled = await Promise.allSettled(urls.map((url) => adapter.collect({ ...input, sourceType: "public_url", urlOrQuery: url }, { ...context, maxRecords: 1 })));
     const documents = settled.flatMap((result) => result.status === "fulfilled" ? result.value : []);
     if (documents.length === 0) throw new SourceCollectionError("NO_VERIFIABLE_TAVILY_RESULTS", "Discovery returned no underlying public pages that passed policy and context checks.");
-    return documents.map((document) => ({ ...document, sourceType: "tavily_query" as const, accessMethod: "public_search_api" as const, policyNote: `${document.policyNote} Discovered through Tavily; the underlying public page was fetched and verified.` }));
+    return documents.map((document) => ({ ...document, sourceType: "tavily_query" as const, sourceName: `Tavily: ${document.sourceName}`, accessMethod: "public_search_api" as const, policyNote: `${document.policyNote} Discovered through Tavily; the underlying public page was fetched and verified.` }));
   }
 }

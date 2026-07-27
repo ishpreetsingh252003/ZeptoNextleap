@@ -40,7 +40,16 @@ export const serverEnvSchema = z.object({
   ANALYSIS_THEME_MAX_ESTIMATED_PROMPT_TOKENS_PER_BATCH: z.coerce.number().int().min(1_000).max(500_000).default(32_000),
   ANALYSIS_THEME_MAX_PROVISIONAL_PER_BATCH: z.coerce.number().int().min(2).max(500).default(40),
   ANALYSIS_INSIGHT_MAX_EVIDENCE_PER_BATCH: z.coerce.number().int().min(1).max(2_000).default(100),
-  ANALYSIS_INSIGHT_MAX_ESTIMATED_PROMPT_TOKENS_PER_BATCH: z.coerce.number().int().min(1_000).max(500_000).default(32_000)
+  ANALYSIS_INSIGHT_MAX_ESTIMATED_PROMPT_TOKENS_PER_BATCH: z.coerce.number().int().min(1_000).max(500_000).default(32_000),
+  MVP_SOURCE_CONCENTRATION_WARNING_THRESHOLD: z.coerce.number().min(0.5).max(1).default(0.6),
+  RESEARCH_READINESS_MIN_RELEVANT_RECORDS: z.coerce.number().int().min(1).default(100),
+  RESEARCH_READINESS_MIN_SOURCES: z.coerce.number().int().min(1).default(3),
+  RESEARCH_READINESS_MAX_SOURCE_CONCENTRATION: z.coerce.number().min(0).max(1).default(0.75),
+  RESEARCH_READINESS_MIN_CATEGORIES: z.coerce.number().int().min(1).default(3),
+  RESEARCH_READINESS_MAX_CATEGORY_CONCENTRATION: z.coerce.number().min(0).max(1).default(0.75),
+  RESEARCH_READINESS_MIN_BARRIERS_OR_RISKS: z.coerce.number().int().min(0).default(20),
+  RESEARCH_READINESS_MIN_TRIGGERS_OR_TRUST_SIGNALS: z.coerce.number().int().min(0).default(10),
+  RESEARCH_READINESS_MIN_ABANDONMENT_OR_WORKAROUNDS: z.coerce.number().int().min(0).default(10)
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;

@@ -10,6 +10,6 @@ export class ManualTextAdapter implements SourceAdapter {
     if (text.length < 40) throw new SourceCollectionError("INSUFFICIENT_MANUAL_CONTEXT", "Manual text needs at least 40 characters of public-source context.");
     const id = randomUUID();
     const suppliedUrl = input.urlOrQuery && /^https?:\/\//.test(input.urlOrQuery) ? input.urlOrQuery : `manual://user-supplied-text/${id}`;
-    return [{ externalId: id, url: suppliedUrl, canonicalUrl: suppliedUrl, sourceType: this.type, platform: "Manual import", title: "User-supplied public source text", publicationDate: null, capturedAt: new Date().toISOString(), normalizedText: text, accessMethod: "manual_import", policyNote: "Text was supplied manually and must be reviewed for public accessibility, excerpt permission, and source traceability." }];
+    return [{ externalId: id, url: suppliedUrl, canonicalUrl: suppliedUrl, sourceType: this.type, sourceName: "Manual import", platform: "Manual import", title: "User-supplied public source text", publicationDate: null, capturedAt: new Date().toISOString(), normalizedText: text, accessMethod: "manual_import", policyNote: "Text was supplied manually and must be reviewed for public accessibility, excerpt permission, and source traceability." }];
   }
 }

@@ -73,7 +73,7 @@ type ClassificationOutput = z.infer<typeof classificationOutputSchema>;
 type TaxonomyTheme = z.infer<typeof taxonomyThemeSchema> & { id: string };
 
 export type MvpCorpusContext = {
-  sourceMode: "frozen_replay";
+  sourceMode: "frozen_replay" | "multi_source_snapshot";
   corpusFingerprint: string;
   collectedReviewCount: number;
   eligibleCount: number;
@@ -85,13 +85,15 @@ export type MvpAnalysisConfig = {
   maxEvidenceTextCharacters: number;
   classificationMaxRecordsPerBatch: number;
   classificationMaxEstimatedPromptTokensPerBatch: number;
+  sourceConcentrationWarningThreshold: number;
 };
 
 export const defaultMvpAnalysisConfig: MvpAnalysisConfig = {
   maxEvidenceTextCharacters: DEFAULT_MVP_EVIDENCE_TEXT_LIMIT,
   classificationMaxRecordsPerBatch: DEFAULT_MVP_CLASSIFICATION_BATCH_SIZE,
   classificationMaxEstimatedPromptTokensPerBatch:
-    DEFAULT_MVP_CLASSIFICATION_PROMPT_TOKEN_LIMIT
+    DEFAULT_MVP_CLASSIFICATION_PROMPT_TOKEN_LIMIT,
+  sourceConcentrationWarningThreshold: 0.6
 };
 
 export type MvpClassificationDiagnostic = {
@@ -153,6 +155,7 @@ export function createLocalMvpEvidence(
       config.maxEvidenceTextCharacters
     ),
     sourceType: document.sourceType,
+    sourceName: document.sourceName,
     sourceUrl: document.canonicalUrl,
     rating: document.sourceMetadata?.rating ?? null,
     reviewDate: document.publicationDate
@@ -223,7 +226,7 @@ function dominantSentimentFromRatings(evidence: readonly MvpEvidence[]): MvpThem
   return sorted[0]![0];
 }
 
-function representativeIds(evidence: readonly MvpEvidence[]): string[] {
+function rankedEvidence(evidence: readonly MvpEvidence[]): MvpEvidence[] {
   return [...evidence]
     .sort((first, second) => {
       const ratingPriority = (item: MvpEvidence) =>
@@ -234,9 +237,24 @@ function representativeIds(evidence: readonly MvpEvidence[]): string[] {
         || second.canonicalText.length - first.canonicalText.length
         || (second.reviewDate ?? "").localeCompare(first.reviewDate ?? "")
         || first.id.localeCompare(second.id);
-    })
-    .slice(0, REPRESENTATIVE_REVIEWS_PER_THEME)
-    .map(({ id }) => id);
+    });
+}
+
+function representativeIds(evidence: readonly MvpEvidence[]): string[] {
+  const ranked = rankedEvidence(evidence);
+  const selected: MvpEvidence[] = [];
+  const selectedSources = new Set<string>();
+  for (const item of ranked) {
+    if (selectedSources.has(item.sourceName)) continue;
+    selected.push(item);
+    selectedSources.add(item.sourceName);
+    if (selected.length === REPRESENTATIVE_REVIEWS_PER_THEME) break;
+  }
+  for (const item of ranked) {
+    if (selected.length === REPRESENTATIVE_REVIEWS_PER_THEME) break;
+    if (!selected.some(({ id }) => id === item.id)) selected.push(item);
+  }
+  return selected.map(({ id }) => id);
 }
 
 export async function generateMvpTaxonomy(
@@ -257,13 +275,14 @@ Return only the requested structured object.`,
       corpus: {
         evidenceCount: parsedEvidence.length,
         ratingDistribution: ratingDistribution(parsedEvidence),
-        sourceTypes: [...new Set(parsedEvidence.map(({ sourceType }) => sourceType))].sort()
+      sourceTypes: [...new Set(parsedEvidence.map(({ sourceType }) => sourceType))].sort()
       },
-      representativeSample: sample.map(({ canonicalText, rating, reviewDate, sourceType }) => ({
+      representativeSample: sample.map(({ canonicalText, rating, reviewDate, sourceType, sourceName }) => ({
         text: canonicalText,
         rating,
         reviewDate,
-        sourceType
+        sourceType,
+        sourceName
       }))
     })}\n\nReturn only the requested structured object.`,
     jsonSchema: z.toJSONSchema(mvpTaxonomyModelOutputSchema, {
@@ -424,7 +443,9 @@ export async function createMvpThemes(
   provider: AiProvider,
   config: Pick<
     MvpAnalysisConfig,
-    "classificationMaxRecordsPerBatch" | "classificationMaxEstimatedPromptTokensPerBatch"
+    "classificationMaxRecordsPerBatch"
+      | "classificationMaxEstimatedPromptTokensPerBatch"
+      | "sourceConcentrationWarningThreshold"
   > = defaultMvpAnalysisConfig
 ): Promise<MvpThemeResult> {
   const parsedEvidence = mvpEvidenceSchema.array().min(1).parse(evidence);
@@ -475,6 +496,29 @@ export async function createMvpThemes(
     evidenceCount: members.length,
     percentage: parsedEvidence.length === 0 ? 0 : members.length / parsedEvidence.length * 100,
     ratingDistribution: ratingDistribution(members),
+    sourceCounts: Object.fromEntries(
+      [...new Set(members.map(({ sourceName }) => sourceName))]
+        .sort()
+        .map((sourceName) => [
+          sourceName,
+          members.filter((item) => item.sourceName === sourceName).length
+        ])
+    ),
+    sourceConcentrationWarning: (() => {
+      if (members.length === 0) return null;
+      const counts = new Map<string, number>();
+      for (const { sourceName } of members) {
+        counts.set(sourceName, (counts.get(sourceName) ?? 0) + 1);
+      }
+      const [sourceName, count] = [...counts.entries()]
+        .sort(([firstName, firstCount], [secondName, secondCount]) =>
+          secondCount - firstCount || firstName.localeCompare(secondName)
+        )[0]!;
+      const contribution = count / members.length;
+      return contribution > config.sourceConcentrationWarningThreshold
+        ? `${sourceName} contributes ${(contribution * 100).toFixed(1)}% of this Theme.`
+        : null;
+    })(),
     dominantSentiment: dominantSentimentFromRatings(members),
     representativeEvidenceIds: representativeIds(members)
   });
@@ -567,6 +611,8 @@ Do not reproduce canonical reviews. Return only the requested structured object.
         evidenceCount,
         percentage,
         ratingDistribution,
+        sourceCounts,
+        sourceConcentrationWarning,
         dominantSentiment,
         representativeEvidenceIds
       }) => ({
@@ -576,10 +622,16 @@ Do not reproduce canonical reviews. Return only the requested structured object.
         evidenceCount,
         percentage,
         ratingDistribution,
+        sourceCounts,
+        sourceConcentrationWarning,
         dominantSentiment,
         representativeEvidence: representativeEvidenceIds.map((evidenceId) => {
           const item = evidenceById.get(evidenceId)!;
-          return { text: item.canonicalText, rating: item.rating };
+          return {
+            text: item.canonicalText,
+            rating: item.rating,
+            sourceName: item.sourceName
+          };
         })
       })),
       sentimentDistribution
@@ -607,6 +659,8 @@ function attachRepresentativeReviews(
         evidenceId: item.id,
         documentId: item.documentId,
         canonicalText: item.canonicalText,
+        sourceType: item.sourceType,
+        sourceName: item.sourceName,
         sourceUrl: item.sourceUrl,
         rating: item.rating,
         reviewDate: item.reviewDate
@@ -678,7 +732,9 @@ export async function runMvpAnalysis(
     representativeReviews: attachRepresentativeReviews(themeResult.themes, evidence),
     businessAnalysis: businessResult.narrative,
     limitations: [
-      "The corpus is a deterministic subset of a bounded public Google Play collection, not all historical reviews.",
+      corpus.sourceMode === "multi_source_snapshot"
+        ? "The corpus combines a deterministic bounded Google Play subset with approved manually collected public evidence; it is not population-representative."
+        : "The corpus is a deterministic subset of a bounded public Google Play collection, not all historical reviews.",
       "Sentiment distribution and Theme metrics are calculated locally and do not establish behavioral prevalence.",
       ...(themeResult.uncategorizedCount > 0
         ? [`${themeResult.uncategorizedCount} Evidence records require human review in Uncategorized.`]

@@ -35,6 +35,7 @@ function document(externalId: string, sourceType: SourceType): PublicDocument {
     url: `https://example.com/${externalId}`,
     canonicalUrl: `https://example.com/${externalId}`,
     sourceType,
+    sourceName: sourceType,
     platform: "Test source",
     title: null,
     publicationDate: null,

@@ -110,6 +110,7 @@ export class FirecrawlAdapter implements SourceAdapter {
       url: url.href,
       canonicalUrl: url.href,
       sourceType: this.type,
+      sourceName: url.hostname.replace(/^www\./, ""),
       platform: url.hostname.replace(/^www\./, ""),
       title: normalizeText(metadata?.title ?? "").slice(0, 500) || null,
       publicationDate: null,

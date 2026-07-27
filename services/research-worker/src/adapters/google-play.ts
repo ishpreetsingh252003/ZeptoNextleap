@@ -136,23 +136,24 @@ export class GooglePlayAdapter implements SourceAdapter {
       if (!reviewText) {
         throw new SourceCollectionError("GOOGLE_PLAY_INVALID_RESPONSE", "google-play-scraper returned a review without usable text.");
       }
-      const author = normalizeText(review.userName ?? "") || "not available";
       const title = normalizeText(review.title ?? "").slice(0, 500) || null;
       return {
         externalId: `${packageId}:${review.id}`,
         url: canonicalUrl,
         canonicalUrl,
         sourceType: this.type,
+        sourceName: "Google Play",
         platform: "Google Play",
         title,
         publicationDate: review.date ?? null,
         capturedAt: new Date().toISOString(),
         normalizedText: reviewText,
         accessMethod: "public_page",
-        policyNote: `Collected from public Google Play reviews with google-play-scraper. Package: ${packageId}. Public author: ${author}. Star rating: ${review.score}/5.`,
+        policyNote: `Collected from public Google Play reviews with google-play-scraper. Package: ${packageId}. Star rating: ${review.score}/5. Author identity was not retained.`,
         sourceMetadata: {
           rating: review.score,
           locale: "en-IN",
+          country: "India",
           packageId
         }
       };

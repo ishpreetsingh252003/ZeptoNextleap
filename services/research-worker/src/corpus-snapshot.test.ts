@@ -35,6 +35,7 @@ function document(record: FrozenCorpusRecord) {
     url,
     canonicalUrl: url,
     sourceType: record.sourceType,
+    sourceName: "Google Play",
     platform: "Google Play",
     title: null,
     publicationDate: record.createdDate,

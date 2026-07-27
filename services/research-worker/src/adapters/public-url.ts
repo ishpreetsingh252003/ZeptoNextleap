@@ -22,6 +22,7 @@ export class PublicUrlAdapter implements SourceAdapter {
       url: url.href,
       canonicalUrl: url.href,
       sourceType: this.type,
+      sourceName: url.hostname.replace(/^www\./, ""),
       platform: url.hostname.replace(/^www\./, ""),
       title,
       publicationDate: null,

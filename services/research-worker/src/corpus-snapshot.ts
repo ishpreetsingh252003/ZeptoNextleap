@@ -164,6 +164,7 @@ export function documentsFromFrozenCorpus(snapshot: FrozenCorpusSnapshot): Publi
       url: canonicalUrl,
       canonicalUrl,
       sourceType: record.sourceType,
+      sourceName: "Google Play",
       platform: "Google Play",
       title: null,
       publicationDate: record.createdDate,
@@ -174,6 +175,7 @@ export function documentsFromFrozenCorpus(snapshot: FrozenCorpusSnapshot): Publi
       sourceMetadata: {
         rating: record.rating,
         locale: record.locale,
+        country: "India",
         packageId: record.packageId
       }
     };

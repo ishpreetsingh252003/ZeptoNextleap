@@ -108,14 +108,17 @@ function document(
   index: number,
   text = `Canonical review ${index}.`,
   rating: number | undefined = index % 5 + 1,
-  reviewDate = `2026-01-${String(index % 28 + 1).padStart(2, "0")}T00:00:00.000Z`
+  reviewDate = `2026-01-${String(index % 28 + 1).padStart(2, "0")}T00:00:00.000Z`,
+  sourceName = "Google Play",
+  sourceType: PublicDocument["sourceType"] = "google_play"
 ): PublicDocument {
   return {
     externalId: `review-${index}`,
     url: `https://example.com/review-${index}`,
     canonicalUrl: `https://example.com/review-${index}`,
-    sourceType: "google_play",
-    platform: "Google Play",
+    sourceType,
+    sourceName,
+    platform: sourceName,
     title: null,
     publicationDate: reviewDate,
     capturedAt: "2026-02-01T00:00:00.000Z",
@@ -299,6 +302,8 @@ describe("simplified MVP analysis", () => {
     });
     expect(theme.dominantSentiment).toBe("negative");
     expect(theme.representativeEvidenceIds[0]).toBe(evidence[1]!.id);
+    expect(theme.sourceCounts).toEqual({ "Google Play": 3 });
+    expect(theme.sourceConcentrationWarning).toContain("100.0%");
   });
 
   it("business synthesis cannot modify local membership, counts, or canonical reviews", async () => {
@@ -317,6 +322,44 @@ describe("simplified MVP analysis", () => {
     )!;
     expect(businessRequest.systemPrompt).toContain("Do not invent");
     expect(businessRequest.userPrompt).not.toContain("evidenceIds");
+  });
+
+  it("preserves source provenance and calculates Theme source counts locally", async () => {
+    const input = [
+      document(1, "Google Play evidence.", 1),
+      document(
+        2,
+        "Reddit evidence.",
+        undefined,
+        "2026-01-02T00:00:00.000Z",
+        "Reddit",
+        "csv_import"
+      )
+    ];
+    const provider = new SyntheticMvpProvider(taxonomy(), (request) => {
+      const payload = promptPayload(request);
+      return {
+        assignments: payload.evidence.map(({ evidenceId }) => ({
+          evidenceId,
+          themeId: payload.taxonomy[0]!.themeId
+        }))
+      };
+    });
+    const evidence = createLocalMvpEvidence(input);
+    const artifact = await runMvpAnalysis(input, corpus(2), provider);
+    const populatedTheme = artifact.themes.find(({ evidenceCount }) => evidenceCount === 2)!;
+
+    expect(evidence.map(({ sourceName }) => sourceName)).toEqual(["Google Play", "Reddit"]);
+    expect(populatedTheme.sourceCounts).toEqual({ "Google Play": 1, Reddit: 1 });
+    expect(populatedTheme.sourceConcentrationWarning).toBeNull();
+    expect(artifact.representativeReviews.map(({ sourceName }) => sourceName).sort())
+      .toEqual(["Google Play", "Reddit"]);
+    const businessRequest = provider.requests.find(
+      ({ schemaName }) => schemaName === "mvp_business_analysis"
+    )!;
+    expect(businessRequest.userPrompt).toContain(
+      JSON.stringify({ "Google Play": 1, Reddit: 1 })
+    );
   });
 
   it("produces the same non-timing artifact for the same input", async () => {

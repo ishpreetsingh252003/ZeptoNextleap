@@ -61,7 +61,8 @@ describe("GooglePlayAdapter", () => {
       publicationDate: "2026-07-01T10:00:00.000Z",
       normalizedText: "The review contains a shopping decision and a clearly stated outcome."
     });
-    expect(documents[0]?.policyNote).toContain("Public author: Public Reviewer");
+    expect(documents[0]?.policyNote).toContain("Author identity was not retained");
+    expect(documents[0]?.policyNote).not.toContain("Public Reviewer");
     expect(documents[0]?.policyNote).toContain("Star rating: 4/5");
     expect(reviewsMock).toHaveBeenCalledWith(expect.objectContaining({
       appId: "com.zeptoconsumerapp",
