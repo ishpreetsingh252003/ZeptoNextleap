@@ -18,6 +18,7 @@
     "corpus:live": "tsx src/frozen-corpus-live.ts",
     "mvp:live": "tsx src/mvp-analysis-live.ts",
     "multi-source:live": "tsx src/multi-source-live.ts",
+    "research:intake": "tsx src/research-intake.ts",
     "stability:live": "tsx src/pipeline-stability-live.ts",
     "pilot:import": "tsx src/import-manual-pilot.ts"
   },

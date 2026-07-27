@@ -1,9 +1,11 @@
 import type {
+  ProvenanceLevel,
   PublicDocument,
   ResearchRelevance
 } from "@zepto/research-contracts";
 import type { ServerEnv } from "@zepto/shared-config";
 import { normalizeText } from "./lib/text.js";
+import { classifyProvenance } from "./research-provenance.js";
 
 export type ClassifiedResearchDocument = {
   document: PublicDocument;
@@ -228,6 +230,7 @@ export type ResearchReadinessReport = {
   recordsByBehaviorStage: Record<string, number>;
   recordsByEvidenceType: Record<string, number>;
   recordsByRelevance: Record<ResearchRelevance, number>;
+  recordsByProvenance: Record<ProvenanceLevel, number>;
   provenance: {
     complete: number;
     incomplete: number;
@@ -272,34 +275,18 @@ function concentration(counts: Record<string, number>): Concentration {
   };
 }
 
-function hasCompleteProvenance(document: PublicDocument): boolean {
-  let publicUrl = false;
-  try {
-    publicUrl = ["http:", "https:"].includes(
-      new URL(document.canonicalUrl).protocol
-    );
-  } catch {
-    publicUrl = false;
-  }
-  return Boolean(
-    document.externalId
-    && document.sourceName
-    && document.capturedAt
-    && document.accessMethod
-    && publicUrl
-    && document.sourceMetadata?.sourceUrlAvailable !== false
-  );
-}
-
 export function createResearchReadinessReport(
   documents: readonly PublicDocument[],
   thresholds: ResearchReadinessThresholds =
     defaultResearchReadinessThresholds
 ): ResearchReadinessReport {
   const classified = classifyAndPrioritizeResearchDocuments(documents);
-  const relevant = classified.filter(({ relevance }) =>
-    relevance === "directly_relevant"
-    || relevance === "potentially_relevant"
+  const relevant = classified.filter(({ document, relevance }) =>
+    (
+      relevance === "directly_relevant"
+      || relevance === "potentially_relevant"
+    )
+    && classifyProvenance(document) !== "INSUFFICIENT"
   );
   const relevantDocuments = relevant.map(({ document }) => document);
   const recordsBySource = countBy(documents, ({ sourceName }) => sourceName);
@@ -318,11 +305,11 @@ export function createResearchReadinessReport(
     ({ sourceMetadata }) => sourceMetadata!.category!
   );
   const incompleteDocuments = documents
-    .filter((document) => !hasCompleteProvenance(document))
+    .filter((document) => classifyProvenance(document) === "INSUFFICIENT");
   const incompleteDocumentIds = incompleteDocuments
     .map(({ externalId }) => externalId).sort();
   const incompleteEligibleDocumentIds = relevantDocuments
-    .filter((document) => !hasCompleteProvenance(document))
+    .filter((document) => classifyProvenance(document) === "INSUFFICIENT")
     .map(({ externalId }) => externalId);
   const barriersOrRisks = relevantDocuments.filter(({ sourceMetadata }) =>
     sourceMetadata?.evidenceType === "barrier"
@@ -432,6 +419,14 @@ export function createResearchReadinessReport(
     irrelevant: 0
   };
   for (const item of classified) recordsByRelevance[item.relevance] += 1;
+  const recordsByProvenance: Record<ProvenanceLevel, number> = {
+    VERIFIED: 0,
+    PARTIAL: 0,
+    INSUFFICIENT: 0
+  };
+  for (const document of documents) {
+    recordsByProvenance[classifyProvenance(document)] += 1;
+  }
 
   return {
     status: unmetCriteria.length === 0 ? "ready" : "not_ready",
@@ -447,6 +442,7 @@ export function createResearchReadinessReport(
       ({ sourceMetadata }) => sourceMetadata?.evidenceType ?? "unknown"
     ),
     recordsByRelevance,
+    recordsByProvenance,
     provenance: {
       complete: documents.length - incompleteDocuments.length,
       incomplete: incompleteDocuments.length,

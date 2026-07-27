@@ -40,6 +40,11 @@ test-results/
 **/*-replay-output.jsonl
 **/*-stability.jsonl
 
+# Local category-evidence imports and normalized intake output
+research/imports/
+research/intake-output/
+**/*category-evidence-import*.json
+
 # IDE and editor files
 .idea/
 .vscode/

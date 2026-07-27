@@ -11,7 +11,8 @@ export const sourceTypeSchema = z.enum([
   "tavily_query",
   "firecrawl",
   "manual_text",
-  "manual_pilot"
+  "manual_pilot",
+  "user_interview"
 ]);
 export type SourceType = z.infer<typeof sourceTypeSchema>;
 
@@ -70,6 +71,22 @@ export const researchRelevanceSchema = z.enum([
 ]);
 export type ResearchRelevance = z.infer<typeof researchRelevanceSchema>;
 
+export const provenanceLevelSchema = z.enum([
+  "VERIFIED",
+  "PARTIAL",
+  "INSUFFICIENT"
+]);
+export type ProvenanceLevel = z.infer<typeof provenanceLevelSchema>;
+
+export const interviewConsentStatusSchema = z.enum([
+  "consent_given",
+  "consent_withdrawn",
+  "not_recorded"
+]);
+export type InterviewConsentStatus = z.infer<
+  typeof interviewConsentStatusSchema
+>;
+
 export const createProjectSchema = z.object({
   name: z.string().trim().min(2).max(120),
   description: z.string().trim().max(500).optional()
@@ -77,7 +94,7 @@ export const createProjectSchema = z.object({
 
 export const createCollectionRunSchema = z.object({
   projectId: z.string().uuid(),
-  sourceType: sourceTypeSchema.exclude(["manual_pilot"]),
+  sourceType: sourceTypeSchema.exclude(["manual_pilot", "user_interview"]),
   urlOrQuery: z.string().trim().max(2_000).optional(),
   manualText: z.string().trim().max(20_000).optional(),
   csvText: z.string().max(2_000_000).optional(),
@@ -136,7 +153,13 @@ export const publicDocumentSchema = z.object({
       "manual_entry",
       "csv_import",
       "automated_collection"
-    ]).optional()
+    ]).optional(),
+    provenanceLevel: provenanceLevelSchema.optional(),
+    consentStatus: interviewConsentStatusSchema.optional(),
+    participantSegment: z.string().trim().min(1).max(160).optional(),
+    interviewDate: z.string().date().optional(),
+    verbatimQuoteAvailable: z.boolean().optional(),
+    researcherObservationAvailable: z.boolean().optional()
   }).strict().optional()
 });
 export type PublicDocument = z.infer<typeof publicDocumentSchema>;

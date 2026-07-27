@@ -250,7 +250,7 @@ describe("category-expansion research readiness", () => {
     expect(report.sourceConcentration.ratio).toBe(1);
     expect(report.categoryConcentration.ratio).toBe(1);
     expect(report.provenance.incomplete).toBe(1);
-    expect(report.provenance.eligibleIncomplete).toBe(1);
+    expect(report.provenance.eligibleIncomplete).toBe(0);
     expect(report.unmetCriteria.map(({ criterion }) => criterion))
       .toEqual(expect.arrayContaining([
         "relevant_records",
@@ -258,8 +258,7 @@ describe("category-expansion research readiness", () => {
         "source_concentration",
         "category_diversity",
         "category_concentration",
-        "triggers_or_trust_signals",
-        "provenance_completeness"
+        "triggers_or_trust_signals"
       ]));
   });
 

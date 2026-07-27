@@ -1,0 +1,65 @@
+category,source_type,query,research_question,behavior_stage,expected_evidence_type,notes
+pet care,Google search,Zepto pet food quality trust review,What makes shoppers trust or distrust pet-care quality?,consideration,perceived_risk,Review public results manually and retain decision context only
+pet care,Reddit approved/manual search,Zepto pet food bought elsewhere,Why do shoppers buy pet care elsewhere?,purchase_elsewhere,workaround,Use approved access or explicit public URLs only
+pet care,Google Play manual filtering,Zepto pet products first order,What happened during a first pet-care purchase?,first_purchase,outcome,Retain only reviews that mention the category decision
+pet care,public forums,quick commerce pet food authenticity,Which authenticity signals affect pet-care trial?,comparison,trust_signal,Use explicit policy-compliant public pages
+pet care,specialist category forums,buy pet supplies offline instead of quick commerce,Why are specialist channels preferred?,purchase_elsewhere,decision_criterion,Do not collect private member content
+pet care,Trustpilot,Zepto pet care product quality,What product risk caused avoidance or abandonment?,abandonment,barrier,Record the exact public source URL
+pet care,explicit Quora URLs,first time ordering pet food online trust,What information is needed before trial?,trial,information_need,Manual explicit URLs only
+pet care,manual interviews,what would make you reorder pet care from Zepto,What creates repeat purchase after trial?,repeat_purchase,trigger,Collect only with recorded consent
+baby care,Google search,Zepto baby products trust authenticity,What makes shoppers trust baby-care products?,consideration,trust_signal,Exclude personal child details
+baby care,Reddit approved/manual search,Zepto diapers bought elsewhere,Why do shoppers choose another channel?,purchase_elsewhere,decision_criterion,Use approved access or explicit public URLs only
+baby care,Google Play manual filtering,Zepto baby care first purchase,What happened during the first purchase?,first_purchase,outcome,Retain category-specific behavior only
+baby care,public forums,quick commerce baby products safety information,What information is missing before ordering?,comparison,information_need,Exclude medical advice and sensitive data
+baby care,specialist category forums,buy baby care from pharmacy instead of quick commerce,Which trust advantage drives channel choice?,purchase_elsewhere,perceived_risk,Use public policy-compliant discussions
+baby care,Trustpilot,Zepto baby product complaint refund,Does recovery risk prevent future category purchase?,abandonment,barrier,Do not treat broad support complaints as category evidence
+baby care,App Store CSV/export research,Zepto baby products stopped ordering,What caused category abandonment?,churn,outcome,Use authorized exports or manual research records
+baby care,manual interviews,what would make you reorder baby care from Zepto,What creates repeat behavior?,repeat_purchase,trigger,Collect only with recorded consent
+personal care,Google search,Zepto personal care product authenticity,What risks prevent personal-care trial?,consideration,perceived_risk,Review public results manually
+personal care,Reddit approved/manual search,Zepto personal care bought offline,Why are offline or specialist channels chosen?,purchase_elsewhere,workaround,Use approved access or explicit URLs only
+personal care,Google Play manual filtering,Zepto personal care first order,What happened during first purchase?,first_purchase,outcome,Retain explicit category context
+personal care,public forums,quick commerce personal care ingredients information,What details are needed before ordering?,comparison,information_need,Use explicit public pages
+personal care,Trustpilot,Zepto personal care quality review,Which quality concerns cause abandonment?,abandonment,barrier,Preserve review-page provenance
+personal care,App Store CSV/export research,Zepto personal care repeat purchase,What encourages repeat ordering?,repeat_purchase,positive_signal,Use authorized export or manual entry
+personal care,explicit Quora URLs,trust personal care products from quick commerce,Which trust signals reduce hesitation?,trial,trust_signal,Manual explicit URLs only
+personal care,manual interviews,why buy personal care elsewhere instead of Zepto,What decision criterion drives channel choice?,purchase_elsewhere,decision_criterion,Collect only with recorded consent
+health and wellness,Google search,Zepto health wellness products authenticity,What authenticity concerns prevent trial?,consideration,perceived_risk,Exclude medical claims and sensitive health data
+health and wellness,Reddit approved/manual search,Zepto supplements bought from pharmacy instead,Why is another channel preferred?,purchase_elsewhere,decision_criterion,Use approved access and exclude personal health details
+health and wellness,Google Play manual filtering,Zepto wellness first order experience,What happened during first purchase?,first_purchase,outcome,Retain behavioral context only
+health and wellness,public forums,quick commerce supplements ingredient information,What information is required before ordering?,comparison,information_need,Do not collect or repeat medical advice
+health and wellness,specialist category forums,buy wellness products offline trust,Which trust requirements drive channel choice?,purchase_elsewhere,trust_signal,Use public policy-compliant pages
+health and wellness,Trustpilot,Zepto health product return risk,Does recovery uncertainty prevent trial or repeat?,abandonment,barrier,Connect complaint to category behavior
+health and wellness,App Store CSV/export research,Zepto wellness stopped ordering,What caused category churn?,churn,outcome,Use authorized exports only
+health and wellness,manual interviews,what would make you reorder wellness products from Zepto,What creates repeat purchase?,repeat_purchase,trigger,Collect consent and avoid sensitive health details
+beauty and skincare,Google search,Zepto skincare authenticity review,What authenticity risks prevent trial?,consideration,perceived_risk,Review public results manually
+beauty and skincare,Reddit approved/manual search,Zepto skincare bought elsewhere,Why do shoppers switch channels?,purchase_elsewhere,workaround,Use approved access or explicit public URLs
+beauty and skincare,Google Play manual filtering,Zepto skincare first purchase,What happened during first purchase?,first_purchase,outcome,Retain category-specific evidence only
+beauty and skincare,public forums,quick commerce skincare ingredients missing,What information is needed before ordering?,comparison,information_need,Use explicit public discussions
+beauty and skincare,specialist category forums,buy skincare from beauty marketplace instead,Which specialist trust signals matter?,purchase_elsewhere,decision_criterion,Do not access private groups
+beauty and skincare,Trustpilot,Zepto beauty product quality complaint,What quality issue caused abandonment?,abandonment,barrier,Preserve source and review context
+beauty and skincare,explicit Quora URLs,first time buying skincare from quick commerce,What reduced hesitation during trial?,trial,trust_signal,Manual explicit URLs only
+beauty and skincare,manual interviews,what would make you buy skincare again from Zepto,What creates repeat purchase?,repeat_purchase,trigger,Collect only with recorded consent
+fresh produce,Google search,Zepto vegetables freshness trust,What freshness uncertainty prevents purchase?,consideration,perceived_risk,Review public results manually
+fresh produce,Reddit approved/manual search,Zepto vegetables bought offline instead,Why is physical inspection preferred?,purchase_elsewhere,decision_criterion,Use approved access or explicit URLs
+fresh produce,Google Play manual filtering,Zepto fruit first order experience,What happened during first category trial?,first_purchase,outcome,Distinguish category trial from routine grocery replenishment
+fresh produce,public forums,quick commerce produce ripeness information,What information is missing before ordering?,comparison,information_need,Use explicit public pages
+fresh produce,Trustpilot,Zepto vegetables quality abandonment,What quality issue caused switching or abandonment?,abandonment,barrier,Connect complaint to category behavior
+fresh produce,App Store CSV/export research,Zepto produce repeat order,What created repeat purchase?,repeat_purchase,positive_signal,Use authorized exports or manual records
+fresh produce,explicit Quora URLs,buy vegetables offline instead of quick commerce,Which workaround replaces platform purchase?,purchase_elsewhere,workaround,Manual explicit URLs only
+fresh produce,manual interviews,what would make you trust Zepto fresh produce,Which signal would enable trial?,trial,trust_signal,Collect only with recorded consent
+meat and seafood,Google search,Zepto meat quality freshness review,What risks prevent category consideration?,consideration,perceived_risk,Review public results manually
+meat and seafood,Reddit approved/manual search,Zepto meat bought from local shop instead,Why is a specialist or local channel preferred?,purchase_elsewhere,decision_criterion,Use approved access or explicit URLs
+meat and seafood,Google Play manual filtering,Zepto meat first order,What happened during first purchase?,first_purchase,outcome,Retain explicit category decision context
+meat and seafood,public forums,quick commerce meat handling information,What handling details are needed before ordering?,comparison,information_need,Use explicit policy-compliant pages
+meat and seafood,specialist category forums,buy seafood from specialist instead of quick commerce,Which trust requirements drive switching?,purchase_elsewhere,trust_signal,Do not access private member areas
+meat and seafood,Trustpilot,Zepto meat quality stopped ordering,What failure caused abandonment or churn?,abandonment,barrier,Preserve public source context
+meat and seafood,App Store CSV/export research,Zepto meat repeat purchase,What enabled repeat ordering?,repeat_purchase,positive_signal,Use authorized exports only
+meat and seafood,manual interviews,what would make you try meat or seafood from Zepto,What would reduce first-trial hesitation?,trial,trigger,Collect only with recorded consent
+premium/high-value packaged products,Google search,Zepto premium product authenticity review,What authenticity risk prevents consideration?,consideration,perceived_risk,Review public results manually
+premium/high-value packaged products,Reddit approved/manual search,Zepto expensive product bought elsewhere,Why is another marketplace selected?,purchase_elsewhere,decision_criterion,Use approved access or explicit public URLs
+premium/high-value packaged products,Google Play manual filtering,Zepto high value product first order,What happened during first purchase?,first_purchase,outcome,Retain explicit high-value category context
+premium/high-value packaged products,public forums,quick commerce premium product warranty information,What information is needed before ordering?,comparison,information_need,Use explicit public pages
+premium/high-value packaged products,specialist category forums,buy premium packaged products from specialist marketplace,Which protection creates trust?,purchase_elsewhere,trust_signal,Do not access private forums
+premium/high-value packaged products,Trustpilot,Zepto expensive product return risk,Does recovery uncertainty cause abandonment?,abandonment,barrier,Connect support issue to purchase decision
+premium/high-value packaged products,explicit Quora URLs,first time ordering expensive product from quick commerce,What enabled or blocked trial?,trial,trigger,Manual explicit URLs only
+premium/high-value packaged products,manual interviews,what would make you reorder a high value packaged product from Zepto,What creates repeat purchase?,repeat_purchase,positive_signal,Collect only with recorded consent
