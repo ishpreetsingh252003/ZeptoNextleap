@@ -20,6 +20,7 @@
     "multi-source:live": "tsx src/multi-source-live.ts",
     "research:intake": "tsx src/research-intake.ts",
     "research:discover": "tsx src/research-discover.ts",
+    "research:prioritize-candidates": "tsx src/research-prioritize-candidates.ts",
     "research:fetch-approved": "tsx src/research-fetch-approved.ts",
     "stability:live": "tsx src/pipeline-stability-live.ts",
     "pilot:import": "tsx src/import-manual-pilot.ts"
