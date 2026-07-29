@@ -1,4 +1,10 @@
+/**
+ * @module [LEGACY RUNTIME]
+ * Original database worker pipeline utilizing 5-stage analysis.
+ * Retained for database compatibility and reference; offline MVP pipeline uses deterministic scoring.
+ */
 import { eq, sql } from "drizzle-orm";
+
 import {
   assertThemeTraceability,
   createCollectionRunSchema,

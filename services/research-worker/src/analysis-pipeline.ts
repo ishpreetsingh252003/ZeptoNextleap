@@ -1,4 +1,10 @@
+/**
+ * @module [EXPERIMENTAL]
+ * LLM-heavy structured pipeline for multi-stage theme repair and insight generation.
+ * Retained for engineering reference and synthetic scale testing; not used for offline MVP.
+ */
 import type {
+
   Evidence,
   Insight,
   PublicDocument,

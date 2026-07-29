@@ -44,6 +44,7 @@ test-results/
 research/imports/
 research/intake-output/
 research/discovery-output/
+research/opportunity-output/
 **/*category-evidence-import*.json
 
 # IDE and editor files

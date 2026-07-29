@@ -1,0 +1,2229 @@
+{
+  "reports": [
+    {
+      "path": "services\\research-api\\dist\\app.d.ts",
+      "lineCount": 20,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\dist\\app.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\factory.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\frozen-corpus-live.d.ts"
+      ]
+    },
+    {
+      "path": "services\\research-api\\dist\\index.d.ts",
+      "lineCount": 2,
+      "functionCount": 0,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-api\\src\\app.test.ts",
+      "lineCount": 26,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\src\\app.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-collection.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-api\\src\\app.ts",
+      "lineCount": 137,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\src\\app.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\execute.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\execute.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-api\\src\\index.ts",
+      "lineCount": 14,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\src\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\factory.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\structured-stage.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\evidence-extractor.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\insight-generation.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\mvp-analysis.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\theme-clustering.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\structured-stage.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\frozen-corpus-live.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts",
+        "D:\\Zepto N\\apps\\research-web\\next.config.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\adapters\\csv-import.d.ts",
+      "lineCount": 24,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\csv-import.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\google-play.d.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+      "lineCount": 11,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\google-play.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\index.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\tavily.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-readiness.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\source-orchestrator.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\curated-public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\adapters\\errors.d.ts",
+      "lineCount": 6,
+      "functionCount": 0,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\dist\\adapters\\fetch-public.d.ts",
+      "lineCount": 6,
+      "functionCount": 2,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+      "lineCount": 9,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\google-play.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\index.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\tavily.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-readiness.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\source-orchestrator.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\curated-public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\adapters\\google-play.d.ts",
+      "lineCount": 9,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\google-play.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\index.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\tavily.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-readiness.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\source-orchestrator.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\curated-public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\adapters\\index.d.ts",
+      "lineCount": 5,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\google-play.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\index.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\tavily.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-readiness.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\source-orchestrator.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\curated-public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\adapters\\manual-text.d.ts",
+      "lineCount": 6,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\manual-text.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\tavily.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\manual-text.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\adapters\\public-url.d.ts",
+      "lineCount": 9,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\google-play.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\index.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\tavily.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-readiness.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\source-orchestrator.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\curated-public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\adapters\\tavily.d.ts",
+      "lineCount": 9,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\google-play.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\index.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\tavily.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-readiness.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\source-orchestrator.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\curated-public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\ai\\errors.d.ts",
+      "lineCount": 14,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\errors.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\errors.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\ai\\execute.d.ts",
+      "lineCount": 9,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\execute.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\execute.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\ai\\factory.d.ts",
+      "lineCount": 4,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\src\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\factory.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\structured-stage.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\evidence-extractor.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\insight-generation.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\mvp-analysis.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\theme-clustering.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\structured-stage.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\frozen-corpus-live.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts",
+        "D:\\Zepto N\\apps\\research-web\\next.config.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\ai\\failure-diagnostics.d.ts",
+      "lineCount": 27,
+      "functionCount": 3,
+      "maxImportDepth": 1,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\failure-diagnostics.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\failure-diagnostics.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\corpus-snapshot.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-snapshot.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\opportunity-scoring.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\ai\\gemini.d.ts",
+      "lineCount": 10,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\gemini.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\groq.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\gemini.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\groq.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\ai\\groq.d.ts",
+      "lineCount": 9,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\gemini.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\groq.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\gemini.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\groq.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\ai\\structured-stage.d.ts",
+      "lineCount": 24,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\structured-stage.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\database-validation.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\ai\\types.d.ts",
+      "lineCount": 23,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\errors.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\execute.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\types.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\csv-import.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\manual-text.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\errors.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\execute.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\types.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\[id]\\page.tsx"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\analysis-pipeline.d.ts",
+      "lineCount": 10,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\src\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\factory.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\structured-stage.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\evidence-extractor.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\insight-generation.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\mvp-analysis.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\theme-clustering.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\structured-stage.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\frozen-corpus-live.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts",
+        "D:\\Zepto N\\apps\\research-web\\next.config.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\analysis-scale-live.d.ts",
+      "lineCount": 2,
+      "functionCount": 0,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\dist\\analysis-scale.d.ts",
+      "lineCount": 126,
+      "functionCount": 11,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\google-play.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\index.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\tavily.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-readiness.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\source-orchestrator.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\curated-public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\category-evidence-intake.d.ts",
+      "lineCount": 123,
+      "functionCount": 4,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\dist\\corpus-snapshot.d.ts",
+      "lineCount": 66,
+      "functionCount": 8,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\corpus-snapshot.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\multi-source-snapshot.d.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\evidence-extractor.d.ts",
+      "lineCount": 4,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\src\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\factory.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\structured-stage.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\evidence-extractor.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\insight-generation.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\mvp-analysis.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\theme-clustering.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\structured-stage.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\frozen-corpus-live.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts",
+        "D:\\Zepto N\\apps\\research-web\\next.config.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\free-research-discovery.d.ts",
+      "lineCount": 54,
+      "functionCount": 3,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\free-research-discovery.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-discover.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-fetch-approved.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-provenance.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\frozen-corpus-live.d.ts",
+      "lineCount": 24,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\frozen-corpus-live.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\frozen-corpus-live.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\import-manual-pilot.d.ts",
+      "lineCount": 2,
+      "functionCount": 0,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\dist\\index.d.ts",
+      "lineCount": 2,
+      "functionCount": 0,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\dist\\insight-generation.d.ts",
+      "lineCount": 4,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\src\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\factory.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\structured-stage.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\evidence-extractor.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\insight-generation.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\mvp-analysis.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\theme-clustering.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\structured-stage.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\frozen-corpus-live.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts",
+        "D:\\Zepto N\\apps\\research-web\\next.config.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\lib\\text.d.ts",
+      "lineCount": 9,
+      "functionCount": 3,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\lib\\text.d.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\multi-source-live.d.ts",
+      "lineCount": 8,
+      "functionCount": 1,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\dist\\multi-source-quality.d.ts",
+      "lineCount": 36,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\multi-source-quality.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-quality.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\multi-source-snapshot.d.ts",
+      "lineCount": 117,
+      "functionCount": 5,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\corpus-snapshot.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\multi-source-snapshot.d.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\mvp-analysis-live.d.ts",
+      "lineCount": 11,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\mvp-analysis-live.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\mvp-analysis.d.ts",
+      "lineCount": 72,
+      "functionCount": 6,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\src\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\factory.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\structured-stage.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\evidence-extractor.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\insight-generation.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\mvp-analysis.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\theme-clustering.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\structured-stage.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\frozen-corpus-live.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts",
+        "D:\\Zepto N\\apps\\research-web\\next.config.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\pipeline-stability-live.d.ts",
+      "lineCount": 64,
+      "functionCount": 2,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\dist\\pipeline.d.ts",
+      "lineCount": 9,
+      "functionCount": 3,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\google-play.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\index.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\tavily.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-readiness.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\source-orchestrator.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\curated-public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\quote-mismatch.d.ts",
+      "lineCount": 12,
+      "functionCount": 2,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\dist\\research\\candidate-prioritization.d.ts",
+      "lineCount": 55,
+      "functionCount": 3,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\research\\candidate-prioritization.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research\\opportunity-scoring.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-opportunities.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-prioritize-candidates.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\research\\opportunity-scoring.d.ts",
+      "lineCount": 59,
+      "functionCount": 3,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\research\\candidate-prioritization.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research\\opportunity-scoring.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-opportunities.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-prioritize-candidates.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\research-discover.d.ts",
+      "lineCount": 8,
+      "functionCount": 1,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\dist\\research-fetch-approved.d.ts",
+      "lineCount": 7,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-fetch-approved.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\research-intake.d.ts",
+      "lineCount": 6,
+      "functionCount": 1,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\dist\\research-opportunities.d.ts",
+      "lineCount": 6,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\research\\candidate-prioritization.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research\\opportunity-scoring.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-opportunities.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-prioritize-candidates.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\research-prioritize-candidates.d.ts",
+      "lineCount": 6,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\research\\candidate-prioritization.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research\\opportunity-scoring.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-opportunities.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-prioritize-candidates.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\research-provenance.d.ts",
+      "lineCount": 4,
+      "functionCount": 2,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\dist\\research-readiness.d.ts",
+      "lineCount": 58,
+      "functionCount": 4,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-readiness.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\source-orchestrator.d.ts",
+      "lineCount": 23,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\google-play.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\index.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\tavily.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-readiness.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\source-orchestrator.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\curated-public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\theme-clustering.d.ts",
+      "lineCount": 26,
+      "functionCount": 3,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\src\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\factory.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\structured-stage.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\evidence-extractor.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\insight-generation.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\mvp-analysis.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\theme-clustering.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\structured-stage.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\frozen-corpus-live.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts",
+        "D:\\Zepto N\\apps\\research-web\\next.config.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\dist\\tinyfish-client.d.ts",
+      "lineCount": 31,
+      "functionCount": 0,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\csv-import.ts",
+      "lineCount": 264,
+      "functionCount": 14,
+      "maxImportDepth": 1,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\csv-import.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\frozen-corpus-live.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\curated-public-url.ts",
+      "lineCount": 101,
+      "functionCount": 4,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\curated-public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\errors.ts",
+      "lineCount": 7,
+      "functionCount": 1,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\fetch-public.ts",
+      "lineCount": 60,
+      "functionCount": 7,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\fetch-public.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\fetch-public.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\firecrawl.integration.test.ts",
+      "lineCount": 29,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.integration.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\firecrawl.test.ts",
+      "lineCount": 126,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\firecrawl.ts",
+      "lineCount": 126,
+      "functionCount": 9,
+      "maxImportDepth": 1,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\google-play.integration.test.ts",
+      "lineCount": 25,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.integration.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\google-play.test.ts",
+      "lineCount": 255,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-collection.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.test.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\[id]\\theme-detail.tsx"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\google-play.ts",
+      "lineCount": 169,
+      "functionCount": 10,
+      "maxImportDepth": 1,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\packages\\shared-config\\src\\index.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\index.test.ts",
+      "lineCount": 31,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\index.ts",
+      "lineCount": 41,
+      "functionCount": 10,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\manual-text.ts",
+      "lineCount": 16,
+      "functionCount": 0,
+      "maxImportDepth": 1,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\manual-text.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\database-validation.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\public-url.ts",
+      "lineCount": 36,
+      "functionCount": 1,
+      "maxImportDepth": 1,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\google-play.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\index.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\tavily.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-readiness.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\source-orchestrator.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\curated-public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\adapters\\tavily.ts",
+      "lineCount": 23,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\[id]\\evidence-detail.tsx"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\ai\\errors.ts",
+      "lineCount": 26,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\errors.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\errors.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\ai\\execute.test.ts",
+      "lineCount": 61,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\execute.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\execute.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\ai\\execute.ts",
+      "lineCount": 51,
+      "functionCount": 6,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\execute.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\structured-stage.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis-live.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\ai\\factory.test.ts",
+      "lineCount": 40,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\ai\\factory.ts",
+      "lineCount": 18,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\ai\\failure-diagnostics.test.ts",
+      "lineCount": 114,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\failure-diagnostics.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\ai\\failure-diagnostics.ts",
+      "lineCount": 231,
+      "functionCount": 17,
+      "maxImportDepth": 1,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\failure-diagnostics.ts",
+        "D:\\Zepto N\\packages\\research-contracts\\src\\index.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\ai\\gemini.ts",
+      "lineCount": 67,
+      "functionCount": 3,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\gemini.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\ai\\groq.ts",
+      "lineCount": 38,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\groq.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\structured-stage.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\ai\\structured-stage.ts",
+      "lineCount": 73,
+      "functionCount": 4,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\structured-stage.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\structured-stage.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\ai\\types.ts",
+      "lineCount": 26,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\errors.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\execute.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\types.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\csv-import.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\manual-text.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\errors.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\execute.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\types.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\[id]\\page.tsx"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\analysis-pipeline.test.ts",
+      "lineCount": 211,
+      "functionCount": 6,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.test.ts",
+        "D:\\Zepto N\\packages\\research-contracts\\src\\index.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\analysis-pipeline.ts",
+      "lineCount": 32,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\analysis-scale-live.ts",
+      "lineCount": 277,
+      "functionCount": 11,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale-live.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\analysis-scale.test.ts",
+      "lineCount": 601,
+      "functionCount": 8,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-quality.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\analysis-scale.ts",
+      "lineCount": 989,
+      "functionCount": 52,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\category-evidence-intake.test.ts",
+      "lineCount": 474,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\category-evidence-intake.ts",
+      "lineCount": 698,
+      "functionCount": 28,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\corpus-snapshot.test.ts",
+      "lineCount": 106,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\corpus-snapshot.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\database-validation.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\corpus-snapshot.ts",
+      "lineCount": 215,
+      "functionCount": 12,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\corpus-snapshot.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-snapshot.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\database-validation.test.ts",
+      "lineCount": 105,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\database-validation.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-live.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\evidence-extractor.test.ts",
+      "lineCount": 237,
+      "functionCount": 3,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\evidence-extractor.ts",
+      "lineCount": 74,
+      "functionCount": 5,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\free-research-discovery.test.ts",
+      "lineCount": 308,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\free-research-discovery.ts",
+      "lineCount": 445,
+      "functionCount": 21,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\free-research-discovery.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\frozen-corpus-live.test.ts",
+      "lineCount": 107,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\frozen-corpus-live.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\frozen-corpus-live.ts",
+      "lineCount": 204,
+      "functionCount": 11,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\frozen-corpus-live.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-live.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis-live.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-discover.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-fetch-approved.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-intake.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-opportunities.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-prioritize-candidates.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\gemini-integration.test.ts",
+      "lineCount": 73,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\gemini-integration.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\explorer.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\explorer.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\[id]\\evidence-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\run-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\[id]\\theme-detail.tsx"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\import-manual-pilot.ts",
+      "lineCount": 47,
+      "functionCount": 3,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\import-manual-pilot.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-live.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\index.ts",
+      "lineCount": 30,
+      "functionCount": 3,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\index.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\components\\ui.tsx"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\insight-generation.test.ts",
+      "lineCount": 205,
+      "functionCount": 5,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\insight-generation.ts",
+      "lineCount": 77,
+      "functionCount": 8,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\lib\\text.test.ts",
+      "lineCount": 82,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\lib\\text.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\lib\\text.ts",
+      "lineCount": 28,
+      "functionCount": 4,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\lib\\text.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\multi-source-coverage.test.ts",
+      "lineCount": 405,
+      "functionCount": 4,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\multi-source-live.ts",
+      "lineCount": 164,
+      "functionCount": 6,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-live.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\[id]\\theme-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\[id]\\theme-detail.tsx"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\multi-source-quality.ts",
+      "lineCount": 231,
+      "functionCount": 12,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-quality.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\multi-source-snapshot.ts",
+      "lineCount": 134,
+      "functionCount": 8,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\corpus-snapshot.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-snapshot.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\mvp-analysis-live.ts",
+      "lineCount": 172,
+      "functionCount": 8,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-live.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis-live.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\mvp-analysis.test.ts",
+      "lineCount": 385,
+      "functionCount": 8,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.test.ts",
+        "D:\\Zepto N\\packages\\research-contracts\\src\\index.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\mvp-analysis.ts",
+      "lineCount": 748,
+      "functionCount": 40,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\overview.tsx"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\pipeline-collection.test.ts",
+      "lineCount": 61,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-collection.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\pipeline-stability-live.test.ts",
+      "lineCount": 229,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\pipeline-stability-live.ts",
+      "lineCount": 443,
+      "functionCount": 26,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\pipeline.ts",
+      "lineCount": 182,
+      "functionCount": 19,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\pipelines\\synthesize_evidence.ts",
+      "lineCount": 64,
+      "functionCount": 7,
+      "maxImportDepth": 4,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\pipelines\\synthesize_evidence.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-discover.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-fetch-approved.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-intake.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-opportunities.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-prioritize-candidates.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\quote-mismatch.test.ts",
+      "lineCount": 66,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\src\\app.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.integration.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.integration.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\failure-diagnostics.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\corpus-snapshot.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\lib\\text.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-collection.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\quote-mismatch.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.test.ts",
+        "D:\\Zepto N\\packages\\research-contracts\\src\\schema-validation.test.ts",
+        "D:\\Zepto N\\packages\\research-contracts\\src\\traceability.test.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\run-detail.tsx"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\quote-mismatch.ts",
+      "lineCount": 218,
+      "functionCount": 25,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\quote-mismatch.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\[id]\\evidence-detail.tsx"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\research\\candidate-prioritization.test.ts",
+      "lineCount": 295,
+      "functionCount": 5,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-prioritize-candidates.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\research\\candidate-prioritization.ts",
+      "lineCount": 711,
+      "functionCount": 46,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\candidate-prioritization.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-prioritize-candidates.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\research\\opportunity-scoring.test.ts",
+      "lineCount": 192,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\opportunity-scoring.test.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\run-detail.tsx"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\research\\opportunity-scoring.ts",
+      "lineCount": 507,
+      "functionCount": 26,
+      "maxImportDepth": 4,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\opportunity-scoring.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-opportunities.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-prioritize-candidates.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\research-discover.ts",
+      "lineCount": 99,
+      "functionCount": 9,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\research-discover.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-fetch-approved.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\research-fetch-approved.ts",
+      "lineCount": 98,
+      "functionCount": 8,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\research-fetch-approved.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-opportunities.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-prioritize-candidates.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\research-intake.ts",
+      "lineCount": 76,
+      "functionCount": 9,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\research-discover.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-fetch-approved.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-intake.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-opportunities.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-prioritize-candidates.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\research-opportunities.ts",
+      "lineCount": 92,
+      "functionCount": 6,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\research-fetch-approved.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-opportunities.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-prioritize-candidates.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\research-prioritize-candidates.ts",
+      "lineCount": 64,
+      "functionCount": 6,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\research-fetch-approved.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-opportunities.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-prioritize-candidates.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\research-provenance.ts",
+      "lineCount": 57,
+      "functionCount": 6,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\research-provenance.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-provenance.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\research-readiness.test.ts",
+      "lineCount": 280,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\research-readiness.ts",
+      "lineCount": 464,
+      "functionCount": 17,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\source-orchestrator.test.ts",
+      "lineCount": 156,
+      "functionCount": 3,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\source-orchestrator.ts",
+      "lineCount": 59,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\curated-public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\firecrawl.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\google-play.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\index.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\public-url.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\adapters\\tavily.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\research-readiness.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\source-orchestrator.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\curated-public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\public-url.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\source-orchestrator.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\theme-clustering.test.ts",
+      "lineCount": 411,
+      "functionCount": 6,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.test.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\theme-clustering.ts",
+      "lineCount": 320,
+      "functionCount": 20,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts"
+      ]
+    },
+    {
+      "path": "services\\research-worker\\src\\tinyfish-client.ts",
+      "lineCount": 210,
+      "functionCount": 12,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts"
+      ]
+    },
+    {
+      "path": "packages\\research-contracts\\src\\contracts.ts",
+      "lineCount": 30,
+      "functionCount": 0,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "packages\\research-contracts\\src\\index.ts",
+      "lineCount": 488,
+      "functionCount": 5,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.test.ts",
+        "D:\\Zepto N\\packages\\research-contracts\\src\\index.ts"
+      ]
+    },
+    {
+      "path": "packages\\research-contracts\\src\\schema-validation.test.ts",
+      "lineCount": 27,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\src\\app.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.integration.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\google-play.integration.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\index.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\failure-diagnostics.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-scale.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\corpus-snapshot.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\lib\\text.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-collection.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\pipeline-stability-live.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\quote-mismatch.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research-readiness.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.test.ts",
+        "D:\\Zepto N\\packages\\research-contracts\\src\\schema-validation.test.ts",
+        "D:\\Zepto N\\packages\\research-contracts\\src\\traceability.test.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\run-detail.tsx"
+      ]
+    },
+    {
+      "path": "packages\\research-contracts\\src\\traceability.test.ts",
+      "lineCount": 21,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\packages\\research-contracts\\src\\traceability.test.ts",
+        "D:\\Zepto N\\packages\\research-contracts\\src\\traceability.ts"
+      ]
+    },
+    {
+      "path": "packages\\research-contracts\\src\\traceability.ts",
+      "lineCount": 8,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\packages\\research-contracts\\src\\traceability.test.ts",
+        "D:\\Zepto N\\packages\\research-contracts\\src\\traceability.ts"
+      ]
+    },
+    {
+      "path": "packages\\research-database\\drizzle.config.ts",
+      "lineCount": 16,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\opportunity-scoring.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\research\\opportunity-scoring.ts",
+        "D:\\Zepto N\\packages\\research-database\\drizzle.config.ts"
+      ]
+    },
+    {
+      "path": "packages\\research-database\\src\\index.ts",
+      "lineCount": 31,
+      "functionCount": 4,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\database-validation.test.ts",
+        "D:\\Zepto N\\packages\\research-database\\drizzle.config.ts",
+        "D:\\Zepto N\\packages\\research-database\\src\\index.ts"
+      ]
+    },
+    {
+      "path": "packages\\research-database\\src\\schema.ts",
+      "lineCount": 140,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\category-evidence-intake.ts",
+        "D:\\Zepto N\\packages\\research-database\\src\\schema.ts"
+      ]
+    },
+    {
+      "path": "packages\\research-prompts\\src\\index.ts",
+      "lineCount": 93,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\packages\\research-prompts\\src\\index.ts",
+        "D:\\Zepto N\\packages\\research-prompts\\src\\index.ts",
+        "D:\\Zepto N\\packages\\research-prompts\\src\\index.ts",
+        "D:\\Zepto N\\packages\\research-prompts\\src\\index.ts",
+        "D:\\Zepto N\\packages\\research-prompts\\src\\index.ts"
+      ]
+    },
+    {
+      "path": "packages\\shared-config\\src\\index.test.ts",
+      "lineCount": 62,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\packages\\shared-config\\src\\index.test.ts",
+        "D:\\Zepto N\\apps\\research-web\\.next\\dev\\types\\routes.d.ts",
+        "D:\\Zepto N\\apps\\research-web\\.next\\types\\routes.d.ts"
+      ]
+    },
+    {
+      "path": "packages\\shared-config\\src\\index.ts",
+      "lineCount": 161,
+      "functionCount": 14,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\packages\\shared-config\\src\\index.ts",
+        "D:\\Zepto N\\packages\\shared-config\\src\\index.ts"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\.next\\dev\\types\\cache-life.d.ts",
+      "lineCount": 146,
+      "functionCount": 8,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\.next\\dev\\types\\cache-life.d.ts",
+        "D:\\Zepto N\\apps\\research-web\\.next\\types\\cache-life.d.ts"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\.next\\dev\\types\\routes.d.ts",
+      "lineCount": 64,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\.next\\dev\\types\\routes.d.ts",
+        "D:\\Zepto N\\apps\\research-web\\.next\\types\\routes.d.ts"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\.next\\dev\\types\\validator.ts",
+      "lineCount": 116,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\.next\\dev\\types\\validator.ts",
+        "D:\\Zepto N\\apps\\research-web\\.next\\dev\\types\\validator.ts",
+        "D:\\Zepto N\\apps\\research-web\\.next\\types\\validator.ts",
+        "D:\\Zepto N\\apps\\research-web\\.next\\types\\validator.ts"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\.next\\types\\cache-life.d.ts",
+      "lineCount": 146,
+      "functionCount": 8,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\.next\\dev\\types\\cache-life.d.ts",
+        "D:\\Zepto N\\apps\\research-web\\.next\\types\\cache-life.d.ts"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\.next\\types\\routes.d.ts",
+      "lineCount": 64,
+      "functionCount": 2,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\.next\\dev\\types\\routes.d.ts",
+        "D:\\Zepto N\\apps\\research-web\\.next\\types\\routes.d.ts"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\.next\\types\\validator.ts",
+      "lineCount": 116,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\.next\\dev\\types\\validator.ts",
+        "D:\\Zepto N\\apps\\research-web\\.next\\dev\\types\\validator.ts",
+        "D:\\Zepto N\\apps\\research-web\\.next\\types\\validator.ts",
+        "D:\\Zepto N\\apps\\research-web\\.next\\types\\validator.ts"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\next-env.d.ts",
+      "lineCount": 7,
+      "functionCount": 0,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "apps\\research-web\\next.config.ts",
+      "lineCount": 5,
+      "functionCount": 0,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-api\\src\\index.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\factory.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\ai\\structured-stage.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-pipeline.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\analysis-scale.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\evidence-extractor.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\insight-generation.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\mvp-analysis.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\dist\\theme-clustering.d.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\factory.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\ai\\structured-stage.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\analysis-pipeline.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\evidence-extractor.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\frozen-corpus-live.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\insight-generation.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\theme-clustering.ts",
+        "D:\\Zepto N\\apps\\research-web\\next.config.ts"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\collect\\page.tsx",
+      "lineCount": 3,
+      "functionCount": 1,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\collect\\workspace.tsx",
+      "lineCount": 57,
+      "functionCount": 4,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\collect\\workspace.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\explorer.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\[id]\\evidence-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\overview.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\run-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\run-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\themes-index.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\[id]\\theme-detail.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\evidence\\explorer.tsx",
+      "lineCount": 24,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\explorer.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\[id]\\evidence-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\run-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\[id]\\theme-detail.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\evidence\\page.tsx",
+      "lineCount": 3,
+      "functionCount": 1,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\evidence\\[id]\\evidence-detail.tsx",
+      "lineCount": 19,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\[id]\\evidence-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\[id]\\evidence-detail.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\evidence\\[id]\\page.tsx",
+      "lineCount": 3,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\[id]\\page.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\page.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\[id]\\page.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\layout.tsx",
+      "lineCount": 12,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\layout.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\run-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\components\\app-shell.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\overview.tsx",
+      "lineCount": 25,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\overview.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\run-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\themes-index.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\page.tsx",
+      "lineCount": 3,
+      "functionCount": 1,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\runs\\[id]\\page.tsx",
+      "lineCount": 3,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\[id]\\page.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\page.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\[id]\\page.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\runs\\[id]\\run-detail.tsx",
+      "lineCount": 36,
+      "functionCount": 4,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\run-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\themes-index.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\themes\\page.tsx",
+      "lineCount": 3,
+      "functionCount": 1,
+      "maxImportDepth": 0
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\themes\\themes-index.tsx",
+      "lineCount": 14,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\run-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\themes-index.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\themes\\[id]\\page.tsx",
+      "lineCount": 3,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\mvp-analysis.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\evidence\\[id]\\page.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\runs\\[id]\\page.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\[id]\\page.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\app\\themes\\[id]\\theme-detail.tsx",
+      "lineCount": 22,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\[id]\\theme-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\components\\app-shell.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\components\\app-shell.tsx",
+      "lineCount": 25,
+      "functionCount": 1,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\apps\\research-web\\src\\app\\themes\\[id]\\theme-detail.tsx",
+        "D:\\Zepto N\\apps\\research-web\\src\\components\\app-shell.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\components\\ui.tsx",
+      "lineCount": 26,
+      "functionCount": 5,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\index.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\components\\ui.tsx"
+      ]
+    },
+    {
+      "path": "apps\\research-web\\src\\lib\\api.ts",
+      "lineCount": 30,
+      "functionCount": 4,
+      "maxImportDepth": 0,
+      "duplicateFunctions": [
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\fetch-public.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\fetch-public.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\firecrawl.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\adapters\\tavily.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\multi-source-coverage.test.ts",
+        "D:\\Zepto N\\services\\research-worker\\src\\tinyfish-client.ts",
+        "D:\\Zepto N\\apps\\research-web\\src\\lib\\api.ts"
+      ]
+    }
+  ]
+}

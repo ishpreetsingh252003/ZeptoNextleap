@@ -23,6 +23,7 @@
     "research:intake": "pnpm --filter @zepto/research-worker research:intake",
     "research:discover": "pnpm --filter @zepto/research-worker research:discover",
     "research:prioritize-candidates": "pnpm --filter @zepto/research-worker research:prioritize-candidates",
+    "research:opportunities": "pnpm --filter @zepto/research-worker research:opportunities",
     "research:fetch-approved": "pnpm --filter @zepto/research-worker research:fetch-approved"
   },
   "devDependencies": { "typescript": "^5.9.3" }

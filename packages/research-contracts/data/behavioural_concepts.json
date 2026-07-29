@@ -1,0 +1,32 @@
+[
+  {
+    "id": "loss_aversion",
+    "name": "Loss Aversion",
+    "description": "People prefer to avoid losses more than acquiring equivalent gains."
+  },
+  {
+    "id": "social_proof",
+    "name": "Social Proof",
+    "description": "People look to the behavior of others to guide their own actions."
+  },
+  {
+    "id": "risk_reduction",
+    "name": "Risk Reduction",
+    "description": "Features that reduce perceived risk increase adoption."
+  },
+  {
+    "id": "choice_overload",
+    "name": "Choice Overload",
+    "description": "Too many options can lead to decision paralysis."
+  },
+  {
+    "id": "first_purchase_trust",
+    "name": "First Purchase Trust",
+    "description": "Trust cues encourage first-time purchases."
+  },
+  {
+    "id": "habit_formation",
+    "name": "Habit Formation",
+    "description": "Repeated actions become automatic habits over time."
+  }
+]

@@ -1,4 +1,10 @@
+/**
+ * @module [LEGACY RUNTIME]
+ * Long-running database worker loop processing collection runs via PostgreSQL.
+ * Retained for database-driven execution mode; offline MVP pipeline uses CLI/deterministic commands.
+ */
 import { closeDb } from "@zepto/research-database";
+
 import { getServerEnv, loadRootEnv } from "@zepto/shared-config";
 import { claimNextRun, processRun } from "./pipeline.js";
 
