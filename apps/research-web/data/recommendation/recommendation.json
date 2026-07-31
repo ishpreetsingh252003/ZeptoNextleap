@@ -1,0 +1,102 @@
+{
+  "report": {
+    "title": "Final MVP Decision",
+    "project": "Zepto NextLeap Graduation Project",
+    "date": "July 2026",
+    "status": "Final — Decision Locked",
+    "source": "docs/MVP_RECOMMENDATION_REPORT.md and docs/FINAL_MVP_DECISION.md"
+  },
+  "hero": {
+    "id": "opp_quality_assurance",
+    "title": "Product-Quality Assurance & Authenticity Confidence for Category Trial",
+    "status": "Recommended for Implementation",
+    "mvpRole": "PRIMARY GRADUATION MVP",
+    "weightedScore": 4.85,
+    "weightedMax": 5,
+    "combinedScore": 85,
+    "combinedMax": 100,
+    "confidence": "High",
+    "tagline": "Removes the single largest behavioral barrier — fear of receiving counterfeit, expired, or sub-standard products — that prevents existing Zepto customers from trying non-grocery categories."
+  },
+  "whyThisWon": {
+    "businessValue": "Unlocking these categories directly expands Zepto's total addressable market per customer. Beauty and personal care alone is a $28B Indian market growing 39% YoY online. This is a growth play, not a defensive play.",
+    "userValue": "It removes the single largest behavioral barrier — fear of receiving counterfeit, expired, or sub-standard products — that prevents existing Zepto customers from trying non-grocery categories. The concern appears across beauty, personal care, supplements, baby care, pet care, and premium packaged goods.",
+    "behaviouralReasoning": "High-involvement items evoke acute Loss Aversion and Perceived Risk (Kahneman & Tversky, 1979). Explicit assurances lower risk perception in unfamiliar categories (Bauer, 1960); prominent quality seals credibly signal platform integrity (Spence, 1973); structural assurances drive initial purchase intention (McKnight et al., 2002).",
+    "evidence": {
+      "records": 27,
+      "sourceTypes": 4,
+      "theories": 10,
+      "caseStudies": 7,
+      "papers": 6,
+      "commerceInsights": 8
+    }
+  },
+  "supportingEvidence": {
+    "reviewsAnalysed": { "primary": 27, "corpus": 133 },
+    "sourceTypes": ["Google Play", "Reddit", "Trustpilot", "App Store"],
+    "theories": 10,
+    "caseStudies": 7,
+    "papers": 6,
+    "commerceInsights": 8
+  },
+  "comparisonTradeOffs": {
+    "opp_quality_assurance": "Wins on every weighted dimension — the strongest triangulation across evidence, theory, industry, and academic support.",
+    "opp_support_refund": "Defensive intervention — addresses what happens after a bad experience; business value is limited to churn reduction rather than new revenue.",
+    "opp_fulfillment_control": "Fatal weakness is implementation complexity — real-time substitution requires dark-store integration that would consume the entire graduation timeline.",
+    "opp_freshness_guarantee": "Narrow category scope (fresh produce, dairy, meat only); many trust mechanisms overlap with the primary MVP.",
+    "opp_category_onboarding": "Weakest evidence base (14 records); downstream of the trust problem — customers first need to trust product quality."
+  },
+  "decisionScores": {
+    "opp_quality_assurance": 4.85,
+    "opp_support_refund": 3.8,
+    "opp_fulfillment_control": 3.6,
+    "opp_freshness_guarantee": 3.3,
+    "opp_category_onboarding": 3.3
+  },
+  "assumptions": [
+    "Category trial is primarily blocked by trust, not price or awareness. This assumption is supported by the evidence base (27 records citing quality/authenticity concerns vs. minimal price-related friction in non-grocery categories).",
+    "Visual trust badges measurably reduce perceived risk. Supported by Signaling Theory (Spence, 1973) and Initial Trust Formation Model (McKnight et al., 2002). Requires A/B validation.",
+    "Existing Zepto grocery customers are the target audience for category expansion. The evidence base primarily captures existing users expressing hesitation about specific categories, not first-time platform adopters.",
+    "Zepto has (or can establish) supply-chain controls to back authenticity claims for non-grocery categories. This requires commercial agreements with brand partners.",
+    "Post-delivery resolution can be handled within existing OMS. The MVP assumes Zepto's order management system supports instant refund/replacement for quality issues without manual intervention.",
+    "The 10-minute delivery promise is not undermined by adding quality assurance steps. The intervention is UX-level; it does not change picking or delivery workflows."
+  ],
+  "outlook": {
+    "expectedUserOutcome": "First-time trial of high-involvement categories becomes friction-free: category-shelf assurance and product provenance reduce perceived risk, and a single-tap resolution entrypoint protects buyers after delivery.",
+    "expectedBusinessOutcome": "Expands total addressable market per customer by unlocking high-margin non-grocery categories (beauty, personal care, baby care, wellness); measured by the percentage of Monthly Active Customers purchasing from at least one lifetime-new category per month.",
+    "primaryMetric": "Percentage of Monthly Active Customers purchasing from at least one lifetime-new category per month.",
+    "guardrailMetric": "Post-delivery refund/issue request rate must remain < 3%.",
+    "risks": [
+      {
+        "risk": "Brands refuse to be listed alongside an authenticity badge without formal partnership",
+        "likelihood": "Medium",
+        "impact": "High",
+        "mitigation": "Start with first-party / Zepto-sourced inventory; expand to third-party with commercial agreements"
+      },
+      {
+        "risk": "Refund abuse through the \"instant resolution\" entrypoint",
+        "likelihood": "Medium",
+        "impact": "Medium",
+        "mitigation": "Implement abuse detection; cap resolution frequency per customer; require photo evidence"
+      },
+      {
+        "risk": "Quality assurance badges do not move the category trial metric",
+        "likelihood": "Low",
+        "impact": "High",
+        "mitigation": "A/B test badge variants before full rollout; measure pre/post category conversion"
+      },
+      {
+        "risk": "Operational data (batch origins, expiry windows) is not available in the current dark-store system",
+        "likelihood": "Medium",
+        "impact": "Medium",
+        "mitigation": "Limit initial scope to categories where data is available; add manual override for data-gap items"
+      },
+      {
+        "risk": "Existing customers do not perceive non-grocery categories as relevant to their needs",
+        "likelihood": "Low",
+        "impact": "Medium",
+        "mitigation": "Combine with targeted category discovery; address awareness alongside trust"
+      }
+    ]
+  }
+}

@@ -5,6 +5,7 @@ import { ZodError, z } from "zod";
 import { createCollectionRunSchema, createProjectSchema, reviewerStatusSchema } from "@zepto/research-contracts";
 import { analysisRuns, collectionRuns, evidenceItems, getDb, projects, reviewDecisions, sources, themeEvidence, themes } from "@zepto/research-database";
 import { isSelectedAiModelConfigured, isSelectedAiProviderConfigured, type ServerEnv } from "@zepto/shared-config";
+import { createPipelineRouter } from "./pipeline-routes.js";
 
 const idSchema = z.string().uuid();
 
@@ -126,6 +127,8 @@ export function createApp(env: ServerEnv): express.Express {
     });
     response.status(201).json({ ok: true });
   });
+
+  app.use("/v1", createPipelineRouter());
 
   app.use((error: unknown, _request: express.Request, response: express.Response, _next: express.NextFunction) => {
     if (error instanceof ZodError) return response.status(400).json({ error: "INVALID_REQUEST", message: "The request did not match the research contract.", issues: error.issues });

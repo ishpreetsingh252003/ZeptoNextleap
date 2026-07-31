@@ -47,6 +47,9 @@ research/discovery-output/
 research/opportunity-output/
 **/*category-evidence-import*.json
 
+# Local pipeline run history and generated synthesis artifacts
+apps/research-web/data/runs/
+
 # IDE and editor files
 .idea/
 .vscode/

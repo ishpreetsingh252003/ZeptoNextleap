@@ -1,12 +1,172 @@
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000";
 
-export type Project = { id: string; name: string; description: string | null; datasetLabel: string | null; createdAt: string };
-export type Run = { id: string; projectId: string; sourceType: string; status: string; currentStage: string | null; sourceCount: number; duplicateCount: number; evidenceCount: number; themeCount: number; errorCode: string | null; errorMessage: string | null; createdAt: string; completedAt: string | null };
-export type Source = { id: string; url: string; canonicalUrl: string; platform: string; title: string | null; sourceType: string; publicationDate: string | null; capturedAt: string; accessMethod: string; policyNote: string };
-export type EvidenceItem = { id: string; neutralParaphrase: string; minimalExcerpt: string; categoryGroup: string; shoppingMission: string; behavioralCodes: string[]; interpretationCertainty: string; outcome: string | null; jtbd: string | null; mentalModel: string | null; applicability: string; transferRationale: string; evidenceValence: string; reviewerStatus: string; limitations: string };
-export type EvidenceRow = { item: EvidenceItem; source: Pick<Source, "id" | "url" | "platform" | "title" | "publicationDate" | "capturedAt" | "policyNote"> };
-export type Theme = { id: string; title: string; summary: string; behavioralMechanism: string; applicability: string; transferRationale: string; evidenceStrength: string; strengthRationale: string; limitations: string; claimStatus: string; reviewerStatus: string };
-export type AnalysisRun = { id: string; stage: string; provider: string; model: string; promptVersion: string; attemptCount: number; status: string; errorMessage: string | null; startedAt: string; completedAt: string | null };
+export type DiscoveryConfig = { objective: string; company: string; country: string; dateRange: string; minRating: number; maxReviews: number; sources: string[] };
+export type DiscoveryStatus = { available: boolean; outputFiles: string[]; generatedOutputs: string[]; evidenceCount: number; sourceCount: number; queryCount: number; lastUpdated: string | null };
+export type DiscoveryStageId = "preparing" | "searching" | "collecting" | "scoring" | "opportunities" | "finalizing";
+export type DiscoveryStageEvent = { type: "stage"; stage: DiscoveryStageId; status: "active" | "done"; message: string; at: string };
+export type DiscoveryRunSummary = {
+  totalSources: number;
+  totalEvidence: number;
+  matchedEvidence: number;
+  queriesAvailable: number;
+  reviewsCollected: number;
+  opportunitiesFound: number;
+};
+export type DiscoveryRunPayload = {
+  runId: string;
+  config: Pick<DiscoveryConfig, "company" | "country" | "dateRange" | "sources" | "objective">;
+  summary: DiscoveryRunSummary;
+  evidence: {
+    id: string;
+    excerpt: string;
+    paraphrase: string;
+    category: string;
+    mission: string;
+    sentiment: string;
+    certainty: string;
+    sourceType: string;
+    sourceUrl: string;
+    date: string;
+    reviewerStatus: string;
+    source: { title: string; platform: string; status: string } | null;
+  }[];
+  prioritization: {
+    shortlist: { id: string; category: string; score: number; band: string; reasons: string[]; flags: string[]; action: string; url: string; snippet: string }[];
+    bands: Record<string, number>;
+    weakAreas: string[];
+  } | null;
+  opportunities: { id: string; title: string; combinedScore: number; evidenceCount: number; confidenceLevel: string }[];
+  outputs: Record<string, string>;
+  durationMs: number;
+};
+export type HistoryRun = {
+  id: string;
+  timestamp: string;
+  status: "completed" | "failed";
+  config: DiscoveryConfig;
+  durationMs: number;
+  reviewsCollected: number;
+  opportunitiesFound: number;
+  outputs: Record<string, string>;
+};
+export type Review = { excerpt: string; category: string; sentiment: "positive" | "negative" | "neutral"; confidence: number; source: string; url: string; title: string | null; date: string; reviewerStatus: string };
+
+export type BehaviorRecord = { id: string; theme: string; summary: string; source: string; opportunityIds: string[]; reviewed: boolean; notes: string };
+export type ThemeExample = { id: string; excerpt: string; category: string; sourceType: string; date: string };
+export type OpportunityRef = { id: string; label: string };
+export type AiTheme = {
+  name: string;
+  count: number;
+  distinctSources: number;
+  sourceTypes: string[];
+  categories: string[];
+  strength: "High" | "Medium" | "Low";
+  examples: ThemeExample[];
+  theoryThemes: string[];
+  theories: BehaviorRecord[];
+  opportunities: OpportunityRef[];
+};
+export type InsightsReport = {
+  executiveSummary: {
+    evidenceCount: number;
+    sourceCount: number;
+    sourceTypes: Record<string, number>;
+    categories: Record<string, number>;
+    sentiment: Record<string, number>;
+    topThemes: { name: string; count: number; strength: string }[];
+    topCategories: string[];
+    knowledgeCounts: { theories: number; commerceInsights: number; caseStudies: number; papers: number };
+    strengthDistribution: { high: number; medium: number; low: number };
+    narrative: string[];
+  };
+  aiThemes: AiTheme[];
+  behaviouralTheories: BehaviorRecord[];
+  commerceInsights: BehaviorRecord[];
+  industryCaseStudies: BehaviorRecord[];
+  researchPapers: BehaviorRecord[];
+};
+
+export type Opportunity = {
+  id: string;
+  rank: number;
+  title: string;
+  headline: string;
+  combinedScore: number;
+  confidenceLevel: "high" | "med_high" | "medium";
+  mvpRole: string;
+  evidenceCount: number;
+  sourceBreakdown: Record<string, number>;
+  theoryMatches: number;
+  caseStudyMatches: number;
+  academicMatches: number;
+  problem: string;
+  categories: string[];
+  businessImpact: string;
+  userImpact: string;
+  behaviouralTheories: string[];
+  industrySupport: string[];
+  academicSupport: string[];
+  evidenceGaps: string[];
+  recommendedMvpFit: string;
+  proposedUserFlow?: string[];
+  successMetrics?: string[];
+  supportingThemes: { theme: string; count: number }[];
+  confidence: "High" | "Med-High" | "Medium";
+  evidenceStrength: "Very Strong" | "Strong" | "Moderate" | "Emerging";
+  support: { theories: number; caseStudies: number; papers: number };
+};
+export type OpportunityReport = {
+  report: { title: string; project: string; date: string; status: string; executiveSummary: string };
+  opportunities: Opportunity[];
+};
+
+export type RecommendationEvidence = {
+  records: number;
+  sourceTypes: number;
+  theories: number;
+  caseStudies: number;
+  papers: number;
+  commerceInsights: number;
+};
+export type RecommendationRisk = { risk: string; likelihood: string; impact: string; mitigation: string };
+export type RecommendationReport = {
+  report: { title: string; project: string; date: string; status: string; source: string };
+  hero: {
+    id: string;
+    title: string;
+    status: string;
+    mvpRole: string;
+    weightedScore: number;
+    weightedMax: number;
+    combinedScore: number;
+    combinedMax: number;
+    confidence: string;
+    tagline: string;
+  };
+  whyThisWon: {
+    businessValue: string;
+    userValue: string;
+    behaviouralReasoning: string;
+    evidence: RecommendationEvidence;
+  };
+  supportingEvidence: {
+    reviewsAnalysed: { primary: number; corpus: number };
+    sourceTypes: string[];
+    theories: number;
+    caseStudies: number;
+    papers: number;
+    commerceInsights: number;
+  };
+  assumptions: string[];
+  outlook: {
+    expectedUserOutcome: string;
+    expectedBusinessOutcome: string;
+    primaryMetric: string;
+    guardrailMetric: string;
+    risks: RecommendationRisk[];
+  };
+  comparison: (Opportunity & { weightedScore: number; tradeOff: string })[];
+};
 
 export class ApiError extends Error {
   constructor(message: string, public readonly code?: string, public readonly status?: number) { super(message); }

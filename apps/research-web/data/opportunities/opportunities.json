@@ -1,0 +1,185 @@
+{
+  "report": {
+    "title": "MVP Recommendation Report",
+    "project": "Zepto NextLeap Graduation Project",
+    "date": "July 2026",
+    "status": "Final Research Phase — Consolidated Evidence & Behaviour Knowledge Base Recommendation",
+    "executiveSummary": "This report delivers the final, evidence-backed MVP recommendation for the Zepto NextLeap project. Integrating customer review data, qualitative interviews, structured behavioural psychology theories, e-commerce industry case studies, and academic literature, we present a synthesis of top market opportunities. All findings are derived from human-reviewed evidence and structured knowledge base records (research/behavior/). No AI inference, live provider calls, scraping, or database alterations were performed."
+  },
+  "opportunities": [
+    {
+      "id": "opp_quality_assurance",
+      "rank": 1,
+      "title": "Product Quality & Authenticity Assurance for Category Trial",
+      "headline": "Product Quality & Authenticity Assurance",
+      "combinedScore": 85,
+      "confidenceLevel": "high",
+      "mvpRole": "PRIMARY MVP",
+      "evidenceCount": 27,
+      "sourceBreakdown": { "Google Play": 21, "Reddit": 4, "Trustpilot": 2 },
+      "theoryMatches": 10,
+      "caseStudyMatches": 7,
+      "academicMatches": 6,
+      "problem": "Fear of counterfeit, expired, or sub-standard non-grocery products (beauty, supplements, personal care) blocking first-time trial.",
+      "categories": ["Beauty", "Supplements", "Personal care", "Baby care", "Wellness"],
+      "businessImpact": "Expanding existing customers' baskets beyond daily staple groceries into high-margin categories (beauty, personal care, baby care, wellness).",
+      "userImpact": "Removes the fear of counterfeit, expired, or sub-standard products that currently blocks first-time trial of high-involvement items.",
+      "behaviouralTheories": [
+        "Loss Aversion (Kahneman & Tversky, 1979): The pain of receiving an unauthentic or damaged product is twice as intense as the satisfaction of fast delivery.",
+        "Perceived Risk Reduction Theory (Bauer, 1960): Explicit assurances lower risk perception in unfamiliar categories.",
+        "Signaling Theory (Spence, 1973): Prominent quality seals credibly signal platform integrity."
+      ],
+      "industrySupport": [
+        "Amazon A-to-z Guarantee: Mitigated seller authenticity doubts.",
+        "Nykaa Authenticity Badges: Built consumer trust in digital beauty retail.",
+        "Sephora Ingredient & Origin Cues: Reduced product suitability concerns."
+      ],
+      "academicSupport": [
+        "Gefen, Karahanna, & Straub (2003, MISQ): Structural assurances directly drive initial online purchase intention.",
+        "Kim, Ferrin, & Rao (2008, DSS): Perceived risk is the single largest negative barrier to e-commerce adoption."
+      ],
+      "evidenceGaps": ["Multi-category transaction frequency across non-grocery verticals."],
+      "recommendedMvpFit": "PRIMARY GRADUATION MVP — Category-shelf quality assurance badges, authenticity guarantees, and instant issue resolution eligibility.",
+      "proposedUserFlow": [
+        "Category Shelf Assurance: Displays prominent \"100% Authentic & Freshness Guaranteed\" badges directly on high-involvement product listings.",
+        "Product Page Provenance: Exposes batch origin, expiry/harvest window, and explicit zero-risk return eligibility.",
+        "Cart Commitment Cue: Re-affirms the quality guarantee for trial items during checkout.",
+        "Post-Delivery Resolution Entrypoint: Provides a single-tap resolution button in order history if quality expectations are not met."
+      ],
+      "successMetrics": [
+        "Primary Metric: Percentage of Monthly Active Customers purchasing from at least one lifetime-new category per month.",
+        "Guardrail Metric: Post-delivery refund/issue request rate (must remain < 3%)."
+      ]
+    },
+    {
+      "id": "opp_support_refund",
+      "rank": 2,
+      "title": "Refund & Resolution Transparency with Support Escalation Visibility",
+      "headline": "Refund & Resolution Transparency",
+      "combinedScore": 82,
+      "confidenceLevel": "high",
+      "mvpRole": "BACKUP MVP 1",
+      "evidenceCount": 45,
+      "sourceBreakdown": { "Customer Support": 22, "Refund/Resolution": 23 },
+      "theoryMatches": 6,
+      "caseStudyMatches": 6,
+      "academicMatches": 4,
+      "problem": "Unvouched refund timelines, unhelpful chat bots, and lack of escalation for defective items.",
+      "categories": ["All categories", "Customer support", "Refund & resolution"],
+      "businessImpact": "Post-purchase resolution heavily dictates memory and LTV; unresolved financial losses lead to instant app abandonment.",
+      "userImpact": "Users lack visibility into refund timelines and escalation when an item arrives defective.",
+      "behaviouralTheories": [
+        "Peak-End Rule (Kahneman et al., 1993): Post-purchase resolution heavily dictates memory and LTV.",
+        "Mental Accounting (Thaler, 1985): Unresolved financial losses lead to instant app abandonment.",
+        "Endowment Effect (Kahneman et al., 1990): Restoring value after defects protects platform retention."
+      ],
+      "industrySupport": [
+        "Blinkit 2-Minute Wallet Refund: Automated refund processing for delivery defects.",
+        "Nykaa Doorstep Return Pickup: Simplified returns for damaged items.",
+        "Target Drive Up Inspection: Immediate resolution prior to customer departure."
+      ],
+      "academicSupport": [
+        "Keaveney (1995, Journal of Marketing): Service resolution failures cause 45%+ of customer churn.",
+        "Reibstein (2002, IJEC): Support responsiveness impacts long-term loyalty more than price discounts."
+      ],
+      "evidenceGaps": ["Real-time customer support ticket resolution telemetry."],
+      "recommendedMvpFit": "BACKUP MVP 1 — Transparent self-service post-order resolution and escalation tracker."
+    },
+    {
+      "id": "opp_fulfillment_control",
+      "rank": 3,
+      "title": "Fulfillment Reliability & Real-Time Item Substitution Control",
+      "headline": "Fulfillment Reliability & Substitution Control",
+      "combinedScore": 78,
+      "confidenceLevel": "med_high",
+      "mvpRole": "BACKUP MVP 2",
+      "evidenceCount": 26,
+      "sourceBreakdown": { "Google Play": 25, "Apple App Store": 1 },
+      "theoryMatches": 4,
+      "caseStudyMatches": 4,
+      "academicMatches": 3,
+      "problem": "Unwanted item swaps, missing basket items, and out-of-stock cancellations without user approval.",
+      "categories": ["All categories", "Order accuracy"],
+      "businessImpact": "Order accuracy directly impacts repeat purchase intent; fulfillment predictability is the baseline for continuance.",
+      "userImpact": "Users are surprised by substitutions and missing items with no approval step before dispatch.",
+      "behaviouralTheories": [
+        "Expectation-Confirmation Theory (Bhattacherjee, 2001): Order accuracy directly impacts repeat purchase intent.",
+        "Hyperbolic Discounting (Laibson, 1997): Fulfillment delays or unexpected missing items cause acute dissatisfaction."
+      ],
+      "industrySupport": [
+        "Walmart In-Home Substitution Control: Pre-fulfillment substitution approval.",
+        "Instacart Real-Time Shopper Messaging: Live confirmation of alternative items.",
+        "Swiggy Instamart Live Substitution: Picker approval flow."
+      ],
+      "academicSupport": [
+        "Bhattacherjee (2001, MISQ): Expectation confirmation is the baseline for e-commerce continuance.",
+        "Ji & Wood (2007, JCP): Repeat ordering habits rely on friction-free fulfillment predictability."
+      ],
+      "evidenceGaps": ["Live dark-store inventory availability feeds."],
+      "recommendedMvpFit": "BACKUP MVP 2 — Pre-checkout substitution preferences and picker confirmation."
+    },
+    {
+      "id": "opp_freshness_guarantee",
+      "rank": 4,
+      "title": "Guaranteed Freshness & Quality Provenance for Perishable Goods",
+      "headline": "Guaranteed Freshness & Quality Provenance",
+      "combinedScore": 74,
+      "confidenceLevel": "medium",
+      "mvpRole": "Vertical Feature",
+      "evidenceCount": 21,
+      "sourceBreakdown": { "Google Play": 19, "Trustpilot": 2 },
+      "theoryMatches": 3,
+      "caseStudyMatches": 4,
+      "academicMatches": 2,
+      "problem": "Short shelf-life items, spoiled produce, and inability to inspect physical goods prior to 10-minute delivery.",
+      "categories": ["Fresh produce", "Dairy", "Meat"],
+      "businessImpact": "Perceived freshness strongly dictates long-term platform loyalty and repeat grocery order frequency.",
+      "userImpact": "A single bad produce experience disproportionately deters future fresh grocery orders.",
+      "behaviouralTheories": [
+        "Availability Bias (Tversky & Kahneman, 1973): Single bad produce experience disproportionately deters future fresh grocery orders.",
+        "Framing Effect (Tversky & Kahneman, 1981): 100% Freshness Guarantee framing reduces trial anxiety."
+      ],
+      "industrySupport": [
+        "Instacart 100% Freshness Guarantee: Instant replacement for spoiled items.",
+        "BigBasket Doorstep Inspection: Quality verification at handover.",
+        "Blinkit Farm Sourcing Badges: Explicit harvest date disclosures."
+      ],
+      "academicSupport": [
+        "Verhoef & Langerak (2001, IJRDM): Perceived freshness uncertainty is the primary barrier to online grocery adoption."
+      ],
+      "evidenceGaps": ["Operational dark-store batch date tracking metrics."],
+      "recommendedMvpFit": "Specialized category expansion enhancement for Fresh & Produce verticals."
+    },
+    {
+      "id": "opp_category_onboarding",
+      "rank": 5,
+      "title": "Guided Category Onboarding & Trial Incentive Badging",
+      "headline": "Guided Category Onboarding",
+      "combinedScore": 70,
+      "confidenceLevel": "medium",
+      "mvpRole": "Shelf UX Feature",
+      "evidenceCount": 14,
+      "sourceBreakdown": { "Manual pilot & review samples": 14 },
+      "theoryMatches": 5,
+      "caseStudyMatches": 3,
+      "academicMatches": 3,
+      "problem": "Hesitation in transitioning from core daily grocery items to high-value secondary categories.",
+      "categories": ["All categories", "Secondary category discovery"],
+      "businessImpact": "Cross-category basket expansion; unstructured catalog navigation increases drop-off.",
+      "userImpact": "Users hesitate to explore high-value secondary categories without trial cues or structure.",
+      "behaviouralTheories": [
+        "Social Proof (Cialdini, 1984): Buyers rely on peer reviews when exploring novel categories.",
+        "Choice Overload / Hick-Hyman Law (Iyengar & Lepper, 2000; Hick, 1952): Unstructured catalog navigation increases drop-off."
+      ],
+      "industrySupport": [
+        "Target Circle 360: Category trial cross-promotions.",
+        "Amazon Pantry Progress Indicators: Basket expansion cues."
+      ],
+      "academicSupport": [
+        "Chevalier & Mayzlin (2006, JMR): User-generated reviews significantly accelerate category trial."
+      ],
+      "evidenceGaps": ["Funnel conversion analytics for cross-category discovery."],
+      "recommendedMvpFit": "Supplemental feature for category discovery shelves."
+    }
+  ]
+}
