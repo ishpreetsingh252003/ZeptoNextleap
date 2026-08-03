@@ -69,6 +69,7 @@ export type RunResult = {
     matchedEvidence: number;
     queriesAvailable: number;
     reviewsCollected: number;
+    mode: "live" | "cached" | "verified";
     opportunitiesFound: number;
     themesFound: number;
     behaviorSignals: number;
@@ -85,6 +86,8 @@ export type RunResult = {
     mission: string;
     sentiment: string;
     certainty: string;
+    behavioralCodes: string[];
+    confidence: number;
     sourceType: string;
     sourceUrl: string;
     date: string;
@@ -128,6 +131,7 @@ function relToRoot(root: string, absPath: string): string {
 }
 
 function mapEvidenceRow(row: Record<string, string>, sourceLogMap: Map<string, Record<string, string>>, index: number) {
+  const behavioralCodes = (row.behavioral_codes ?? "").split(";").map((c) => c.trim()).filter(Boolean);
   return {
     id: row.evidence_id ?? "",
     excerpt: row.minimal_permitted_excerpt ?? "",
@@ -136,6 +140,8 @@ function mapEvidenceRow(row: Record<string, string>, sourceLogMap: Map<string, R
     mission: row.shopping_mission ?? "",
     sentiment: row.evidence_valence ?? "",
     certainty: row.interpretation_certainty ?? "",
+    behavioralCodes,
+    confidence: row.interpretation_certainty === "Explicit" ? 0.9 : row.interpretation_certainty === "Strongly implied" ? 0.7 : 0.5,
     sourceType: row.source_type ?? "",
     sourceUrl: row.source_url ?? "",
     date: row.publication_date ?? "",
@@ -155,14 +161,6 @@ function parseDateFilter(config: DiscoveryConfig): { dateFrom: string | null; da
     dateFrom: valid(config.dateFrom) ? config.dateFrom as string : null,
     dateTo: valid(config.dateTo) ? config.dateTo as string : null,
   };
-}
-
-function inDateRange(date: string | undefined, dateFrom: string | null, dateTo: string | null): boolean {
-  const value = (date ?? "").trim().slice(0, 10);
-  if (!value) return dateFrom === null && dateTo === null;
-  if (dateFrom && value < dateFrom) return false;
-  if (dateTo && value > dateTo) return false;
-  return true;
 }
 
 function heuristicBehavioralCodes(rating: number | undefined): string {
@@ -333,8 +331,27 @@ function toCandidates(rows: readonly Record<string, string>[]): ResearchCandidat
   }));
 }
 
-function loadBehaviourKnowledge(): BehaviourKnowledgeRecord[] {
-  const records: BehaviourKnowledgeRecord[] = [];
+function buildRunSourceLog(rows: readonly Record<string, string>[]): Record<string, string>[] {
+  const seen = new Set<string>();
+  const out: Record<string, string>[] = [];
+  for (const row of rows) {
+    const url = row.source_url ?? "";
+    const key = url || `${row.platform ?? ""}|${row.source_type ?? ""}`;
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push({
+      source_id: `run-${out.length + 1}`,
+      source_url: url,
+      source_title: row.source_title ?? row.platform ?? row.source_type ?? "Public source",
+      platform: row.platform ?? "",
+      source_type: row.source_type ?? "",
+      review_status: row.reviewer_status ?? "Retained",
+    });
+  }
+  return out;
+}
+
+function loadBehaviourKnowledge(): BehaviourKnowledgeRecord[] {  const records: BehaviourKnowledgeRecord[] = [];
   for (const { file, bundled, dataset } of KNOWLEDGE_FILES) {
     const path = resolveInput(file, bundled);
     if (!path) {
@@ -423,12 +440,12 @@ export async function runPipeline(
   stage("collecting", "active", "Collecting reviews");
   const evidenceRows = parse(readFileSync(evidencePath, "utf8"), { columns: true, skip_empty_lines: true, bom: true, trim: true }) as Record<string, string>[];
   const { dateFrom, dateTo } = parseDateFilter(config);
-  const dateFiltered = evidenceRows.filter((row) => inDateRange(row.publication_date, dateFrom, dateTo));
   const maxRecords = Math.min(Math.max(config.maxReviews || 100, 1), 100);
   const minRating = config.minRating || 1;
 
   let liveRows: Record<string, string>[] = [];
   let liveMode: DiscoverySourceDiagnostic["mode"] = "dataset";
+  let liveDocCount = 0;
   if (config.sources.includes("play_store")) {
     loadRootEnv();
     const cached = readLiveCollectionCache({ dateFrom, dateTo });
@@ -448,6 +465,7 @@ export async function runPipeline(
             fetchLiveGooglePlayReviews({ dateFrom, dateTo, maxRecords, timeoutMs }),
             Math.min(timeoutMs, 5000)
           );
+          liveDocCount = docs.length;
           liveRows = docs
             .filter((doc) => (doc.sourceMetadata?.rating ?? 5) >= minRating)
             .map((doc) => liveReviewToEvidenceRow(doc));
@@ -462,8 +480,10 @@ export async function runPipeline(
     }
   }
 
+  // The bundled corpus represents historical verified research: date filters
+  // only ever apply to a live scrape, never to the verified dataset.
   const corpusFor = (source: string) =>
-    dateFiltered.filter((row) => {
+    evidenceRows.filter((row) => {
       const names = new Set(SOURCE_MAP[source] ?? []);
       return names.has(row.platform ?? "") || names.has(row.source_type ?? "");
     });
@@ -487,7 +507,15 @@ export async function runPipeline(
       addRows(corpusFor(source));
     }
   }
-  stage("collecting", "done", `Collected ${matchedEvidence.length} reviews for analysis`);
+
+  const datasetMode: "live" | "cached" | "verified" =
+    liveRows.length > 0 ? (liveMode === "cached" ? "cached" : "live") : "verified";
+  const datasetLabel = datasetMode === "live" ? "Live" : datasetMode === "cached" ? "Cached" : "Bundled";
+
+  stage("collecting", "done", `Collected ${matchedEvidence.length} reviews for analysis (${datasetLabel} dataset)`);
+  console.log(
+    `[Discovery] Mode: ${datasetLabel} | Collected: ${liveDocCount || matchedEvidence.length} | Analysed: ${matchedEvidence.length} | Evidence: ${matchedEvidence.length}`
+  );
 
   const diagnostics: DiscoverySourceDiagnostic[] = config.sources.map((source) => {
     const label = SOURCE_LABELS[source] ?? source;
@@ -543,8 +571,18 @@ export async function runPipeline(
   stage("opportunities", "done", `Identified ${opportunityReport.topOpportunities.length} opportunity areas`);
 
   stage("finalizing", "active", "Generating recommendation");
-  const sources = loadSynthesisSources();
-  const synthesis = buildSynthesis(sources) as SynthesisPayload;
+  // The synthesis must be built from the same evidence set the run analysed,
+  // never from the bundled corpus.
+  const bundledSources = loadSynthesisSources();
+  const runSourceLog = buildRunSourceLog(matchedEvidence);
+  const synthesis = buildSynthesis({
+    evidenceRows: matchedEvidence,
+    sourceLogRows: runSourceLog,
+    theories: bundledSources.theories,
+    commerce: bundledSources.commerce,
+    caseStudies: bundledSources.caseStudies,
+    papers: bundledSources.papers,
+  }) as SynthesisPayload;
   synthesis.scoringSummary = {
     evidenceCount: opportunityReport.evidenceCount,
     opportunities: opportunityReport.topOpportunities.map((opportunity) => ({
@@ -584,7 +622,9 @@ export async function runPipeline(
     status: "completed" as const,
     config,
     durationMs,
+    mode: datasetMode,
     reviewsCollected: matchedEvidence.length,
+    behaviorSignals: behaviorCodes.size,
     opportunitiesFound: opportunityReport.topOpportunities.length,
     themesFound: themesFound.size,
     qualityLevel: quality.level,
@@ -615,6 +655,7 @@ export async function runPipeline(
       matchedEvidence: matchedEvidence.length,
       queriesAvailable: queryPackRows.length,
       reviewsCollected: matchedEvidence.length,
+      mode: datasetMode,
       opportunitiesFound: opportunityReport.topOpportunities.length,
       themesFound: themesFound.size,
       behaviorSignals: behaviorCodes.size,

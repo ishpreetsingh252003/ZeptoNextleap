@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { readFileSync } from "fs";
 import { resolveInput, repoDir, latestFileIn } from "@/lib/repo-paths";
+import { getLatestRun } from "@/lib/run-history";
 
 export async function GET() {
   console.log("[discovery] Resolving research corpus status...");
@@ -48,6 +49,8 @@ export async function GET() {
     if (report) generatedOutputs.push("research/opportunity-output/" + report.split(/[\\/]/).pop());
   }
 
+  const latestRun = getLatestRun();
+
   return NextResponse.json({
     available: outputFiles.length > 0,
     outputFiles,
@@ -55,6 +58,17 @@ export async function GET() {
     evidenceCount,
     sourceCount,
     queryCount,
+    latestRun: latestRun
+      ? {
+          id: latestRun.id,
+          timestamp: latestRun.timestamp,
+          mode: latestRun.mode,
+          reviewsCollected: latestRun.reviewsCollected,
+          opportunitiesFound: latestRun.opportunitiesFound,
+          themesFound: latestRun.themesFound,
+          qualityLevel: latestRun.qualityLevel,
+        }
+      : null,
     lastUpdated: new Date().toISOString(),
   });
 }

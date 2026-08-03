@@ -34,6 +34,8 @@ const MODE_BADGES: Record<DiscoverySourceDiagnostic["mode"], { label: string; cl
 
 const QUALITY_TONE: Record<string, string> = { Excellent: "badge-success", Good: "badge-warning", Limited: "badge-neutral" };
 
+const DATASET_LABELS: Record<string, string> = { live: "Live Reviews", cached: "Cached Dataset", verified: "Verified Dataset" };
+
 const DATE_RANGE_LABELS: Record<string, string> = {
   last_30: "Last 30 Days",
   last_90: "Last 90 Days",
@@ -290,13 +292,18 @@ export function DiscoveryWorkspace() {
           <div className="summary-row"><span>High Confidence</span><strong>{result.summary.highConfidence}</strong></div>
           <div className="summary-row"><span>Sources</span><strong>{result.summary.sourceLabels.length > 0 ? result.summary.sourceLabels.join(", ") : "None"}</strong></div>
           <div className="summary-row"><span>Date Range</span><strong>{DATE_RANGE_LABELS[result.config.dateRange] ?? result.config.dateRange}</strong></div>
+          <div className="summary-row"><span>Dataset</span><strong>{DATASET_LABELS[result.summary.mode] ?? "Verified Dataset"} · {result.summary.matchedEvidence} {result.summary.matchedEvidence === 1 ? "Review" : "Reviews"}</strong></div>
         </div>
       </GlassCard>
 
       {result.diagnostics.length > 0 && <GlassCard className="panel" style={{ marginBottom: "20px" }}>
         <div className="section-header"><div><span className="eyebrow">Collection</span><h2>Source collection</h2><p>How each selected source contributed reviews to this run.</p></div></div>
         <div className="panel-pad" style={{ display: "grid", gap: "8px", paddingTop: 0 }}>
-          {result.diagnostics.map((d) => <div key={d.source} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "11.5px", flexWrap: "wrap" }}><span className={`badge ${MODE_BADGES[d.mode].cls}`}><span className="badge-dot" />{MODE_BADGES[d.mode].label}</span><strong>{d.label}</strong><span style={{ color: "var(--muted)" }}>{d.mode === "coming_soon" && d.collected === 0 ? "Coming soon" : `${d.collected} ${d.unit}`}</span></div>)}
+          {result.diagnostics.map((d) => {
+            const badge = MODE_BADGES[d.mode];
+            const countLabel = d.mode === "coming_soon" && d.collected === 0 ? "Coming soon" : `${d.collected} ${d.unit}`;
+            return <div key={d.source} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "11.5px", flexWrap: "wrap" }}><span className={`badge ${badge.cls}`}><span className="badge-dot" />{d.mode === "coming_soon" ? badge.label : `${badge.label} — ${countLabel}`}</span><strong>{d.label}</strong>{d.mode === "coming_soon" && d.collected === 0 ? <span style={{ color: "var(--muted)" }}>{countLabel}</span> : null}</div>;
+          })}
         </div>
       </GlassCard>}
 

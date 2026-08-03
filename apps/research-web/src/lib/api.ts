@@ -18,6 +18,7 @@ export type DiscoveryRunSummary = {
   matchedEvidence: number;
   queriesAvailable: number;
   reviewsCollected: number;
+  mode: "live" | "cached" | "verified";
   opportunitiesFound: number;
   themesFound: number;
   behaviorSignals: number;
@@ -39,6 +40,8 @@ export type DiscoveryRunPayload = {
     mission: string;
     sentiment: string;
     certainty: string;
+    behavioralCodes: string[];
+    confidence: number;
     sourceType: string;
     sourceUrl: string;
     date: string;
@@ -60,7 +63,9 @@ export type HistoryRun = {
   status: "completed" | "failed";
   config: DiscoveryConfig;
   durationMs: number;
+  mode: "live" | "cached" | "verified";
   reviewsCollected: number;
+  behaviorSignals: number;
   opportunitiesFound: number;
   themesFound: number;
   qualityLevel: "Excellent" | "Good" | "Limited";
@@ -69,6 +74,14 @@ export type HistoryRun = {
   outputs: Record<string, string>;
 };
 export type Review = { excerpt: string; category: string; sentiment: "positive" | "negative" | "neutral"; confidence: number; source: string; url: string; title: string | null; date: string; reviewerStatus: string };
+
+export type ReviewMeta = {
+  mode: "live" | "cached" | "verified";
+  label: string;
+  total: number;
+  shown: number;
+  dateFilterApplied: boolean;
+};
 
 export type BehaviorRecord = { id: string; theme: string; summary: string; source: string; opportunityIds: string[]; reviewed: boolean; notes: string };
 export type ThemeExample = { id: string; excerpt: string; category: string; sourceType: string; date: string };

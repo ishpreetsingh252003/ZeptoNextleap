@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { parse } from "csv-parse/sync";
 import { readFileSync } from "fs";
 import { resolveInput, repoDir, latestFileIn } from "@/lib/repo-paths";
+import { getLatestRun, loadResult } from "@/lib/run-history";
+import type { DiscoveryRunPayload, ReviewMeta } from "@/lib/api";
 
 function parseCsv(path: string | null): Record<string, string>[] {
   if (!path) return [];
@@ -13,21 +15,91 @@ function parseCsv(path: string | null): Record<string, string>[] {
   }
 }
 
+function inDateRange(date: string | undefined, dateFrom: string | null, dateTo: string | null): boolean {
+  const value = (date ?? "").trim().slice(0, 10);
+  if (!value) return dateFrom === null && dateTo === null;
+  if (dateFrom && value < dateFrom) return false;
+  if (dateTo && value > dateTo) return false;
+  return true;
+}
+
+function filtersFor(searchParams: URLSearchParams) {
+  return {
+    query: searchParams.get("query")?.toLowerCase() ?? "",
+    category: searchParams.get("category") ?? "",
+    source: searchParams.get("source") ?? "",
+    sentiment: searchParams.get("sentiment") ?? "",
+    dateFrom: searchParams.get("dateFrom"),
+    dateTo: searchParams.get("dateTo"),
+  };
+}
+
+function toReviewMeta(mode: ReviewMeta["mode"], label: string, total: number, shown: number, dateFilterApplied: boolean): ReviewMeta {
+  return { mode, label, total, shown, dateFilterApplied };
+}
+
 export async function GET(request: NextRequest) {
-  console.log("[reviews] Loading latest run...");
-  const evidencePath = resolveInput("research/pilot/evidence-items.csv", "pilot/evidence-items.csv");
-  const sourceLogPath = resolveInput("research/pilot/source-log.csv", "pilot/source-log.csv");
-  if (!evidencePath) {
-    console.log("[reviews] Evidence corpus is missing — returning empty reviews.");
-  } else {
-    console.log(`[reviews] Loading bundled reviews from ${evidencePath}.`);
+  const { searchParams } = new URL(request.url);
+  const { query, category, source, sentiment, dateFrom, dateTo } = filtersFor(searchParams);
+
+  const matches = (text: string | undefined, needle: string) => needle === "" || (text ?? "").toLowerCase().includes(needle);
+
+  // Prefer the latest run's analysed dataset — the single source of truth.
+  // As long as a run payload exists (even with zero evidence) it is served, so
+  // every stage stays anchored to the same dataset. Bundled data is only used
+  // when no run has been recorded yet.
+  const latestRun = getLatestRun();
+  const runResult = latestRun ? loadResult(latestRun.id) : null;
+  const hasRunPayload = runResult !== null && Array.isArray((runResult as DiscoveryRunPayload).evidence);
+  if (hasRunPayload) {
+    const runEvidence = (runResult as DiscoveryRunPayload).evidence;
+    const mode: ReviewMeta["mode"] = (runResult as DiscoveryRunPayload).summary?.mode ?? "verified";
+    const label = mode === "live" ? "Live Reviews" : mode === "cached" ? "Cached Research Dataset" : "Verified Research Dataset";
+    const dateFilterApplied = mode === "live" || mode === "cached";
+    console.log(`[reviews] Loading ${runEvidence.length} reviews from latest run ${latestRun?.id} (${label}).`);
+
+    const reviews = runEvidence
+      .filter((e) => {
+        if (query) {
+          const text = `${e.paraphrase ?? ""} ${e.excerpt ?? ""} ${e.behavioralCodes?.join(" ") ?? ""}`.toLowerCase();
+          if (!text.includes(query)) return false;
+        }
+        if (category && e.category?.toLowerCase() !== category.toLowerCase()) return false;
+        if (source && e.sourceType?.toLowerCase() !== source.toLowerCase()) return false;
+        if (sentiment && e.sentiment !== sentiment) return false;
+        if (dateFilterApplied && !inDateRange(e.date, dateFrom, dateTo)) return false;
+        return true;
+      })
+      .map((e) => ({
+        id: e.id,
+        excerpt: e.excerpt,
+        paraphrase: e.paraphrase,
+        category: e.category,
+        mission: e.mission,
+        behavioralCodes: e.behavioralCodes ?? [],
+        sentiment: e.sentiment,
+        certainty: e.certainty,
+        confidence: e.confidence,
+        sourceType: e.sourceType,
+        sourceUrl: e.sourceUrl,
+        date: e.date,
+        reviewerStatus: e.reviewerStatus,
+        source: e.source ? { title: e.source.title, platform: e.source.platform } : null,
+      }));
+
+    return NextResponse.json({
+      reviews,
+      meta: toReviewMeta(mode, label, runEvidence.length, reviews.length, dateFilterApplied),
+    });
   }
 
-  const { searchParams } = new URL(request.url);
-  const query = searchParams.get("query")?.toLowerCase() ?? "";
-  const category = searchParams.get("category") ?? "";
-  const source = searchParams.get("source") ?? "";
-  const sentiment = searchParams.get("sentiment") ?? "";
+  // No run has been recorded yet: fall back to the bundled verified dataset.
+  // Date filters do NOT apply to the verified research dataset.
+  console.log("[reviews] No run recorded yet — loading the bundled verified research dataset.");
+  const evidencePath = resolveInput("research/pilot/evidence-items.csv", "pilot/evidence-items.csv");
+  const sourceLogPath = resolveInput("research/pilot/source-log.csv", "pilot/source-log.csv");
+  const sourceLogRows = parseCsv(sourceLogPath);
+  const sourceMap = new Map(sourceLogRows.map((row) => [row.source_id, row]));
 
   const reviews: {
     id: string;
@@ -49,9 +121,6 @@ export async function GET(request: NextRequest) {
     priorityBand?: string;
     recommendedAction?: string;
   }[] = [];
-
-  const sourceLogRows = parseCsv(sourceLogPath);
-  const sourceMap = new Map(sourceLogRows.map((row) => [row.source_id, row]));
 
   for (const row of parseCsv(evidencePath)) {
     if (query) {
@@ -116,5 +185,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({ reviews });
+  console.log(`[reviews] Returning ${reviews.length} reviews from the bundled verified research dataset.`);
+  return NextResponse.json({
+    reviews,
+    meta: toReviewMeta("verified", "Verified Research Dataset", reviews.length, reviews.length, false),
+  });
 }

@@ -1,7 +1,9 @@
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
+import { join } from "path";
 import { parse } from "csv-parse/sync";
 import { resolveInput, repoDir, latestFileIn } from "@/lib/repo-paths";
 import { resolveDataFile } from "@/lib/data-paths";
+import { getLatestRun } from "@/lib/run-history";
 import type { OpportunityReport } from "@zepto/research-worker/dist/research/scoring/types";
 import type { Opportunity } from "@/lib/api";
 
@@ -91,15 +93,18 @@ export function latestScoredReport(): { report: OpportunityReport; runId: string
     console.log("[opportunities] No generated opportunity-output directory found — falling back to bundled data.");
     return null;
   }
-  const file = latestFileIn(dir, { suffix: "-opportunities.json" });
+  // Anchor to the latest run first, so every stage serves the same dataset.
+  const latestRun = getLatestRun();
+  const anchoredFile = latestRun ? join(dir, `${latestRun.id}-opportunities.json`) : null;
+  const file = anchoredFile && existsSync(anchoredFile) ? anchoredFile : latestFileIn(dir, { suffix: "-opportunities.json" });
   if (!file) {
     console.log("[opportunities] No generated -opportunities.json found — falling back to bundled data.");
     return null;
   }
   try {
     const parsed = JSON.parse(readFileSync(file, "utf-8")) as OpportunityReport;
-    const runId = file.split(/[\\/]/).pop()?.replace("-opportunities.json", "") ?? null;
-    console.log(`[opportunities] Loading latest scored report: ${file}`);
+    const runId = latestRun?.id ?? file.split(/[\\/]/).pop()?.replace("-opportunities.json", "") ?? null;
+    console.log(`[opportunities] Loading scored report ${file} (run ${runId ?? "unknown"}).`);
     return { report: parsed, runId };
   } catch (error) {
     console.error(`[opportunities] Could not parse scored report (${file}) — falling back to bundled data:`, error);

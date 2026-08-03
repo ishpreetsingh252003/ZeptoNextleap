@@ -26,6 +26,16 @@ type Review = {
   recommendedAction?: string;
 };
 
+type ReviewMeta = {
+  mode: "live" | "cached" | "verified";
+  label: string;
+  total: number;
+  shown: number;
+  dateFilterApplied: boolean;
+};
+
+type ReviewsResponse = { reviews: Review[]; meta: ReviewMeta };
+
 const CATEGORIES = ["all", "Cross-category", "Baby care", "Personal care", "Health and wellness", "Fresh produce", "Other / Home and kitchen"];
 
 type SortKey = "newest" | "confidence" | "discussed" | "negative" | "positive" | "theme";
@@ -38,6 +48,23 @@ const SORT_OPTIONS: { id: SortKey; label: string }[] = [
   { id: "positive", label: "Most positive" },
   { id: "theme", label: "Most referenced theme" },
 ];
+
+type DatePreset = "all_time" | "last_30" | "last_90";
+
+const DATE_OPTIONS: { id: DatePreset; label: string }[] = [
+  { id: "all_time", label: "All Time" },
+  { id: "last_30", label: "Last 30 Days" },
+  { id: "last_90", label: "Last 90 Days" },
+];
+
+const toDateString = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+function presetToRange(preset: DatePreset): { dateFrom: string | null; dateTo: string | null } {
+  const today = new Date();
+  if (preset === "last_30") return { dateFrom: toDateString(new Date(today.getTime() - 30 * 86400000)), dateTo: toDateString(today) };
+  if (preset === "last_90") return { dateFrom: toDateString(new Date(today.getTime() - 90 * 86400000)), dateTo: toDateString(today) };
+  return { dateFrom: null, dateTo: null };
+}
 
 function sortReviews(reviews: Review[], sort: SortKey): Review[] {
   const sorted = [...reviews];
@@ -70,8 +97,10 @@ export function ReviewsViewer() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
   const [source, setSource] = useState("all");
+  const [datePreset, setDatePreset] = useState<DatePreset>("all_time");
   const [sort, setSort] = useState<SortKey>("newest");
   const [reviews, setReviews] = useState<Review[] | null>(null);
+  const [meta, setMeta] = useState<ReviewMeta | null>(null);
   const [error, setError] = useState<string>();
   const hasFilters = query !== "" || category !== "all" || source !== "all";
 
@@ -80,11 +109,17 @@ export function ReviewsViewer() {
     if (query) params.set("query", query);
     if (category !== "all") params.set("category", category);
     if (source !== "all") params.set("source", source);
+    const { dateFrom, dateTo } = presetToRange(datePreset);
+    if (dateFrom) params.set("dateFrom", dateFrom);
+    if (dateTo) params.set("dateTo", dateTo);
     fetch(`/api/reviews?${params.toString()}`, { cache: "no-store" })
       .then((r) => r.json())
-      .then((body) => setReviews(body.reviews))
+      .then((body: ReviewsResponse) => {
+        setReviews(body.reviews);
+        setMeta(body.meta);
+      })
       .catch((cause) => setError(cause instanceof Error ? cause.message : "Failed to load reviews."));
-  }, [query, category, source]);
+  }, [query, category, source, datePreset]);
 
   const sorted = reviews ? sortReviews(reviews, sort) : null;
 
@@ -94,8 +129,10 @@ export function ReviewsViewer() {
       <input className="input" placeholder="Search reviews..." aria-label="Search reviews" value={query} onChange={(e) => setQuery(e.target.value)} style={{ minWidth: "260px" }} />
       <select className="input" aria-label="Filter by category" value={category} onChange={(e) => setCategory(e.target.value)} style={{ width: "auto" }}>{CATEGORIES.map((c) => <option key={c} value={c}>{c === "all" ? "All categories" : c}</option>)}</select>
       <select className="input" aria-label="Filter by source" value={source} onChange={(e) => setSource(e.target.value)} style={{ width: "auto" }}><option value="all">All sources</option><option value="App-store review">App stores</option><option value="Public community thread">Reddit</option><option value="Consumer-review platform">Trustpilot</option></select>
+      <select className="input" aria-label="Filter by date" value={datePreset} onChange={(e) => setDatePreset(e.target.value as DatePreset)} style={{ width: "auto" }}>{DATE_OPTIONS.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}</select>
       <select className="input" aria-label="Sort reviews" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} style={{ width: "auto" }}>{SORT_OPTIONS.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}</select>
     </div>
+    {meta && <div className="research-rule" style={{ marginBottom: "16px" }}><strong>{meta.label}</strong><p>{meta.dateFilterApplied ? `${meta.shown} of ${meta.total} reviews in the selected date range.` : meta.mode === "verified" ? `${meta.total} reviews from the historical verified research dataset — date filters do not apply to verified research.` : `${meta.shown} of ${meta.total} reviews.`}</p></div>}
     {error && <div className="notice notice-error">{error}</div>}
     {!reviews ? <GlassCard className="panel-pad"><SkeletonRows count={5} /></GlassCard>
       : sorted && sorted.length === 0 ? <GlassCard className="panel-pad"><EmptyState

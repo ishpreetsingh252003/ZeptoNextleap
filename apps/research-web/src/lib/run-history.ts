@@ -9,7 +9,9 @@ export type RunManifest = {
   status: "completed" | "failed";
   config: DiscoveryConfig;
   durationMs: number;
+  mode: "live" | "cached" | "verified";
   reviewsCollected: number;
+  behaviorSignals: number;
   opportunitiesFound: number;
   themesFound: number;
   qualityLevel: "Excellent" | "Good" | "Limited";

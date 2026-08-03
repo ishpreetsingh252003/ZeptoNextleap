@@ -8,8 +8,10 @@ import { cachedJson } from "@/lib/client-cache";
 import { EmptyState, GlassCard, Metric, MetricsSkeleton, SectionHeader, SkeletonRows, StatusBadge } from "@/components/ui";
 
 type HistoryResponse = { runs: HistoryRun[]; latest: HistoryRun | null };
-type ReviewsResponse = { reviews: unknown[] };
+type ReviewsResponse = { reviews: unknown[]; meta?: { label: string; total: number; mode: "live" | "cached" | "verified" } };
 type OpportunityResponse = { report: { title: string; project: string; date: string; status: string; executiveSummary: string } | null; opportunities: Opportunity[] };
+
+const DATASET_LABELS: Record<string, string> = { live: "Live Reviews", cached: "Cached Dataset", verified: "Verified Dataset" };
 
 type DashboardData = {
   history: HistoryResponse | null;
@@ -75,7 +77,8 @@ export function Overview() {
   }
 
   const { history, reviews, status, insights, opportunities, recommendation } = data;
-  const reviewsCollected = reviews?.reviews.length ?? status?.evidenceCount ?? 0;
+  const reviewsCollected = reviews?.meta?.total ?? history?.latest?.reviewsCollected ?? reviews?.reviews.length ?? status?.evidenceCount ?? 0;
+  const reviewsDatasetLabel = reviews?.meta?.label ?? (history?.latest?.mode ? DATASET_LABELS[history.latest.mode] : "Verified Research Dataset");
   const sourcesConnected = status?.sourceCount ?? 0;
   const opportunitiesFound = opportunities?.opportunities.length ?? history?.latest?.opportunitiesFound ?? 0;
   const runCount = history?.runs.length ?? 0;
@@ -115,7 +118,7 @@ export function Overview() {
     )}
 
     <div className="metrics">
-      <Metric label="Reviews collected" value={reviewsCollected} detail="Reviewed evidence retained in the corpus" />
+      <Metric label="Reviews collected" value={reviewsCollected} detail={reviewsDatasetLabel} />
       <Metric label="Sources connected" value={sourcesConnected} detail="Public sources with retained evidence" />
       <Metric label="Opportunities found" value={opportunitiesFound} detail="Scored by the deterministic engine" />
       <Metric label="Discovery runs" value={runCount} detail={latest ? `Last run ${formatDuration(latest.durationMs)}` : "No runs in this workspace yet"} />
@@ -124,7 +127,7 @@ export function Overview() {
     <div className="grid-main">
       <section className="panel">
         <SectionHeader eyebrow="Recent activity" title="Discovery runs" description="Every pipeline execution, most recent first." action={<Link className="trace-link" href="/discovery">Open discovery <ArrowRight size={12} /></Link>} />
-        {history && history.runs.length === 0 ? <EmptyState title="No discovery runs yet" body="Configure a company, country, and date range to start collecting public reviews through the pipeline." action={{ href: "/discovery", label: "Start a discovery" }} /> : <div className="table-wrap"><table><thead><tr><th scope="col">Run</th><th scope="col">Sources</th><th scope="col">Reviews</th><th scope="col">Themes</th><th scope="col">Opportunities</th><th scope="col">Duration</th><th scope="col">Quality</th><th scope="col">Status</th></tr></thead><tbody>{(history?.runs ?? []).slice(0, 6).map((run) => <tr key={run.id}><td><span className="row-title">{runTitle(run)}</span><span className="row-meta">{formatDate(run.timestamp)} · {run.config.country}</span>{run.topOpportunityTitle ? <span className="row-meta" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 260 }}>MVP: {run.topOpportunityTitle}</span> : null}</td><td>{run.config.sources.length}</td><td>{run.reviewsCollected}</td><td>{run.themesFound ?? "—"}</td><td>{run.opportunitiesFound}</td><td>{formatDuration(run.durationMs)}</td><td>{run.qualityLevel ? <span className={`badge ${QUALITY_TONE[run.qualityLevel] ?? "badge-neutral"}`}><span className="badge-dot" />{run.qualityLevel}</span> : "—"}</td><td><StatusBadge status={run.status} /></td></tr>)}</tbody></table></div>}
+        {history && history.runs.length === 0 ? <EmptyState title="No discovery runs yet" body="Configure a company, country, and date range to start collecting public reviews through the pipeline." action={{ href: "/discovery", label: "Start a discovery" }} /> : <div className="table-wrap"><table><thead><tr><th scope="col">Run</th><th scope="col">Sources</th><th scope="col">Reviews</th><th scope="col">Themes</th><th scope="col">Signals</th><th scope="col">Opportunities</th><th scope="col">Duration</th><th scope="col">Quality</th><th scope="col">Status</th></tr></thead><tbody>{(history?.runs ?? []).slice(0, 6).map((run) => <tr key={run.id}><td><span className="row-title">{runTitle(run)}</span><span className="row-meta">{formatDate(run.timestamp)} · {run.config.country}</span>{run.mode ? <span className="row-meta">Dataset: {DATASET_LABELS[run.mode] ?? run.mode}</span> : null}{run.topOpportunityTitle ? <span className="row-meta" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 260 }}>MVP: {run.topOpportunityTitle}</span> : null}</td><td>{run.config.sources.length}</td><td>{run.reviewsCollected}</td><td>{run.themesFound ?? "—"}</td><td>{run.behaviorSignals ?? "—"}</td><td>{run.opportunitiesFound}</td><td>{formatDuration(run.durationMs)}</td><td>{run.qualityLevel ? <span className={`badge ${QUALITY_TONE[run.qualityLevel] ?? "badge-neutral"}`}><span className="badge-dot" />{run.qualityLevel}</span> : "—"}</td><td><StatusBadge status={run.status} /></td></tr>)}</tbody></table></div>}
       </section>
 
       <aside className="panel">
