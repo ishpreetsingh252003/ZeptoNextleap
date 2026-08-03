@@ -1,6 +1,8 @@
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { join, relative } from "path";
 import { parse } from "csv-parse/sync";
+import { loadRootEnv } from "@zepto/shared-config";
+import gplay from "google-play-scraper";
 import {
   runCandidatePrioritization,
   candidateColumns,
@@ -17,8 +19,9 @@ import type {
 import { repoRootOrThrow, resolveInput } from "./repo-paths";
 import { deriveThemes, deriveRelevanceTags, OPPORTUNITY_TITLES } from "./behavior-mapping";
 import { buildSynthesis, loadSynthesisSources, type SynthesisPayload } from "./synthesis";
-import { recordRun, writeSynthesis, runDir } from "./run-history";
-import type { DiscoveryConfig } from "./api";
+import { recordRun, recordResult, writeSynthesis, runDir } from "./run-history";
+import { readLiveCollectionCache, writeLiveCollectionCache, type LiveReviewDoc } from "./live-cache";
+import type { DiscoveryConfig, DiscoverySourceDiagnostic } from "./api";
 
 const SOURCE_MAP: Record<string, string[]> = {
   play_store: ["Google Play", "App-store review"],
@@ -58,7 +61,8 @@ export type PipelineEvent =
 
 export type RunResult = {
   runId: string;
-  config: Pick<DiscoveryConfig, "company" | "country" | "dateRange" | "sources" | "objective">;
+  config: Pick<DiscoveryConfig, "company" | "country" | "dateRange" | "sources" | "objective" | "dateFrom" | "dateTo">;
+  diagnostics: DiscoverySourceDiagnostic[];
   summary: {
     totalSources: number;
     totalEvidence: number;
@@ -66,6 +70,12 @@ export type RunResult = {
     queriesAvailable: number;
     reviewsCollected: number;
     opportunitiesFound: number;
+    themesFound: number;
+    behaviorSignals: number;
+    highConfidence: number;
+    sourceLabels: string[];
+    qualityLevel: "Excellent" | "Good" | "Limited";
+    qualityScore: number;
   };
   evidence: {
     id: string;
@@ -137,6 +147,170 @@ function mapEvidenceRow(row: Record<string, string>, sourceLogMap: Map<string, R
         : null;
     })(),
   };
+}
+
+function parseDateFilter(config: DiscoveryConfig): { dateFrom: string | null; dateTo: string | null } {
+  const valid = (value: string | null | undefined) => Boolean(value && /^\d{4}-\d{2}-\d{2}$/.test(value));
+  return {
+    dateFrom: valid(config.dateFrom) ? config.dateFrom as string : null,
+    dateTo: valid(config.dateTo) ? config.dateTo as string : null,
+  };
+}
+
+function inDateRange(date: string | undefined, dateFrom: string | null, dateTo: string | null): boolean {
+  const value = (date ?? "").trim().slice(0, 10);
+  if (!value) return dateFrom === null && dateTo === null;
+  if (dateFrom && value < dateFrom) return false;
+  if (dateTo && value > dateTo) return false;
+  return true;
+}
+
+function heuristicBehavioralCodes(rating: number | undefined): string {
+  if (rating === undefined) return "";
+  if (rating <= 2) return "Barrier; Perceived risk";
+  if (rating === 3) return "Decision criterion; Information need";
+  return "Trust signal; Trigger";
+}
+
+function liveReviewToEvidenceRow(doc: LiveReviewDoc): Record<string, string> {
+  const rating = doc.sourceMetadata?.rating;
+  return {
+    evidence_id: doc.externalId,
+    source_id: "",
+    source_url: doc.canonicalUrl,
+    source_type: "App-store review",
+    platform: "Google Play",
+    publication_date: (doc.publicationDate ?? "").slice(0, 10),
+    capture_date: doc.capturedAt.slice(0, 10),
+    category_group: "Cross-category",
+    shopping_mission: "",
+    neutral_paraphrase: doc.normalizedText.slice(0, 240),
+    minimal_permitted_excerpt: doc.normalizedText.slice(0, 320),
+    behavioral_codes: heuristicBehavioralCodes(rating),
+    interpretation_certainty: "Explicit",
+    outcome_if_stated: "",
+    applicability: "Zepto-direct",
+    transfer_rationale: "",
+    evidence_valence: rating === undefined ? "mixed" : rating <= 2 ? "confirming" : rating >= 4 ? "opposing" : "mixed",
+    reviewer_status: "Live Google Play review",
+    notes_or_limitations: "",
+  };
+}
+
+const GOOGLE_PLAY_PACKAGE_ID = "com.zeptoconsumerapp";
+const GOOGLE_PLAY_CANONICAL_URL = `https://play.google.com/store/apps/details?id=${GOOGLE_PLAY_PACKAGE_ID}`;
+const GOOGLE_PLAY_NEWEST = (gplay.sort as unknown as { NEWEST: number }).NEWEST;
+
+async function fetchLiveGooglePlayReviews(options: {
+  dateFrom: string | null;
+  dateTo: string | null;
+  maxRecords: number;
+  timeoutMs: number;
+}): Promise<LiveReviewDoc[]> {
+  const { dateFrom, dateTo, maxRecords, timeoutMs } = options;
+  const from = dateFrom ? Date.parse(`${dateFrom}T00:00:00.000Z`) : null;
+  const to = dateTo ? Date.parse(`${dateTo}T23:59:59.999Z`) : null;
+  const requestOptions = {
+    timeout: { request: timeoutMs },
+    retry: { limit: 0 },
+  };
+
+  const collected: { id: string; date: string; score: number; text: string }[] = [];
+  let nextPaginationToken: string | undefined;
+  let firstPage = true;
+
+  while (firstPage || (nextPaginationToken && collected.length < maxRecords)) {
+    firstPage = false;
+    const response = await gplay.reviews({
+      appId: GOOGLE_PLAY_PACKAGE_ID,
+      country: "in",
+      lang: "en",
+      sort: GOOGLE_PLAY_NEWEST,
+      paginate: true,
+      ...(nextPaginationToken ? { nextPaginationToken } : {}),
+      requestOptions,
+    } as Parameters<typeof gplay.reviews>[0]);
+    for (const review of response.data) {
+      const inWindow = (from === null || Date.parse(review.date) >= from)
+        && (to === null || Date.parse(review.date) <= to);
+      if (inWindow) {
+        collected.push({ id: review.id, date: review.date, score: review.score, text: review.text });
+      }
+    }
+    const token = response.nextPaginationToken;
+    if (!token || collected.length >= maxRecords) break;
+    nextPaginationToken = token;
+  }
+
+  return collected.slice(0, maxRecords).map((review) => ({
+    externalId: `${GOOGLE_PLAY_PACKAGE_ID}:${review.id}`,
+    canonicalUrl: GOOGLE_PLAY_CANONICAL_URL,
+    normalizedText: (review.text || "").trim().slice(0, 20_000),
+    publicationDate: review.date,
+    capturedAt: new Date().toISOString(),
+    sourceMetadata: { rating: review.score },
+  }));
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error("Google Play request timed out")), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timer) clearTimeout(timer);
+  });
+}
+
+const SOURCE_LABELS: Record<string, string> = {
+  play_store: "Google Play",
+  app_store: "App Store",
+  reddit: "Reddit",
+  youtube: "YouTube",
+  trustpilot: "Trustpilot",
+  twitter: "X / Twitter",
+  linkedin: "LinkedIn",
+  community_forums: "Community Forums",
+};
+
+const SOURCE_UNITS: Record<string, string> = {
+  play_store: "Reviews",
+  app_store: "Reviews",
+  reddit: "Discussions",
+  youtube: "Comments",
+  trustpilot: "Reviews",
+  twitter: "Posts",
+  linkedin: "Posts",
+  community_forums: "Threads",
+};
+
+const SOURCE_CAPABILITY: Record<string, "live" | "dataset" | "coming_soon"> = {
+  play_store: "live",
+  app_store: "coming_soon",
+  reddit: "dataset",
+  youtube: "dataset",
+  trustpilot: "dataset",
+  twitter: "coming_soon",
+  linkedin: "coming_soon",
+  community_forums: "dataset",
+};
+
+function qualityLevelFor(input: { reviews: number; sources: number; themes: number; highConfidence: number }): { level: "Excellent" | "Good" | "Limited"; score: number } {
+  const band = (value: number) => (value >= 100 ? 100 : value >= 30 ? 60 : value >= 1 ? 30 : 0);
+  const coverage = input.reviews > 0 ? Math.round((input.highConfidence / input.reviews) * 100) : 0;
+  const confidence = coverage >= 60 ? 100 : coverage >= 25 ? 60 : coverage >= 1 ? 30 : 0;
+  const score = Math.round(
+    0.35 * band(input.reviews) +
+    0.25 * band(input.sources >= 3 ? 100 : input.sources === 2 ? 60 : input.sources === 1 ? 30 : 0) +
+    0.25 * band(input.themes) +
+    0.15 * confidence
+  );
+  return { level: score >= 80 ? "Excellent" : score >= 55 ? "Good" : "Limited", score };
+}
+
+function countRowsForSource(rows: readonly Record<string, string>[], source: string): number {
+  const names = new Set(SOURCE_MAP[source] ?? []);
+  return rows.filter((row) => names.has(row.platform ?? "") || names.has(row.source_type ?? "")).length;
 }
 
 function toCandidates(rows: readonly Record<string, string>[]): ResearchCandidate[] {
@@ -225,7 +399,7 @@ export async function runPipeline(
     emit({ type: "stage", stage: stageId, status, message, at: new Date().toISOString() });
 
   const repoRoot = repoRootOrThrow();
-  stage("preparing", "active", "Resolving repository corpus and pipeline configuration");
+  stage("preparing", "active", "Preparing research...");
 
   const evidencePath = resolveInput("research/pilot/evidence-items.csv", "pilot/evidence-items.csv");
   if (!evidencePath) {
@@ -237,7 +411,7 @@ export async function runPipeline(
 
   stage("preparing", "done", `Configuration accepted — ${config.sources.length} sources, "${(config.objective ?? "").slice(0, 60)}"`);
 
-  stage("searching", "active", "Loading collected sources from the research corpus");
+  stage("searching", "active", "Loading research dataset");
   const sourceLogRows = sourceLogPath
     ? parse(readFileSync(sourceLogPath, "utf8"), { columns: true, skip_empty_lines: true, bom: true, trim: true }) as Record<string, string>[]
     : [];
@@ -246,13 +420,85 @@ export async function runPipeline(
     : [];
   stage("searching", "done", `Located ${sourceLogRows.length} public sources and ${queryPackRows.length} research queries`);
 
-  stage("collecting", "active", "Collecting reviews that match your source selection");
+  stage("collecting", "active", "Collecting reviews");
   const evidenceRows = parse(readFileSync(evidencePath, "utf8"), { columns: true, skip_empty_lines: true, bom: true, trim: true }) as Record<string, string>[];
-  const activeSourceTypes = new Set(config.sources.flatMap((s) => SOURCE_MAP[s] ?? []));
-  const matchedEvidence = evidenceRows.filter((row) =>
-    activeSourceTypes.size === 0 || activeSourceTypes.has(row.platform ?? "") || activeSourceTypes.has(row.source_type ?? "")
-  );
-  stage("collecting", "done", `Collected ${matchedEvidence.length} reviews from ${evidenceRows.length} retained evidence items`);
+  const { dateFrom, dateTo } = parseDateFilter(config);
+  const dateFiltered = evidenceRows.filter((row) => inDateRange(row.publication_date, dateFrom, dateTo));
+  const maxRecords = Math.min(Math.max(config.maxReviews || 100, 1), 100);
+  const minRating = config.minRating || 1;
+
+  let liveRows: Record<string, string>[] = [];
+  let liveMode: DiscoverySourceDiagnostic["mode"] = "dataset";
+  if (config.sources.includes("play_store")) {
+    loadRootEnv();
+    const cached = readLiveCollectionCache({ dateFrom, dateTo });
+    if (cached) {
+      liveRows = cached.docs
+        .slice(0, maxRecords)
+        .filter((doc) => (doc.sourceMetadata?.rating ?? 5) >= minRating)
+        .map((doc) => liveReviewToEvidenceRow(doc));
+      liveMode = "cached";
+      stage("collecting", "done", `Cached Google Play reviews loaded (${liveRows.length})`);
+    } else {
+      const timeoutMs = Number(process.env.GOOGLE_PLAY_TIMEOUT_MS);
+      if (Number.isFinite(timeoutMs) && timeoutMs > 0) {
+        stage("collecting", "active", "Connecting to Google Play...");
+        try {
+          const docs = await withTimeout(
+            fetchLiveGooglePlayReviews({ dateFrom, dateTo, maxRecords, timeoutMs }),
+            Math.min(timeoutMs, 5000)
+          );
+          liveRows = docs
+            .filter((doc) => (doc.sourceMetadata?.rating ?? 5) >= minRating)
+            .map((doc) => liveReviewToEvidenceRow(doc));
+          liveMode = "live";
+          writeLiveCollectionCache({ dateFrom, dateTo }, docs);
+          stage("collecting", "done", `Live Google Play reviews collected (${liveRows.length})`);
+        } catch {
+          liveMode = "dataset";
+          stage("collecting", "done", "Using verified research dataset");
+        }
+      }
+    }
+  }
+
+  const corpusFor = (source: string) =>
+    dateFiltered.filter((row) => {
+      const names = new Set(SOURCE_MAP[source] ?? []);
+      return names.has(row.platform ?? "") || names.has(row.source_type ?? "");
+    });
+
+  const matchedEvidence: Record<string, string>[] = [];
+  const seenEvidence = new Set<string>();
+  const addRows = (rows: readonly Record<string, string>[]) => {
+    for (const row of rows) {
+      const id = row.evidence_id ?? "";
+      if (id && seenEvidence.has(id)) continue;
+      if (id) seenEvidence.add(id);
+      matchedEvidence.push(row);
+    }
+  };
+
+  for (const source of config.sources) {
+    if (source === "play_store") {
+      addRows(liveRows);
+      if (liveRows.length === 0) addRows(corpusFor(source));
+    } else {
+      addRows(corpusFor(source));
+    }
+  }
+  stage("collecting", "done", `Collected ${matchedEvidence.length} reviews for analysis`);
+
+  const diagnostics: DiscoverySourceDiagnostic[] = config.sources.map((source) => {
+    const label = SOURCE_LABELS[source] ?? source;
+    const unit = SOURCE_UNITS[source] ?? "Items";
+    const capability = SOURCE_CAPABILITY[source] ?? "coming_soon";
+    if (source === "play_store") {
+      return { source, label, unit, mode: liveMode, requested: maxRecords, collected: liveRows.length };
+    }
+    const collected = countRowsForSource(matchedEvidence, source);
+    return { source, label, unit, mode: capability, requested: 0, collected };
+  });
 
   const discoveryOutputDir = join(repoRoot, "research", "discovery-output");
   const opportunityOutputDir = join(repoRoot, "research", "opportunity-output");
@@ -263,7 +509,7 @@ export async function runPipeline(
 
   let prioritization: Awaited<ReturnType<typeof runCandidatePrioritization>> | null = null;
   if (matchedEvidence.length > 0) {
-    stage("scoring", "active", `Scoring ${matchedEvidence.length} candidates with the candidate prioritization module`);
+    stage("scoring", "active", `Analyzing behaviour and scoring ${matchedEvidence.length} reviews`);
     const candidates = toCandidates(matchedEvidence);
     const candidatesCsvPath = join(discoveryOutputDir, `${runId}-candidates.csv`);
     const prioritizedCsvPath = join(discoveryOutputDir, `${runId}-prioritized.csv`);
@@ -275,12 +521,12 @@ export async function runPipeline(
     });
     outputs.candidatesCsv = relToRoot(repoRoot, candidatesCsvPath);
     outputs.prioritizedCsv = relToRoot(repoRoot, prioritizedCsvPath);
-    stage("scoring", "done", `${prioritization.shortlist.length} candidates shortlisted · bands A:${prioritization.bands.A} B:${prioritization.bands.B} C:${prioritization.bands.C}`);
+    stage("scoring", "done", `Shortlisted ${prioritization.shortlist.length} candidates for review`);
   } else {
-    stage("scoring", "done", "No candidates matched the source selection — skipped candidate scoring");
+    stage("scoring", "done", "No reviews matched the selection");
   }
 
-  stage("opportunities", "active", "Building the reviewed-evidence matrix and scoring opportunities");
+  stage("opportunities", "active", "Scoring opportunities from reviewed evidence");
   const behaviourKnowledge = loadBehaviourKnowledge();
   const reviewedRows = reviewedEvidenceRows(matchedEvidence, behaviourKnowledge);
   const reviewedEvidenceCsvPath = join(opportunityOutputDir, `${runId}-reviewed-evidence.csv`);
@@ -294,9 +540,9 @@ export async function runPipeline(
   });
   outputs.reviewedEvidenceCsv = relToRoot(repoRoot, reviewedEvidenceCsvPath);
   outputs.opportunitiesJson = relToRoot(repoRoot, opportunitiesJsonPath);
-  stage("opportunities", "done", `Scored ${opportunityReport.topOpportunities.length} opportunities from ${reviewedRows.length} reviewed-evidence records`);
+  stage("opportunities", "done", `Identified ${opportunityReport.topOpportunities.length} opportunity areas`);
 
-  stage("finalizing", "active", "Writing synthesis output and run manifest");
+  stage("finalizing", "active", "Generating recommendation");
   const sources = loadSynthesisSources();
   const synthesis = buildSynthesis(sources) as SynthesisPayload;
   synthesis.scoringSummary = {
@@ -313,6 +559,25 @@ export async function runPipeline(
   outputs.synthesisJson = relToRoot(repoRoot, synthesisJsonPath);
 
   const durationMs = Date.now() - startedAt;
+
+  const behaviorCodes = new Set<string>();
+  const themesFound = new Set<string>();
+  let highConfidence = 0;
+  for (const row of matchedEvidence) {
+    const codes = (row.behavioral_codes ?? "").split(";").map((c) => c.trim()).filter(Boolean);
+    codes.forEach((code) => behaviorCodes.add(code));
+    deriveThemes(codes).forEach((theme) => themesFound.add(theme));
+    if ((row.interpretation_certainty ?? "") === "Explicit") highConfidence += 1;
+  }
+  const contributingSources = diagnostics.filter((d) => d.collected > 0).map((d) => d.label);
+  const quality = qualityLevelFor({
+    reviews: matchedEvidence.length,
+    sources: contributingSources.length,
+    themes: themesFound.size,
+    highConfidence,
+  });
+  const topOpportunityTitle = opportunityReport.topOpportunities[0]?.opportunityTitle ?? "";
+
   const manifest = {
     id: runId,
     timestamp: new Date().toISOString(),
@@ -321,14 +586,18 @@ export async function runPipeline(
     durationMs,
     reviewsCollected: matchedEvidence.length,
     opportunitiesFound: opportunityReport.topOpportunities.length,
+    themesFound: themesFound.size,
+    qualityLevel: quality.level,
+    topOpportunityTitle,
+    sourceLabels: contributingSources,
     outputs,
   };
   outputs.runManifest = relToRoot(repoRoot, recordRun(manifest));
-  stage("finalizing", "done", `Run ${runId} finalized in ${(durationMs / 1000).toFixed(1)}s`);
+  stage("finalizing", "done", `Recommendation ready in ${(durationMs / 1000).toFixed(1)}s`);
 
   const sourceLogMap = new Map(sourceLogRows.map((row) => [row.source_id, row]));
 
-  return {
+  const resultPayload: RunResult = {
     runId,
     config: {
       company: config.company || "Zepto",
@@ -336,7 +605,10 @@ export async function runPipeline(
       dateRange: config.dateRange,
       sources: config.sources,
       objective: config.objective,
+      dateFrom,
+      dateTo,
     },
+    diagnostics,
     summary: {
       totalSources: sourceLogRows.length,
       totalEvidence: evidenceRows.length,
@@ -344,6 +616,12 @@ export async function runPipeline(
       queriesAvailable: queryPackRows.length,
       reviewsCollected: matchedEvidence.length,
       opportunitiesFound: opportunityReport.topOpportunities.length,
+      themesFound: themesFound.size,
+      behaviorSignals: behaviorCodes.size,
+      highConfidence,
+      sourceLabels: contributingSources,
+      qualityLevel: quality.level,
+      qualityScore: quality.score,
     },
     evidence: matchedEvidence.map((row, index) => mapEvidenceRow(row, sourceLogMap, index)),
     prioritization: prioritization
@@ -374,4 +652,6 @@ export async function runPipeline(
     outputs,
     durationMs,
   };
+  recordResult(runId, resultPayload);
+  return resultPayload;
 }

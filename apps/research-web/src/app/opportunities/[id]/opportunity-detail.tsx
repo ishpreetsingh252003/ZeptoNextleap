@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Award, BookOpen, Briefcase, FileText, Lightbulb, Quote, Scale, ShieldCheck, Target, TrendingUp } from "lucide-react";
 import { GlassCard, SkeletonRows } from "@/components/ui";
+import { cachedJson } from "@/lib/client-cache";
 import { titleCase, type OpportunityReport } from "@/lib/api";
 
 const STRENGTH_TONE: Record<string, string> = { "Very Strong": "badge-success", Strong: "badge-success", Moderate: "badge-warning", Emerging: "badge-neutral" };
 const CONFIDENCE_TONE: Record<string, string> = { High: "badge-success", "Med-High": "badge-warning", Medium: "badge-warning" };
+const EFFORT_TONE: Record<string, string> = { High: "badge-warning", Medium: "badge-neutral", Low: "badge-success" };
 
 function theoryName(line: string): string {
   const colon = line.indexOf(":");
@@ -37,11 +39,7 @@ export function OpportunityDetail() {
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    fetch(`/api/opportunities/${params.id}`, { cache: "no-store" })
-      .then(async (r) => {
-        if (!r.ok) throw new Error(`Opportunity was not found (HTTP ${r.status}).`);
-        return r.json();
-      })
+    cachedJson<OpportunityReport>(`/api/opportunities/${params.id}`)
       .then(setData)
       .catch((cause) => setError(cause instanceof Error ? cause.message : "Failed to load opportunity."));
   }, [params.id]);
@@ -65,6 +63,7 @@ export function OpportunityDetail() {
       <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
         <span className={`badge ${CONFIDENCE_TONE[opportunity.confidence]}`}><span className="badge-dot" />{opportunity.confidence} confidence</span>
         <span className={`badge ${STRENGTH_TONE[opportunity.evidenceStrength]}`}><span className="badge-dot" />{opportunity.evidenceStrength} evidence</span>
+        <span className={`badge ${EFFORT_TONE[opportunity.estimatedEffort]}`}><span className="badge-dot" />{opportunity.estimatedEffort} effort</span>
         <span className={`badge ${opportunity.mvpRole.startsWith("PRIMARY") ? "badge-success" : "badge-warning"}`}><span className="badge-dot" />{opportunity.mvpRole}</span>
       </div>
     </div>

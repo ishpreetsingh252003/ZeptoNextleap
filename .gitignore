@@ -49,6 +49,7 @@ research/opportunity-output/
 
 # Local pipeline run history and generated synthesis artifacts
 apps/research-web/data/runs/
+apps/research-web/data/cache/
 
 # IDE and editor files
 .idea/

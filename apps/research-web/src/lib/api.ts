@@ -1,9 +1,17 @@
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000";
 
-export type DiscoveryConfig = { objective: string; company: string; country: string; dateRange: string; minRating: number; maxReviews: number; sources: string[] };
+export type DiscoveryConfig = { objective: string; company: string; country: string; dateRange: string; minRating: number; maxReviews: number; sources: string[]; dateFrom: string | null; dateTo: string | null };
 export type DiscoveryStatus = { available: boolean; outputFiles: string[]; generatedOutputs: string[]; evidenceCount: number; sourceCount: number; queryCount: number; lastUpdated: string | null };
 export type DiscoveryStageId = "preparing" | "searching" | "collecting" | "scoring" | "opportunities" | "finalizing";
 export type DiscoveryStageEvent = { type: "stage"; stage: DiscoveryStageId; status: "active" | "done"; message: string; at: string };
+export type DiscoverySourceDiagnostic = {
+  source: string;
+  label: string;
+  unit: string;
+  mode: "live" | "cached" | "dataset" | "coming_soon";
+  requested: number;
+  collected: number;
+};
 export type DiscoveryRunSummary = {
   totalSources: number;
   totalEvidence: number;
@@ -11,10 +19,17 @@ export type DiscoveryRunSummary = {
   queriesAvailable: number;
   reviewsCollected: number;
   opportunitiesFound: number;
+  themesFound: number;
+  behaviorSignals: number;
+  highConfidence: number;
+  sourceLabels: string[];
+  qualityLevel: "Excellent" | "Good" | "Limited";
+  qualityScore: number;
 };
 export type DiscoveryRunPayload = {
   runId: string;
-  config: Pick<DiscoveryConfig, "company" | "country" | "dateRange" | "sources" | "objective">;
+  config: Pick<DiscoveryConfig, "company" | "country" | "dateRange" | "sources" | "objective" | "dateFrom" | "dateTo">;
+  diagnostics: DiscoverySourceDiagnostic[];
   summary: DiscoveryRunSummary;
   evidence: {
     id: string;
@@ -47,6 +62,10 @@ export type HistoryRun = {
   durationMs: number;
   reviewsCollected: number;
   opportunitiesFound: number;
+  themesFound: number;
+  qualityLevel: "Excellent" | "Good" | "Limited";
+  topOpportunityTitle: string;
+  sourceLabels: string[];
   outputs: Record<string, string>;
 };
 export type Review = { excerpt: string; category: string; sentiment: "positive" | "negative" | "neutral"; confidence: number; source: string; url: string; title: string | null; date: string; reviewerStatus: string };
@@ -113,6 +132,7 @@ export type Opportunity = {
   supportingThemes: { theme: string; count: number }[];
   confidence: "High" | "Med-High" | "Medium";
   evidenceStrength: "Very Strong" | "Strong" | "Moderate" | "Emerging";
+  estimatedEffort: "High" | "Medium" | "Low";
   support: { theories: number; caseStudies: number; papers: number };
 };
 export type OpportunityReport = {

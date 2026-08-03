@@ -102,9 +102,12 @@ export async function GET() {
   } catch (error) {
     console.error("[recommendation] Could not load the latest scored report — falling back to bundled data:", error);
   }
-  if (scored) {
+  if (scored && scored.report.topOpportunities.length > 0) {
     console.log("[recommendation] Returning scored recommendation.");
     return NextResponse.json(buildFromScored() satisfies RecommendationReport);
+  }
+  if (scored) {
+    console.log("[recommendation] Latest scored report has no opportunities — falling back to bundled data.");
   }
   console.log("[recommendation] No scored run found — falling back to bundled data...");
   const file = resolveDataFile("recommendation/recommendation.json");

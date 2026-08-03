@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowDown, BookOpen, Briefcase, FileSearch, GraduationCap, Lightbulb, LineChart, Quote, ShieldCheck, Sparkles, Target } from "lucide-react";
 import { EmptyState, GlassCard, MetricsSkeleton, SkeletonRows } from "@/components/ui";
+import { cachedJson } from "@/lib/client-cache";
 import { titleCase, type AiTheme, type BehaviorRecord, type InsightsReport } from "@/lib/api";
 
 const THEME_META: Record<string, { icon: typeof BookOpen; tone: string }> = {
@@ -89,8 +90,7 @@ export function InsightsIndex() {
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    fetch("/api/insights", { cache: "no-store" })
-      .then((r) => r.json())
+    cachedJson<InsightsReport>("/api/insights")
       .then(setReport)
       .catch((cause) => setError(cause instanceof Error ? cause.message : "Failed to load insights."));
   }, []);
@@ -101,6 +101,7 @@ export function InsightsIndex() {
   const summary = report.executiveSummary;
   const knowledgeTotal = Object.values(summary.knowledgeCounts).reduce((a, b) => a + b, 0);
   const topThemes = report.aiThemes.slice(0, 6);
+  const themeGroups: { strength: string; themes: AiTheme[] }[] = ["High", "Medium", "Low"].map((strength) => ({ strength, themes: topThemes.filter((t) => t.strength === strength) })).filter((g) => g.themes.length > 0);
 
   if (summary.evidenceCount === 0) {
     return <div className="page"><GlassCard className="panel-pad"><EmptyState icon={Lightbulb} title="No insights yet" body="Insights are synthesized only from reviewed evidence. Run a discovery to populate the corpus first." action={{ href: "/discovery", label: "Start a discovery" }} /></GlassCard></div>;
@@ -134,9 +135,17 @@ export function InsightsIndex() {
     </GlassCard>
 
     <GlassCard className="panel" style={{ marginBottom: "20px" }}>
-      <div className="section-header"><div><span className="eyebrow">Section 2</span><h2>Top behaviour themes</h2><p>The most repeated behavioural patterns in the evidence, with what users said and which principles explain them.</p></div><span className="badge badge-success"><span className="badge-dot" />{report.aiThemes.length} patterns</span></div>
-      <div className="panel-pad" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "14px" }}>
-        {topThemes.map((theme) => <ThemeCard theme={theme} key={theme.name} />)}
+      <div className="section-header"><div><span className="eyebrow">Section 2</span><h2>Top behaviour themes</h2><p>The most repeated behavioural patterns in the evidence, grouped by strength, with what users said and which principles explain them.</p></div><span className="badge badge-success"><span className="badge-dot" />{report.aiThemes.length} patterns</span></div>
+      <div className="panel-pad" style={{ display: "grid", gap: "20px", paddingTop: 0 }}>
+        {themeGroups.map((group) => <div key={group.strength} style={{ display: "grid", gap: "10px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span className={`badge ${STRENGTH_TONE[group.strength]}`}><span className="badge-dot" />{group.strength} strength</span>
+            <span style={{ color: "var(--muted)", fontSize: "10px" }}>{group.themes.length} pattern{group.themes.length === 1 ? "" : "s"}</span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "14px" }}>
+            {group.themes.map((theme) => <ThemeCard theme={theme} key={theme.name} />)}
+          </div>
+        </div>)}
       </div>
     </GlassCard>
 

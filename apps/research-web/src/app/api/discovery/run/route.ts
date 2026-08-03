@@ -12,11 +12,19 @@ export async function POST(request: NextRequest) {
     minRating: number;
     maxReviews: number;
     sources: string[];
+    dateFrom: string | null;
+    dateTo: string | null;
   } | null;
 
   if (!config || !Array.isArray(config.sources)) {
     return Response.json({ error: "Invalid discovery configuration." }, { status: 400 });
   }
+
+  const normalized = {
+    ...config,
+    dateFrom: typeof config.dateFrom === "string" && config.dateFrom ? config.dateFrom : null,
+    dateTo: typeof config.dateTo === "string" && config.dateTo ? config.dateTo : null,
+  };
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
@@ -25,7 +33,7 @@ export async function POST(request: NextRequest) {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
       };
       try {
-        const result = await runPipeline(config, send);
+        const result = await runPipeline(normalized, send);
         send({ type: "complete", payload: result });
       } catch (cause) {
         send({ type: "error", message: cause instanceof Error ? cause.message : "Discovery failed." });

@@ -11,6 +11,10 @@ export type RunManifest = {
   durationMs: number;
   reviewsCollected: number;
   opportunitiesFound: number;
+  themesFound: number;
+  qualityLevel: "Excellent" | "Good" | "Limited";
+  topOpportunityTitle: string;
+  sourceLabels: string[];
   outputs: Record<string, string>;
 };
 
@@ -58,6 +62,26 @@ export function writeSynthesis(runId: string, payload: unknown): string {
     console.error(`[run-history] failed to persist synthesis (${file}):`, error);
   }
   return file;
+}
+
+export function recordResult(runId: string, payload: unknown): void {
+  const file = join(runDir(runId), "result.json");
+  try {
+    writeFileSync(file, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  } catch (error) {
+    console.error(`[run-history] failed to persist result (${file}):`, error);
+  }
+}
+
+export function loadResult(runId: string): unknown | null {
+  const file = join(runDir(runId), "result.json");
+  try {
+    if (!existsSync(file)) return null;
+    return JSON.parse(readFileSync(file, "utf8")) as unknown;
+  } catch (error) {
+    console.error(`[run-history] failed to load result (${file}):`, error);
+    return null;
+  }
 }
 
 export function listRuns(): RunManifest[] {

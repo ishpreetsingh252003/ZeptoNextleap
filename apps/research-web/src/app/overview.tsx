@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Compass } from "lucide-react";
 import { formatDate, type DiscoveryStatus, type HistoryRun, type InsightsReport, type Opportunity, type RecommendationReport } from "@/lib/api";
+import { cachedJson } from "@/lib/client-cache";
 import { EmptyState, GlassCard, Metric, MetricsSkeleton, SectionHeader, SkeletonRows, StatusBadge } from "@/components/ui";
 
 type HistoryResponse = { runs: HistoryRun[]; latest: HistoryRun | null };
@@ -21,9 +22,7 @@ type DashboardData = {
 
 async function getJson<T>(path: string): Promise<T | null> {
   try {
-    const response = await fetch(path, { cache: "no-store" });
-    if (!response.ok) return null;
-    return (await response.json()) as T;
+    return await cachedJson<T>(path);
   } catch {
     return null;
   }
@@ -33,6 +32,8 @@ function formatDuration(durationMs: number): string {
   if (!durationMs) return "—";
   return durationMs >= 60_000 ? `${(durationMs / 60_000).toFixed(1)}m` : `${Math.max(1, Math.round(durationMs / 1000))}s`;
 }
+
+const QUALITY_TONE: Record<string, string> = { Excellent: "badge-success", Good: "badge-warning", Limited: "badge-neutral" };
 
 function runTitle(run: HistoryRun): string {
   if (run.config.company) return `${run.config.company} · category expansion`;
@@ -123,7 +124,7 @@ export function Overview() {
     <div className="grid-main">
       <section className="panel">
         <SectionHeader eyebrow="Recent activity" title="Discovery runs" description="Every pipeline execution, most recent first." action={<Link className="trace-link" href="/discovery">Open discovery <ArrowRight size={12} /></Link>} />
-        {history && history.runs.length === 0 ? <EmptyState title="No discovery runs yet" body="Configure a company, country, and date range to start collecting public reviews through the pipeline." action={{ href: "/discovery", label: "Start a discovery" }} /> : <div className="table-wrap"><table><thead><tr><th scope="col">Run</th><th scope="col">Sources</th><th scope="col">Reviews</th><th scope="col">Opportunities</th><th scope="col">Duration</th><th scope="col">Status</th></tr></thead><tbody>{(history?.runs ?? []).slice(0, 6).map((run) => <tr key={run.id}><td><span className="row-title">{runTitle(run)}</span><span className="row-meta">{formatDate(run.timestamp)} · {run.config.country}</span></td><td>{run.config.sources.length}</td><td>{run.reviewsCollected}</td><td>{run.opportunitiesFound}</td><td>{formatDuration(run.durationMs)}</td><td><StatusBadge status={run.status} /></td></tr>)}</tbody></table></div>}
+        {history && history.runs.length === 0 ? <EmptyState title="No discovery runs yet" body="Configure a company, country, and date range to start collecting public reviews through the pipeline." action={{ href: "/discovery", label: "Start a discovery" }} /> : <div className="table-wrap"><table><thead><tr><th scope="col">Run</th><th scope="col">Sources</th><th scope="col">Reviews</th><th scope="col">Themes</th><th scope="col">Opportunities</th><th scope="col">Duration</th><th scope="col">Quality</th><th scope="col">Status</th></tr></thead><tbody>{(history?.runs ?? []).slice(0, 6).map((run) => <tr key={run.id}><td><span className="row-title">{runTitle(run)}</span><span className="row-meta">{formatDate(run.timestamp)} · {run.config.country}</span>{run.topOpportunityTitle ? <span className="row-meta" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 260 }}>MVP: {run.topOpportunityTitle}</span> : null}</td><td>{run.config.sources.length}</td><td>{run.reviewsCollected}</td><td>{run.themesFound ?? "—"}</td><td>{run.opportunitiesFound}</td><td>{formatDuration(run.durationMs)}</td><td>{run.qualityLevel ? <span className={`badge ${QUALITY_TONE[run.qualityLevel] ?? "badge-neutral"}`}><span className="badge-dot" />{run.qualityLevel}</span> : "—"}</td><td><StatusBadge status={run.status} /></td></tr>)}</tbody></table></div>}
       </section>
 
       <aside className="panel">

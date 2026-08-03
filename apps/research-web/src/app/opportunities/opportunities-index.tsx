@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Award, BookOpen, Briefcase, FileText, Quote, Scale, Target } from "lucide-react";
 import { EmptyState, GlassCard, MetricsSkeleton, SkeletonRows } from "@/components/ui";
+import { cachedJson } from "@/lib/client-cache";
 import { titleCase, type OpportunityReport } from "@/lib/api";
 
 const STRENGTH_TONE: Record<string, string> = { "Very Strong": "badge-success", Strong: "badge-success", Moderate: "badge-warning", Emerging: "badge-neutral" };
 const CONFIDENCE_TONE: Record<string, string> = { High: "badge-success", "Med-High": "badge-warning", Medium: "badge-warning" };
+const EFFORT_TONE: Record<string, string> = { High: "badge-warning", Medium: "badge-neutral", Low: "badge-success" };
 
 function theoryName(line: string): string {
   const colon = line.indexOf(":");
@@ -19,8 +21,7 @@ export function OpportunitiesIndex() {
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    fetch("/api/opportunities", { cache: "no-store" })
-      .then((r) => r.json())
+    cachedJson<OpportunityReport>("/api/opportunities")
       .then(setData)
       .catch((cause) => setError(cause instanceof Error ? cause.message : "Failed to load opportunities."));
   }, []);
@@ -61,6 +62,7 @@ export function OpportunitiesIndex() {
             <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
               <span className={`badge ${CONFIDENCE_TONE[opportunity.confidence]}`}><span className="badge-dot" />{opportunity.confidence}</span>
               <span className={`badge ${STRENGTH_TONE[opportunity.evidenceStrength]}`}><span className="badge-dot" />{opportunity.evidenceStrength}</span>
+              <span className={`badge ${EFFORT_TONE[opportunity.estimatedEffort]}`}><span className="badge-dot" />{opportunity.estimatedEffort} effort</span>
             </div>
           </div>
         </div>

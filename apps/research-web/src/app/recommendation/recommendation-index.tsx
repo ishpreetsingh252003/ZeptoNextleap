@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Award, BookOpen, Briefcase, FileText, Gauge, Lightbulb, Quote, Scale, ShieldCheck, Sparkles, Target, TrendingUp, Zap } from "lucide-react";
 import { EmptyState, GlassCard, MetricsSkeleton, SkeletonRows } from "@/components/ui";
+import { cachedJson } from "@/lib/client-cache";
 import type { RecommendationReport } from "@/lib/api";
 
 const CONFIDENCE_TONE: Record<string, string> = { High: "badge-success", "Med-High": "badge-warning", Medium: "badge-warning" };
@@ -19,19 +20,17 @@ export function RecommendationIndex() {
   const [missing, setMissing] = useState(false);
 
   useEffect(() => {
-    fetch("/api/recommendation", { cache: "no-store" })
-      .then(async (r) => {
-        if (r.status === 404) {
-          setMissing(true);
-          return null;
-        }
-        if (!r.ok) throw new Error(`Recommendation is not available (HTTP ${r.status}).`);
-        return r.json();
-      })
+    cachedJson<RecommendationReport>("/api/recommendation")
       .then((json) => {
-        if (json) setData(json);
+        setData(json);
       })
-      .catch((cause) => setError(cause instanceof Error ? cause.message : "Failed to load recommendation."));
+      .catch((cause) => {
+        if (cause instanceof Error && /404/.test(cause.message)) {
+          setMissing(true);
+          return;
+        }
+        setError(cause instanceof Error ? cause.message : "Failed to load recommendation.");
+      });
   }, []);
 
   if (error) return <div className="page"><div className="notice notice-error">{error}</div></div>;
@@ -66,6 +65,21 @@ export function RecommendationIndex() {
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px", color: "var(--muted)", fontSize: "10px" }}><span>Weighted criteria</span><span style={{ fontFamily: "var(--font-geist-mono), monospace" }}>{hero.combinedScore}/100</span></div>
             </div>
           </div>
+        </div>
+      </div>
+    </GlassCard>
+
+    <GlassCard className="panel" style={{ marginBottom: "20px" }}>
+      <div className="section-header"><div><span className="eyebrow">Section 1</span><h2>Executive summary</h2><p>Condensed from the existing decision report. No new analysis is generated.</p></div><Sparkles size={18} style={{ color: "var(--accent)" }} /></div>
+      <div className="panel-pad" style={{ display: "grid", gap: "12px" }}>
+        <p style={{ margin: 0, fontSize: "14px", lineHeight: 1.7, color: "var(--ink)", fontWeight: 550 }}>The engine recommends {hero.title} — {hero.mvpRole.toLowerCase().replaceAll("_", " ")} — with {hero.confidence} confidence as the primary MVP for {data.report.project}.</p>
+        <p style={{ margin: 0, fontSize: "13.5px", lineHeight: 1.7, color: "rgba(229,226,225,.78)" }}>{whyThisWon.businessValue} On the user side, {whyThisWon.userValue}</p>
+        <p style={{ margin: 0, fontSize: "13.5px", lineHeight: 1.7, color: "rgba(229,226,225,.78)" }}>The decision is triangulated across {supportingEvidence.reviewsAnalysed.corpus} reviewed records in the corpus — {supportingEvidence.reviewsAnalysed.primary} directly supporting this MVP — plus {whyThisWon.evidence.theories} behavioural theories, {whyThisWon.evidence.caseStudies} industry case studies, {whyThisWon.evidence.papers} academic papers, and {whyThisWon.evidence.commerceInsights} commerce insights. It was compared against {comparison.length - 1} other scored opportunities.</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: "10px", marginTop: "6px" }}>
+          <div style={{ padding: "12px 14px", borderRadius: "10px", border: "1px solid rgba(255,255,255,.07)", background: "rgba(255,255,255,.03)" }}><span style={{ display: "block", color: "var(--muted)", fontSize: "9px", textTransform: "uppercase", letterSpacing: ".1em" }}>Weighted score</span><strong style={{ display: "block", marginTop: "5px", fontSize: "12px" }}>{hero.weightedScore} / {hero.weightedMax}</strong></div>
+          <div style={{ padding: "12px 14px", borderRadius: "10px", border: "1px solid rgba(255,255,255,.07)", background: "rgba(255,255,255,.03)" }}><span style={{ display: "block", color: "var(--muted)", fontSize: "9px", textTransform: "uppercase", letterSpacing: ".1em" }}>Opportunities compared</span><strong style={{ display: "block", marginTop: "5px", fontSize: "12px" }}>{comparison.length}</strong></div>
+          <div style={{ padding: "12px 14px", borderRadius: "10px", border: "1px solid rgba(255,255,255,.07)", background: "rgba(255,255,255,.03)" }}><span style={{ display: "block", color: "var(--muted)", fontSize: "9px", textTransform: "uppercase", letterSpacing: ".1em" }}>Explicit assumptions</span><strong style={{ display: "block", marginTop: "5px", fontSize: "12px" }}>{assumptions.length}</strong></div>
+          <div style={{ padding: "12px 14px", borderRadius: "10px", border: "1px solid rgba(255,255,255,.07)", background: "rgba(255,255,255,.03)" }}><span style={{ display: "block", color: "var(--muted)", fontSize: "9px", textTransform: "uppercase", letterSpacing: ".1em" }}>Known risks tracked</span><strong style={{ display: "block", marginTop: "5px", fontSize: "12px" }}>{outlook.risks.length}</strong></div>
         </div>
       </div>
     </GlassCard>

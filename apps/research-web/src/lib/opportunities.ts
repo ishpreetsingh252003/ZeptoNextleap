@@ -73,6 +73,18 @@ function evidenceStrength(combinedScore: number, evidenceCount: number): Opportu
   return "Emerging";
 }
 
+function estimatedEffort(raw: RawOpportunity): Opportunity["estimatedEffort"] {
+  let score = 0;
+  score += Math.min(raw.proposedUserFlow?.length ?? 3, 4);
+  score += Math.min(Object.keys(raw.sourceBreakdown ?? {}).length, 3);
+  score += Math.min(raw.evidenceGaps?.length ?? 0, 2);
+  if (raw.categories && raw.categories.length >= 4) score += 1;
+  if (raw.mvpRole.startsWith("PRIMARY")) score += 2;
+  if (score >= 8) return "High";
+  if (score >= 5) return "Medium";
+  return "Low";
+}
+
 export function latestScoredReport(): { report: OpportunityReport; runId: string | null } | null {
   const dir = repoDir("research/opportunity-output");
   if (!dir) {
@@ -208,6 +220,7 @@ export function toOpportunity(raw: RawOpportunity, themes: Map<string, { theme: 
     supportingThemes: themes.get(raw.id) ?? [],
     confidence: CONFIDENCE_LABEL[raw.confidenceLevel] ?? "Medium",
     evidenceStrength: evidenceStrength(raw.combinedScore, raw.evidenceCount),
+    estimatedEffort: estimatedEffort(raw),
     support: {
       theories: raw.theoryMatches,
       caseStudies: raw.caseStudyMatches,
