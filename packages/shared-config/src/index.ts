@@ -79,7 +79,7 @@ export type SelectedAiConfiguration = {
 export function findRepositoryRoot(startDirectory: string = process.cwd()): string | null {
   let current = resolve(startDirectory);
   while (true) {
-    if (existsSync(join(current, "pnpm-workspace.yaml"))) return current;
+    if (existsSync(join(/*turbopackIgnore: true*/ current, "pnpm-workspace.yaml"))) return current;
     const parent = dirname(current);
     if (parent === current) return null;
     current = parent;

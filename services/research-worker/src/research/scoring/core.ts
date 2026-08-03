@@ -347,8 +347,8 @@ export function scoreOpportunities(
 }
 
 // ---- Output helpers -------------------------------------------------------
-async function assertOpportunityOutput(path: string): Promise<void> {
-  const root = findRepositoryRoot();
+async function assertOpportunityOutput(path: string, repositoryRoot?: string): Promise<void> {
+  const root = repositoryRoot ?? findRepositoryRoot();
   if (!root) throw new Error("Repository root could not be resolved.");
   const repositoryPath = relative(root, resolve(path)).replaceAll("\\", "/");
   if (
@@ -367,11 +367,12 @@ export async function runOpportunityReport(options: {
   inputPath: string;
   outputPath?: string;
   behaviourKnowledge?: readonly BehaviourKnowledgeRecord[];
+  repositoryRoot?: string;
 }): Promise<OpportunityReport> {
   const evidence = parseReviewedEvidenceCsv(await readFile(options.inputPath, "utf8"));
   const report = scoreOpportunities(evidence, options.behaviourKnowledge);
   if (!options.outputPath) return { ...report, outputPath: null };
-  await assertOpportunityOutput(options.outputPath);
+  await assertOpportunityOutput(options.outputPath, options.repositoryRoot);
   const outputPath = resolve(options.outputPath);
   await mkdir(dirname(outputPath), { recursive: true });
   await writeFile(outputPath, `${JSON.stringify(report, null, 2)}\n`, {

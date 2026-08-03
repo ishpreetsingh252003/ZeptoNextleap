@@ -10,7 +10,14 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ message: `Opportunity ${id} was not found.` }, { status: 404 });
   }
   const reportFile = resolveDataFile("opportunities/opportunities.json");
-  const report = reportFile ? JSON.parse(readFileSync(reportFile, "utf-8")).report : null;
+  let report: unknown = null;
+  if (reportFile) {
+    try {
+      report = JSON.parse(readFileSync(reportFile, "utf-8")).report;
+    } catch (error) {
+      console.error(`[opportunities] Could not parse bundled opportunity report (${reportFile}):`, error);
+    }
+  }
   const themes = supportingThemes();
 
   return NextResponse.json({

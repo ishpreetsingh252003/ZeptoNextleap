@@ -5,12 +5,23 @@ import { resolveInput, repoDir, latestFileIn } from "@/lib/repo-paths";
 
 function parseCsv(path: string | null): Record<string, string>[] {
   if (!path) return [];
-  return parse(readFileSync(path, "utf-8"), { columns: true, skip_empty_lines: true, bom: true, trim: true }) as Record<string, string>[];
+  try {
+    return parse(readFileSync(path, "utf-8"), { columns: true, skip_empty_lines: true, bom: true, trim: true }) as Record<string, string>[];
+  } catch (error) {
+    console.error(`[reviews] Could not parse CSV source (${path}):`, error);
+    return [];
+  }
 }
 
 export async function GET(request: NextRequest) {
+  console.log("[reviews] Loading latest run...");
   const evidencePath = resolveInput("research/pilot/evidence-items.csv", "pilot/evidence-items.csv");
   const sourceLogPath = resolveInput("research/pilot/source-log.csv", "pilot/source-log.csv");
+  if (!evidencePath) {
+    console.log("[reviews] Evidence corpus is missing — returning empty reviews.");
+  } else {
+    console.log(`[reviews] Loading bundled reviews from ${evidencePath}.`);
+  }
 
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("query")?.toLowerCase() ?? "";

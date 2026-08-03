@@ -14,12 +14,9 @@ export async function GET(request: NextRequest) {
   if (!path) {
     return NextResponse.json({ error: "Missing path parameter." }, { status: 400 });
   }
-  let root: string;
-  try {
-    root = repoRootOrThrow();
-  } catch {
-    return NextResponse.json({ error: "Repository corpus is not available in this environment." }, { status: 404 });
-  }
+  // repoRootOrThrow() never throws: it resolves the repo root when available
+  // and otherwise falls back to the writable runtime workspace.
+  const root = repoRootOrThrow();
   const candidate = resolve(root, path);
   const repoRelative = relative(root, candidate).replaceAll(sep, "/");
   const allowed = ALLOWED_PREFIXES.some(

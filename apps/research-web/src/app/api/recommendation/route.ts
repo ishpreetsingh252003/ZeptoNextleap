@@ -95,14 +95,30 @@ function buildFromScored(): RecommendationReport {
 }
 
 export async function GET() {
-  if (scoredReportSummary()) {
+  console.log("[recommendation] Loading latest run...");
+  let scored: ReturnType<typeof scoredReportSummary> | null = null;
+  try {
+    scored = scoredReportSummary();
+  } catch (error) {
+    console.error("[recommendation] Could not load the latest scored report — falling back to bundled data:", error);
+  }
+  if (scored) {
+    console.log("[recommendation] Returning scored recommendation.");
     return NextResponse.json(buildFromScored() satisfies RecommendationReport);
   }
+  console.log("[recommendation] No scored run found — falling back to bundled data...");
   const file = resolveDataFile("recommendation/recommendation.json");
   if (!file) {
+    console.log("[recommendation] Bundled recommendation data is missing.");
     return NextResponse.json({ message: "Recommendation output is not available." }, { status: 404 });
   }
-  const raw = JSON.parse(readFileSync(file, "utf-8")) as RawRecommendation;
+  let raw: RawRecommendation;
+  try {
+    raw = JSON.parse(readFileSync(file, "utf-8")) as RawRecommendation;
+  } catch (error) {
+    console.error(`[recommendation] Could not parse bundled recommendation (${file}):`, error);
+    return NextResponse.json({ message: "Recommendation output is not available." }, { status: 404 });
+  }
   const themes = supportingThemes();
 
   const comparison = loadOpportunities()
@@ -114,5 +130,6 @@ export async function GET() {
     }));
 
   const { comparisonTradeOffs: _omitTradeOffs, decisionScores: _omitScores, ...payload } = raw;
+  console.log("[recommendation] Returning bundled recommendation.");
   return NextResponse.json({ ...payload, comparison } satisfies RecommendationReport);
 }

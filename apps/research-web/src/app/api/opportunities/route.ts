@@ -3,8 +3,19 @@ import { loadOpportunities, supportingThemes, toOpportunity, scoredReportSummary
 import { getLatestRun } from "@/lib/run-history";
 
 export async function GET() {
-  const scored = scoredReportSummary();
-  const latestRun = getLatestRun();
+  console.log("[opportunities] Loading latest run...");
+  let scored: ReturnType<typeof scoredReportSummary> | null = null;
+  try {
+    scored = scoredReportSummary();
+  } catch (error) {
+    console.error("[opportunities] Could not load the latest scored report — falling back to bundled data:", error);
+  }
+  let latestRun: ReturnType<typeof getLatestRun> | null = null;
+  try {
+    latestRun = getLatestRun();
+  } catch (error) {
+    console.error("[opportunities] Could not load the latest run manifest — continuing with bundled data:", error);
+  }
   const themes = supportingThemes();
   const opportunities = loadOpportunities()
     .sort((a, b) => a.rank - b.rank)
@@ -19,6 +30,12 @@ export async function GET() {
         executiveSummary: `${scored.report.evidenceCount} reviewed-evidence records were scored into ${scored.report.topOpportunities.length} opportunities. ${scored.report.topOpportunities[0] ? `The leading candidate is ${scored.report.topOpportunities[0].opportunityTitle} (combined score ${scored.report.topOpportunities[0].combinedScore}).` : ""} No AI inference, live provider calls, scraping, or database alterations were performed.`,
       }
     : null;
+
+  if (!scored) {
+    console.log("[opportunities] Returning bundled opportunities.");
+  } else {
+    console.log("[opportunities] Returning scored opportunities.");
+  }
 
   return NextResponse.json({
     report,

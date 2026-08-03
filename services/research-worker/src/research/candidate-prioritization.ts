@@ -656,13 +656,14 @@ export function parseCandidateCsv(csvText: string): ResearchCandidate[] {
 export async function runCandidatePrioritization(options: {
   inputPath: string;
   outputPath?: string;
+  repositoryRoot?: string;
 }): Promise<CandidatePriorityReport> {
   const candidates = parseCandidateCsv(
     await readFile(options.inputPath, "utf8")
   );
   const result = prioritizeCandidates(candidates);
   if (options.outputPath) {
-    const root = findRepositoryRoot();
+    const root = options.repositoryRoot ?? findRepositoryRoot();
     if (!root) throw new Error("Repository root could not be resolved.");
     const outputPath = resolve(options.outputPath);
     const repositoryPath = relative(root, outputPath).replaceAll("\\", "/");

@@ -75,14 +75,22 @@ function evidenceStrength(combinedScore: number, evidenceCount: number): Opportu
 
 export function latestScoredReport(): { report: OpportunityReport; runId: string | null } | null {
   const dir = repoDir("research/opportunity-output");
-  if (!dir) return null;
+  if (!dir) {
+    console.log("[opportunities] No generated opportunity-output directory found — falling back to bundled data.");
+    return null;
+  }
   const file = latestFileIn(dir, { suffix: "-opportunities.json" });
-  if (!file) return null;
+  if (!file) {
+    console.log("[opportunities] No generated -opportunities.json found — falling back to bundled data.");
+    return null;
+  }
   try {
     const parsed = JSON.parse(readFileSync(file, "utf-8")) as OpportunityReport;
     const runId = file.split(/[\\/]/).pop()?.replace("-opportunities.json", "") ?? null;
+    console.log(`[opportunities] Loading latest scored report: ${file}`);
     return { report: parsed, runId };
-  } catch {
+  } catch (error) {
+    console.error(`[opportunities] Could not parse scored report (${file}) — falling back to bundled data:`, error);
     return null;
   }
 }
@@ -148,10 +156,19 @@ export function scoredReportSummary(): { report: OpportunityReport; runId: strin
 export function loadOpportunities(): RawOpportunity[] {
   const scored = scoredOpportunities();
   if (scored.length > 0) return scored;
+  console.log("[opportunities] Falling back to bundled opportunities data.");
   const file = resolveDataFile("opportunities/opportunities.json");
-  if (!file) return [];
-  const parsed = JSON.parse(readFileSync(file, "utf-8")) as { opportunities: RawOpportunity[] };
-  return parsed.opportunities;
+  if (!file) {
+    console.log("[opportunities] Bundled opportunities data is missing.");
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(readFileSync(file, "utf-8")) as { opportunities: RawOpportunity[] };
+    return parsed.opportunities;
+  } catch (error) {
+    console.error(`[opportunities] Could not parse bundled opportunities (${file}) — returning empty set:`, error);
+    return [];
+  }
 }
 
 export function supportingThemes(): Map<string, { theme: string; count: number }[]> {
@@ -164,7 +181,13 @@ export function supportingThemes(): Map<string, { theme: string; count: number }
   ]) {
     const path = resolveInput(file, `behavior/${file.split("/").pop()}`);
     if (!path) continue;
-    const rows = parse(readFileSync(path, "utf-8"), { columns: true, skip_empty_lines: true, bom: true, trim: true }) as Record<string, string>[];
+    let rows: Record<string, string>[];
+    try {
+      rows = parse(readFileSync(path, "utf-8"), { columns: true, skip_empty_lines: true, bom: true, trim: true }) as Record<string, string>[];
+    } catch (error) {
+      console.error(`[opportunities] Could not parse supporting themes source (${path}):`, error);
+      continue;
+    }
     for (const row of rows) {
       for (const opportunityId of (row.opportunity_ids ?? "").split(";").map((o) => o.trim()).filter(Boolean)) {
         const entry = themes.get(opportunityId) ?? new Map<string, number>();

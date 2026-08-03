@@ -14,7 +14,7 @@ import type {
   BehaviourKnowledgeRecord,
   BehaviourKnowledgeDataset,
 } from "@zepto/research-worker/dist/research/scoring/types";
-import { repoFile, repoRootOrThrow, resolveInput } from "./repo-paths";
+import { repoRootOrThrow, resolveInput } from "./repo-paths";
 import { deriveThemes, deriveRelevanceTags, OPPORTUNITY_TITLES } from "./behavior-mapping";
 import { buildSynthesis, loadSynthesisSources, type SynthesisPayload } from "./synthesis";
 import { recordRun, writeSynthesis, runDir } from "./run-history";
@@ -31,11 +31,11 @@ const SOURCE_MAP: Record<string, string[]> = {
   community_forums: ["Public community thread", "Forum post"],
 };
 
-const KNOWLEDGE_FILES: { file: string; dataset: BehaviourKnowledgeDataset }[] = [
-  { file: "research/behavior/behavioural-theories.csv", dataset: "behavioural_theories" },
-  { file: "research/behavior/commerce-insights.csv", dataset: "commerce_insights" },
-  { file: "research/behavior/industry-case-studies.csv", dataset: "industry_case_studies" },
-  { file: "research/behavior/research-papers.csv", dataset: "research_papers" },
+const KNOWLEDGE_FILES: { file: string; bundled: string; dataset: BehaviourKnowledgeDataset }[] = [
+  { file: "research/behavior/behavioural-theories.csv", bundled: "behavior/behavioural-theories.csv", dataset: "behavioural_theories" },
+  { file: "research/behavior/commerce-insights.csv", bundled: "behavior/commerce-insights.csv", dataset: "commerce_insights" },
+  { file: "research/behavior/industry-case-studies.csv", bundled: "behavior/industry-case-studies.csv", dataset: "industry_case_studies" },
+  { file: "research/behavior/research-papers.csv", bundled: "behavior/research-papers.csv", dataset: "research_papers" },
 ];
 
 const REVIEWED_EVIDENCE_COLUMNS = [
@@ -161,10 +161,17 @@ function toCandidates(rows: readonly Record<string, string>[]): ResearchCandidat
 
 function loadBehaviourKnowledge(): BehaviourKnowledgeRecord[] {
   const records: BehaviourKnowledgeRecord[] = [];
-  for (const { file, dataset } of KNOWLEDGE_FILES) {
-    const path = repoFile(file);
-    if (!path) continue;
-    records.push(...parseBehaviourKnowledgeCsv(readFileSync(path, "utf8"), dataset));
+  for (const { file, bundled, dataset } of KNOWLEDGE_FILES) {
+    const path = resolveInput(file, bundled);
+    if (!path) {
+      console.log(`[pipeline] Behaviour knowledge source missing (${file}) — skipping ${dataset}.`);
+      continue;
+    }
+    try {
+      records.push(...parseBehaviourKnowledgeCsv(readFileSync(path, "utf8"), dataset));
+    } catch (error) {
+      console.error(`[pipeline] Could not parse behaviour knowledge source (${path}):`, error);
+    }
   }
   return records;
 }
@@ -264,6 +271,7 @@ export async function runPipeline(
     prioritization = await runCandidatePrioritization({
       inputPath: candidatesCsvPath,
       outputPath: prioritizedCsvPath,
+      repositoryRoot: repoRoot,
     });
     outputs.candidatesCsv = relToRoot(repoRoot, candidatesCsvPath);
     outputs.prioritizedCsv = relToRoot(repoRoot, prioritizedCsvPath);
@@ -282,6 +290,7 @@ export async function runPipeline(
     inputPath: reviewedEvidenceCsvPath,
     outputPath: opportunitiesJsonPath,
     behaviourKnowledge,
+    repositoryRoot: repoRoot,
   });
   outputs.reviewedEvidenceCsv = relToRoot(repoRoot, reviewedEvidenceCsvPath);
   outputs.opportunitiesJson = relToRoot(repoRoot, opportunitiesJsonPath);

@@ -23,7 +23,12 @@ export type SynthesisPayload = InsightsReport & {
 function readCsv(realRelativePath: string, bundledRelativePath: string): Record<string, string>[] {
   const file = resolveInput(realRelativePath, bundledRelativePath);
   if (!file) return [];
-  return parse(readFileSync(file, "utf-8"), { columns: true, skip_empty_lines: true, bom: true, trim: true }) as Record<string, string>[];
+  try {
+    return parse(readFileSync(file, "utf-8"), { columns: true, skip_empty_lines: true, bom: true, trim: true }) as Record<string, string>[];
+  } catch (error) {
+    console.error(`[synthesis] Could not parse CSV source (${file}):`, error);
+    return [];
+  }
 }
 
 function behaviorRecords(rows: Record<string, string>[]): BehaviorRecord[] {
