@@ -1,4 +1,5 @@
-Link to app - https://vercel.com/ishpreet-singh-s-projects/zepto-nextleap-research-web/9YbHM2sjMq3wy2Ew979kxxuchiQ2
+Link to review engine app - https://vercel.com/ishpreet-singh-s-projects/zepto-nextleap-research-web/9YbHM2sjMq3wy2Ew979kxxuchiQ2
+link to mvp - https://zeptonext.lovable.app/
 
 # Zepto NextLeap — Research Command Center
 
