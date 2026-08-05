@@ -1,3 +1,5 @@
+Link to app - https://vercel.com/ishpreet-singh-s-projects/zepto-nextleap-research-web/9YbHM2sjMq3wy2Ew979kxxuchiQ2
+
 # Zepto NextLeap — Research Command Center
 
 A deterministic behavioral-research workspace for category expansion at Zepto. It collects public
